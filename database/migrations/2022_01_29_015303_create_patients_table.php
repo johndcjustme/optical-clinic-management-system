@@ -23,7 +23,7 @@ class CreatePatientsTable extends Migration
             $table->integer('patient_age')->nullable();
             $table->string('patient_occupation')->nullable();
             $table->string('patient_mobile')->nullable();
-            $table->string('patient_email')->unique();
+            $table->string('patient_email')->nullable();
             $table->string('patient_gender')->nullable();
             $table->timestamps();
         });

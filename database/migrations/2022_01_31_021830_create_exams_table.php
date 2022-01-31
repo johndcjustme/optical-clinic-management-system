@@ -16,7 +16,13 @@ class CreateExamsTable extends Migration
     {
         Schema::create('exams', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Patient::class);
+
+            $table->unsignedBigInteger('patient_id');
+            $table->foreign('patient_id')
+                ->references('id')
+                ->on('patients')
+                ->onDelete('cascade');
+
             $table->double('exam_OD_SPH')->nullable();
             $table->double('exam_OD_CYL')->nullable();
             $table->double('exam_OD_AXIS')->nullable();

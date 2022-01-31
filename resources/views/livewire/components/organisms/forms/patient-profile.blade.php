@@ -33,21 +33,6 @@
                         </p>
                         <label class="color_dark" for="">Date Added</label>
 
-                        {{-- <p class="mt_8">
-                            <b>{{ $this->patient_fname }}</b>
-                        </p>
-                        <label class="color_dark" for="">First name</label>
-
-                        <p class="mt_8">
-                            <b>{{ $this->patient_lname }}</b>
-                        </p>
-                        <label class="color_dark" for="">Last name</label>
-
-                        <p class="mt_8">
-                            <b>{{ $this->patient_mname }}</b>
-                        </p>
-                        <label class="color_dark" for="">Middle name</label> --}}
-
                         <p class="mt_8">
                             <b>{{ $this->patient_age }}</b>
                         </p>
@@ -92,6 +77,7 @@
                         {{-- <hr> --}}
                         <div class="overflow_x mt_10">
                             <form action="">
+                                <input type="hidden" name="" >
                                 <table class="noformat" style="min-width: 400px">
                                     <tr>
                                         <td>

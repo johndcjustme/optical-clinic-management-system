@@ -54,7 +54,7 @@
         <div class="grid grid_col_2 gap_1">
             <div>
                 <label for="">Email</label>
-                <input type="email" name="" id="" wire:model="update_patient_email">
+                <input type="email" wire:model="update_patient_email">
             </div>
             <div>
                 <label for="">Mobile number</label>

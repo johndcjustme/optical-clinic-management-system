@@ -21,4 +21,9 @@ class Patient extends Model
         'patient_email',
         'patient_mobile',
     ];
+
+    public function exams()
+    {
+        return $this->hasMany(Exam::class);
+    }
 }

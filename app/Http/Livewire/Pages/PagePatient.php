@@ -5,15 +5,18 @@ use Illuminate\Support\Str;
 
 use Livewire\Component;
 use App\Models\Patient;
+use App\Models\Exam;
 
 
 class PagePatient extends Component
 {
+    // declaration for sorting patient list 
     public 
         $patient_fname, 
         $sortPatient = 'created_at', 
-        $sortMethod = 'asc';
+        $sortMethod = 'desc';
 
+    // resetInputFieldsDeclarations 
     public 
         $new_patient_fname, 
         $new_patient_lname,
@@ -25,12 +28,15 @@ class PagePatient extends Component
         $new_patient_email,
         $new_patient_mobile;
 
+    // searchPatientDeclarations 
     public $searchPatient, $patients;
 
+    // modalWindow
     public 
         $viewPatientProfile = false,
         $modalPatientShow = false,
-        $modalPatientAdd = false;
+        $modalPatientAdd = false,
+        $modalPatientUpdate = false;
 
 
     public function resetInputFields()
@@ -57,7 +63,7 @@ class PagePatient extends Component
             'new_patient_lname' => 'required',
         ]);
 
-        Patient::create([
+        $patientLastId = Patient::create([
             'patient_fname' => $this->new_patient_fname,
             'patient_lname' => $this->new_patient_lname,
             'patient_mname' => $this->new_patient_mname,
@@ -67,11 +73,16 @@ class PagePatient extends Component
             'patient_address' => $this->new_patient_address,
             'patient_email' => $this->new_patient_email,
             'patient_mobile' => $this->new_patient_mobile,
+        ]);
 
+        Exam::create([
+            'patient_id' => $patientLastId->id,
         ]);
 
         $this->modalPatientAdd = false;
         $this->modalPatientShow = false;
+
+        $this->resetInputFields();
 
         session()->flash('message','Patient added successfully.');
     }
@@ -89,7 +100,8 @@ class PagePatient extends Component
         $this->patient_address = Str::title($patient->patient_address);
         $this->patient_email = Str::title($patient->patient_email);
         $this->patient_mobile = Str::title($patient->patient_mobile);
-        $this->patient_created = Str::title($patient->created_at);
+        $this->patient_created = Str::title($patient->created_at);      
+
         $this->viewPatientProfile = true;
     }
 
@@ -124,6 +136,7 @@ class PagePatient extends Component
         session()->flash('message','Patient updated successfully.');
     }
 
+
     public function showUpdatePatientModal($id)
     {
         $this->modalPatientShow = true;
@@ -156,6 +169,15 @@ class PagePatient extends Component
         $this->modalPatientAdd = false;
         $this->modalPatientShow = false;
     }
+
+    public function updateExam() 
+    {
+        
+    }
+
+
+
+
 
     public function render()
     {

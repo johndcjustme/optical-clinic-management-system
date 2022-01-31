@@ -2,7 +2,7 @@
 
     <div class="text_right">
         @includeIf('livewire.components.atoms.btn-patient-modal-close')
-        <button class="ml_3">Add Patient</button>
+        <button type="submit" class="ml_3">Add Patient</button>
     </div>
 
     <br>
@@ -10,18 +10,18 @@
     <fieldset>
         <legend>Select Photo</legend>
         <br>
-        <input type="file" name="" id=""><br>
+        <input type="file" name="" id=""><br>   
     </fieldset>
 
     <br>
 
     <fieldset>
-        <legend>Perosnal Information</legend>
-        <br>
+        <legend>Perosnal Information</legend><br>
+        
         <div class="grid grid_col_2 gap_1">
             <div>
                 <label for="">First Name</label>
-                <input type="text" wire:model="new_patient_fname">
+                <input type="text" name="new_patient_fname" wire:model="new_patient_fname">
                 @error('new_patient_fname') <span>{{ $message }}</span> @enderror <br>
                 <label for="">Last Name</label>
                 <input type="text" wire:model="new_patient_lname">
@@ -33,7 +33,7 @@
             </div>
             <div>
                 <label for="">Gender</label>
-                <select name="" id="" wire:model="new_patient_gender">
+                <select wire:model="new_patient_gender">
                     <option>Male</option>
                     <option>Female</option>
                 </select>
@@ -48,12 +48,12 @@
     <br>
 
     <fieldset>
-        <legend>Contact Information</legend>
-        <br>
+        <legend>Contact Information</legend><br>
+
         <div class="grid grid_col_2 gap_1">
             <div>
                 <label for="">Email</label>
-                <input type="email" name="" id="" wire:model="new_patient_email">
+                <input type="email" wire:model="new_patient_email">
             </div>
             <div>
                 <label for="">Mobile number</label>
