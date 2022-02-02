@@ -1,1 +1,1 @@
-<button wire:click.prevent="closePatientModal">Close</button>
+<button wire:click.prevent="showAddPatientModal('closeModal')">Close</button>

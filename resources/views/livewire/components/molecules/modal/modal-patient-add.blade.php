@@ -8,8 +8,7 @@
     <br>
 
     <fieldset>
-        <legend>Select Photo</legend>
-        <br>
+        <legend>Select Photo</legend><br>
         <input type="file" name="" id=""><br>   
     </fieldset>
 
@@ -17,7 +16,6 @@
 
     <fieldset>
         <legend>Perosnal Information</legend><br>
-        
         <div class="grid grid_col_2 gap_1">
             <div>
                 <label for="">First Name</label>
@@ -34,7 +32,7 @@
             <div>
                 <label for="">Gender</label>
                 <select wire:model="new_patient_gender">
-                    <option>Male</option>
+                    <option selected>Male</option>
                     <option>Female</option>
                 </select>
                 <label for="">Occupation</label>

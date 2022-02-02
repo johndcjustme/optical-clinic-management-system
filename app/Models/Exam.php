@@ -28,6 +28,6 @@ class Exam extends Model
 
     public function patients()
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(Patient::class, 'patient_id');
     }
 }

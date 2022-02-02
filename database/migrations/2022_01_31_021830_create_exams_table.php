@@ -18,11 +18,6 @@ class CreateExamsTable extends Migration
             $table->id();
 
             $table->unsignedBigInteger('patient_id');
-            $table->foreign('patient_id')
-                ->references('id')
-                ->on('patients')
-                ->onDelete('cascade');
-
             $table->double('exam_OD_SPH')->nullable();
             $table->double('exam_OD_CYL')->nullable();
             $table->double('exam_OD_AXIS')->nullable();
@@ -38,6 +33,10 @@ class CreateExamsTable extends Migration
             $table->double('exam_ADD')->nullable();
             $table->double('exam_FRAME')->nullable();
             $table->timestamps();
+            $table->foreign('patient_id')
+                ->references('id')
+                ->on('patients')
+                ->onDelete('cascade');
         });
     }
 

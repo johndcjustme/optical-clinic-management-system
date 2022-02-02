@@ -14,7 +14,8 @@ class PagePatient extends Component
     public 
         $patient_fname, 
         $sortPatient = 'created_at', 
-        $sortMethod = 'desc';
+        $sortMethod = 'desc',
+        $exams;
 
     // resetInputFieldsDeclarations 
     public 
@@ -38,6 +39,7 @@ class PagePatient extends Component
         $modalPatientAdd = false,
         $modalPatientUpdate = false;
 
+    public $purchaseViewItem = 'lens';
 
     public function resetInputFields()
     {
@@ -87,20 +89,21 @@ class PagePatient extends Component
         session()->flash('message','Patient added successfully.');
     }
 
-    public function editPatient($id) 
+    public function showPatient($id) 
     {
         $patient = Patient::findOrFail($id);
-        $this->patient_id = $id;
-        $this->patient_fname = Str::title($patient->patient_fname);
-        $this->patient_lname = Str::title($patient->patient_lname);
-        $this->patient_mname = Str::title($patient->patient_mname);
-        $this->patient_age = Str::title($patient->patient_age);
-        $this->patient_gender = Str::title($patient->patient_gender);
-        $this->patient_occupation = Str::title($patient->patient_occupation);
-        $this->patient_address = Str::title($patient->patient_address);
-        $this->patient_email = Str::title($patient->patient_email);
-        $this->patient_mobile = Str::title($patient->patient_mobile);
-        $this->patient_created = Str::title($patient->created_at);      
+            $this->patient_id = $id;
+            $this->patient_fname = Str::title($patient->patient_fname);
+            $this->patient_lname = Str::title($patient->patient_lname);
+            $this->patient_mname = Str::title($patient->patient_mname);
+            $this->patient_age = Str::title($patient->patient_age);
+            $this->patient_gender = Str::title($patient->patient_gender);
+            $this->patient_occupation = Str::title($patient->patient_occupation);
+            $this->patient_address = Str::title($patient->patient_address);
+            $this->patient_email = Str::title($patient->patient_email);
+            $this->patient_mobile = Str::title($patient->patient_mobile);
+            $this->patient_created = Str::title($patient->created_at);      
+
 
         $this->viewPatientProfile = true;
     }
@@ -131,7 +134,7 @@ class PagePatient extends Component
         $this->modalPatientShow = false;
 
         // call function to display/view current updated patient 
-        $this->editPatient($id);
+        $this->showPatient($id);
 
         session()->flash('message','Patient updated successfully.');
     }
@@ -143,31 +146,36 @@ class PagePatient extends Component
         $this->modalPatientUpdate = true;
 
         $patient = Patient::find($id);
-        $this->update_patient_id = $patient->id;
-        $this->update_patient_fname = Str::title($patient->patient_fname);
-        $this->update_patient_lname = Str::title($patient->patient_lname);
-        $this->update_patient_mname = Str::title($patient->patient_mname);
-        $this->update_patient_age = Str::title($patient->patient_age);
-        $this->update_patient_gender = Str::title($patient->patient_gender);
-        $this->update_patient_occupation = Str::title($patient->patient_occupation);
-        $this->update_patient_address = Str::title($patient->patient_address);
-        $this->update_patient_email = Str::title($patient->patient_email);
-        $this->update_patient_mobile = Str::title($patient->patient_mobile);
-        $this->update_patient_created = Str::title($patient->created_at);
+            $this->update_patient_id = $patient->id;
+            $this->update_patient_fname = Str::title($patient->patient_fname);
+            $this->update_patient_lname = Str::title($patient->patient_lname);
+            $this->update_patient_mname = Str::title($patient->patient_mname);
+            $this->update_patient_age = Str::title($patient->patient_age);
+            $this->update_patient_gender = Str::title($patient->patient_gender);
+            $this->update_patient_occupation = Str::title($patient->patient_occupation);
+            $this->update_patient_address = Str::title($patient->patient_address);
+            $this->update_patient_email = Str::title($patient->patient_email);
+            $this->update_patient_mobile = Str::title($patient->patient_mobile);
+            $this->update_patient_created = Str::title($patient->created_at);
     }
 
-    public function showAddPatientModal()
+    public function showAddPatientModal($action)
     {
-        $this->modalPatientShow = true;
-        $this->modalPatientAdd = true;
+        if($action == 'addPatient') {
+            $this->modalPatientShow = true;
+            $this->modalPatientAdd = true;
+        }
+
+        elseif ($action == 'closeModal') {
+            $this->resetInputFields();  
+            $this->modalPatientShow = false;
+            $this->modalPatientAdd = false;
+            $this->modalPatientUpdate = false;
+        }
     }
 
-    public function closePatientModal()
-    {
-        $this->resetInputFields();  
-        $this->modalPatientUpdate = false;
-        $this->modalPatientAdd = false;
-        $this->modalPatientShow = false;
+    public function purchaseViewItem($item) {
+        if($item === $item) { $this->purchaseViewItem = $item; }
     }
 
     public function updateExam() 
@@ -179,7 +187,7 @@ class PagePatient extends Component
 
 
 
-    public function render()
+    public function render() 
     {
         $searchPatient = '%' . $this->searchPatient . '%';
         $this->patients = Patient::where('patient_fname', 'like', $searchPatient)

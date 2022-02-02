@@ -8,39 +8,28 @@
 @section('pageTitle', 'Patients')
 
 
+<div class="flex flex_x_between full_w main_content_inner overflow_hidden relative">
 
-{{-- main page div  --}}
-<div class="flex full_vh overflow_hidden relative">
-        {{-- sidenav  --}}
-        @includeIf('livewire.components.organisms.layouts.sidenav')
-        <section class="full_vh full_w">
-                {{-- top bar  --}}
-                @includeIf('livewire.components.organisms.layouts.topbar')
-                {{-- main content --}}
-                <div class="main_content">
+        {{-- modal    --}}
+    @if($modalPatientShow)
+        @includeIf('livewire.components.organisms.modal.modal-patient')
+    @endif
 
-                    <div class="flex flex_x_between full_w main_content_inner overflow_hidden">
+    @if ($viewPatientProfile)
+        @includeIf('livewire.components.organisms.forms.patient-profile')
+    @else
+        <div class="full_w full_h flex flex_center">
+            <center>
+                <i class="fas fa-sad-tear" style="font-size: 2rem"></i><br><br>
+                <span>Looks like no patient is selected</span>
+            </center>
+        </div>
+    @endif
+    
+    @includeIf('livewire.components.organisms.forms.patient-list')                   
 
-                         {{-- modal    --}}
-                        @if($modalPatientShow)
-                            @includeIf('livewire.components.organisms.modal.modal-patient')
-                        @endif
-
-
-                        @if ($viewPatientProfile)
-                            @includeIf('livewire.components.organisms.forms.patient-profile')
-                        @else
-                            <center>select patient</center>
-                        @endif
-                        
-                        @includeIf('livewire.components.organisms.forms.patient-list')                   
-
-
-                    </div>
-                </div>
-        </section>
-
-        @if(session()->has('message'))
-            <div class="alert mr_20 mb_20 absolute bottom right">{{ session('message') }} <i class="fas fa-close ml_3"></i></div>
-        @endif
+    @if(session()->has('message'))
+    <div class="alert mr_20 mb_20 absolute bottom right">{{ session('message') }} <i class="fas fa-close ml_3"></i></div>
+    @endif
 </div>
+

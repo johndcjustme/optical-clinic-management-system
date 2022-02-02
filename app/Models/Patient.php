@@ -22,7 +22,7 @@ class Patient extends Model
         'patient_mobile',
     ];
 
-    public function exams()
+    public function exam()
     {
         return $this->hasMany(Exam::class);
     }

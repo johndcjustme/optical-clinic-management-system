@@ -155,58 +155,33 @@
                     {{-- <hr class="my_15"> --}}
                     <br><br>
 
-                    <form action="">
                         <div>
                             <h5>PURCHASE</h5>
-                            {{-- <hr> --}}
-                            <div class="grid grid_col_2 gap_1 mt_10">
-                                <div class="flex flex_column flex_x_end">
-                                    <label for="">TINT</label>
-                                    <input type="text" list="tint_suggestions">
-                                    <datalist id="tint_suggestions">
-                                        <option value="Tint 1">Tint 1</option>
-                                        <option value="Tint 2">Tint 2</option>
-                                        <option value="Tint 3">Tint 3</option>
-                                        <option value="Tint 4">Tint 4</option>
-                                    </datalist>
-                                    <label for="">LENS</label>
-                                    <input type="text" list="lens_suggestions">
-                                    <datalist id="lens_suggestions">
-                                        <option value="Lens 1"></option>
-                                        <option value="Lens 2"></option>
-                                        <option value="Lens 3"></option>
-                                        <option value="Lens 4"></option>
-                                    </datalist>
-                                    <label for="">LENS QUANTITY</label>
-                                    <input type="number">
-                                    <button type="submit" class="mt_7 button_gradient">+ Add lens</button>
+                            <div class="mt_15">
+                                <div class="flex flex_x_between gap_1 full_w pointer">
+                                    <a wire:click.prevent="purchaseViewItem('lens')" class="underlined_item_links @if ($this->purchaseViewItem == 'lens') active @else  @endif full_w text_center p_3">Lens</a>
+                                    <a wire:click.prevent="purchaseViewItem('frame')" class="underlined_item_links @if ($this->purchaseViewItem == 'frame') active @else  @endif full_w text_center p_3">Frame</a>
+                                    <a wire:click.prevent="purchaseViewItem('accessory')" class="underlined_item_links @if ($this->purchaseViewItem == 'accessory') active @else  @endif full_w text_center p_3">Accessory</a>
                                 </div>
-                                <div class="flex flex_column flex_x_end">
-                                    <label for="">FRAME</label>
-                                    <input type="text" list="Frame_suggestions">
-                                    <datalist id="Frame_suggestions">
-                                        <option value="Frame 1"></option>
-                                        <option value="Frame 2"></option>
-                                        <option value="Frame 3"></option>
-                                        <option value="Frame 4"></option>
-                                    </datalist>
-                                    <label for="">FRAME QUANTITY</label>
-                                    <input type="number">
-                                    <button type="submit" class="mt_7 button_gradient">+ Add Frame</button>
+                                <br>
+                                <div>
+                                    <form action="">
+                                        @if ($this->purchaseViewItem == 'lens')
+                                            @include('livewire.components.molecules.patient-purchase-lens')
+                                        @elseif ($this->purchaseViewItem == 'frame')
+                                            @include('livewire.components.molecules.patient-purchase-frame')
+                                        @elseif ($this->purchaseViewItem == 'accessory')
+                                            @include('livewire.components.molecules.patient-purchase-accessory')
+                                        @endif
+                                    </form>
                                 </div>
-                                <div class="b_1 p_5">
-                                    <p><a class="button_link" href="#"><i class="fas fa-remove mr_3"></i></a> Item 1</p>
-                                    <p><a class="button_link" href="#"><i class="fas fa-remove mr_3"></i></a> Item 1</p>
-                                    <p><a class="button_link" href="#"><i class="fas fa-remove mr_3"></i></a> Item 1</p>
-                                </div>
-                                <div class="b_1 p_5">
-                                    <p><a class="button_link" href="#"><i class="fas fa-remove mr_3"></i></a> Item 2</p>
-                                    <p><a class="button_link" href="#"><i class="fas fa-remove mr_3"></i></a> Item 2</p>
-                                    <p><a class="button_link" href="#"><i class="fas fa-remove mr_3"></i></a> Item 2</p>
-                                </div>
-                                <div style="grid-column: 1 / 3">
-                                    <label for="">REMARKS</label>
-                                    <input class="full_w" type="text">
+                                <br>
+                                <div>
+                                    <div class="b_1 p_5">
+                                        <p><a class="button_link" href="#"><i class="fas fa-remove mr_3"></i></a> Item 1</p>
+                                        <p><a class="button_link" href="#"><i class="fas fa-remove mr_3"></i></a> Item 1</p>
+                                        <p><a class="button_link" href="#"><i class="fas fa-remove mr_3"></i></a> Item 1</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -214,19 +189,21 @@
                         {{-- <hr class="my_15"> --}}
                         <br><br><br>
 
+
+                    <form action="">
                         <div>
                             <div class="grid grid_col_2 gap_1">
                                 <div>
-                                    <label for="">DEPOSIT</label>
+                                    <label for="">Deposit</label>
                                     <input type="number">
-                                    <label for="">DISCOUNT</label>
+                                    <label for="">Discount</label>
                                     <input type="number">
                                 </div>
-                                <div>
-                                    <label for="">BALANCE</label>
-                                    <input type="number" value="500.00">
-                                    <label for="">TOTAL AMOUNT</label>
-                                    <input type="number" value="1200.00">
+                                <div class="text_right">
+                                    <label for="">Balance</label>
+                                    <input class="noformat text_right" type="text" value="500.00" disabled style="font-size: 1.2rem; padding:0.4rem">
+                                    <label for="">Total Amount</label>
+                                    <input class="noformat text_right" type="text" value="1200.00" disabled style="font-size: 1.2rem; padding:0.4rem">
                                 </div>
                             </div>
                             <br><br>

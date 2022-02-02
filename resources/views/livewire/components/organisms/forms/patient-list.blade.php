@@ -26,11 +26,15 @@
 
     <div class="overflow_y full_h noscroll" style="">
         <ul class="selectable pointer">
-            @foreach ($patients as $patient)
-                <li title="{{ Str::title($patient->patient_lname . ', ' . $patient->patient_fname . ' ' . $patient->patient_mname) }}" wire:click="editPatient({{ $patient->id }})">
-                    {{ Str::title($patient->patient_lname . ', ' . $patient->patient_fname . ' ' . $patient->patient_mname) }}
-                </li>
-            @endforeach
+
+            @forelse ($patients as $patient)
+            <li title="{{ Str::title($patient->patient_lname . ', ' . $patient->patient_fname . ' ' . $patient->patient_mname) }}" wire:click="showPatient({{ $patient->id }})">
+                {{ Str::title($patient->patient_lname . ', ' . $patient->patient_fname . ' ' . $patient->patient_mname) }}
+            </li>
+            @empty
+                <br><p><center>No patient.</center></p>
+            @endforelse
+
         </ul>
     </div>
 </div>
