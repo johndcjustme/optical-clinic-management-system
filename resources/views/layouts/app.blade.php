@@ -18,14 +18,14 @@
 <body>
     
     {{-- main page div  --}}
-    <div class="flex full_vh overflow_hidden relative">
+    <div class="outer_container full_vh overflow_hidden relative">
         {{-- sidenav  --}}
         @livewire('components.organisms.layouts.sidenav')
-        <section class="full_vh full_w">
+        <section class="section_main full_vh full_w">
             {{-- top bar  --}}
             @livewire('components.organisms.layouts.topbar')
             {{-- main content --}}
-            <div class="main_content">
+            <div class="main_content overflow_hidden full_w">
 
                 @yield('content')
 

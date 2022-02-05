@@ -32,7 +32,8 @@
             <div>
                 <label for="">Gender</label>
                 <select wire:model="new_patient_gender">
-                    <option selected>Male</option>
+                    <option selected hidden>--Select--</option>
+                    <option>Male</option>
                     <option>Female</option>
                 </select>
                 <label for="">Occupation</label>

@@ -29,7 +29,7 @@
     @includeIf('livewire.components.organisms.forms.patient-list')                   
 
     @if(session()->has('message'))
-    <div class="alert mr_20 mb_20 absolute bottom right">{{ session('message') }} <i class="fas fa-close ml_3"></i></div>
+        <x-alert type="error" message="{{ session('message') }}" />
     @endif
 </div>
 

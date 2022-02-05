@@ -178,15 +178,6 @@ class PagePatient extends Component
         if($item === $item) { $this->purchaseViewItem = $item; }
     }
 
-    public function updateExam() 
-    {
-        
-    }
-
-
-
-
-
     public function render() 
     {
         $searchPatient = '%' . $this->searchPatient . '%';

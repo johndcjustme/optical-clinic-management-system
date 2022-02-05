@@ -27,7 +27,6 @@
                 
                     {{-- <h6><i class="fas fa-circle mr_3"></i> PEROSNAL INFO</h6><hr> --}}
                     <div>
-
                         <p class="mt_8">
                             <b>{{ $this->patient_created }}</b>
                         </p>

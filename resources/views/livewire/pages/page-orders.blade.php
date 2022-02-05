@@ -8,8 +8,10 @@
 @section('pageTitle', 'Orders')
 
 
-    <div class="flex flex_center full_w main_content_inner overflow_hidden">
+    <div class="full_w main_content_inner overflow">
 
-        <div>Orders</div>
+        <div class="inner_content">
+            @include('livewire.components.organisms.pagecontents.orders-content')      
+        </div>
 
     </div>

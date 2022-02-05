@@ -5,11 +5,13 @@
 {{-- active page  --}}
 @section('appointments', 'active')
 {{-- current page --}}
-@section('pageTitle', 'Appointment')
+{{-- @section('pageTitle', 'Appointment') --}}
 
 
-    <div class="flex flex_center full_w main_content_inner overflow_hidden">
+    <div class="full_w main_content_inner overflow">
 
-        <div>Appointment</div>
+        <div class="inner_content">
+            @include('livewire.components.organisms.pagecontents.appointments-content')      
+        </div>
 
     </div>

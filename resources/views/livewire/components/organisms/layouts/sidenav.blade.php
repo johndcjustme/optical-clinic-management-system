@@ -1,5 +1,5 @@
-<section class="sidenav full_vh br_1 overflow_y noscroll">
-    <ul class="selectable card card_noformat empty">
+<section class="section_sidenav full_vh overflow_y noscroll">
+    <ul class="selectable p_7 empty">
 
         {{-- header  --}}
         <div>

@@ -5,19 +5,19 @@
 {{-- active page  --}}
 @section('inventory', 'active')
 {{-- current page --}}
-@section('pageTitle', 'Inventory')
+{{-- @section('pageTitle', 'Inventory') --}}
 
 
 
 
-    <div class="flex full_w main_content_inner overflow_hidden">
+    <div class="full_w main_content_inner overflow">
 
-        @include('livewire.components.organisms.table.inventory-tables')
-       
+        <div class="inner_content">
+            @include('livewire.components.organisms.pagecontents.inventory-content')      
+        </div>
+
         @if ($this->inventoryShowModal)
-
-           @includeIf('livewire.components.organisms.modal.modal-inventory');
-
+            @includeIf('livewire.components.organisms.modal.modal-inventory');
         @endif
 
     </div>
