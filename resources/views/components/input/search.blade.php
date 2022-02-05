@@ -1,4 +1,1 @@
-
-
-
-<input type="search" name="" id="" placeholder="Search Lens">
+<input type="search" wire:model.debounce.200ms="{{ $wireModel }}" placeholder="Search">

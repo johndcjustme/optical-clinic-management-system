@@ -5,7 +5,8 @@
             @includeIf('livewire.components.atoms.btn-add-patient')
         </div>
         <div class="my_4">
-            <input type="search" wire:model.debounce.200ms="searchPatient" placeholder="Search Patient">
+            <x-input.search wire-model="searchPatient"/>
+            {{-- <input type="search" wire:model.debounce.200ms="searchPatient" placeholder="Search Patient"> --}}
         </div>
         <div class="flex full_w gap_1">
             <select wire:model="sortPatient" class="input_small" style="width: 50%;">

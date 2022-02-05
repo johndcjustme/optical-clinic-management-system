@@ -11,9 +11,12 @@ class Search extends Component
      *
      * @return void
      */
-    public function __construct()
+    public $wireModel;
+
+    public function __construct($wireModel)
     {
         //
+        $this->wireModel = $wireModel;
     }
 
     /**
