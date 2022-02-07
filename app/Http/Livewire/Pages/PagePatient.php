@@ -55,6 +55,19 @@ class PagePatient extends Component
         $this->new_patient_mobile = '';
     }
 
+    public function render() 
+    {
+        $searchPatient = '%' . $this->searchPatient . '%';
+        $this->patients = Patient::where('patient_fname', 'like', $searchPatient)
+            ->orWhere('patient_lname', 'like', $searchPatient)
+            ->orderBy($this->sortPatient, $this->sortMethod)
+            ->get();
+     
+        return view('livewire.pages.page-patient')
+            ->extends('layouts.app')
+            ->section('content');
+    }
+    
     public function addPatient()
     {
         $this->modalPatientShow = true;
@@ -176,18 +189,5 @@ class PagePatient extends Component
 
     public function purchaseViewItem($item) {
         if($item === $item) { $this->purchaseViewItem = $item; }
-    }
-
-    public function render() 
-    {
-        $searchPatient = '%' . $this->searchPatient . '%';
-        $this->patients = Patient::where('patient_fname', 'like', $searchPatient)
-            ->orWhere('patient_lname', 'like', $searchPatient)
-            ->orderBy($this->sortPatient, $this->sortMethod)
-            ->get();
-     
-        return view('livewire.pages.page-patient')
-            ->extends('layouts.app')
-            ->section('content');
     }
 }

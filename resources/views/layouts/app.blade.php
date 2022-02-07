@@ -18,7 +18,7 @@
 <body>
     
     {{-- main page div  --}}
-    <div class="outer_container full_vh overflow_hidden relative">
+    <div class="outer_container full_vh overflow_hidden">
         {{-- sidenav  --}}
         @livewire('components.organisms.layouts.sidenav')
         <section class="section_main full_vh full_w">
@@ -32,6 +32,7 @@
             </div>
 
         </section>
+
     </div>
 
     @livewireScripts

@@ -38,7 +38,7 @@
     @if($this->isAddItem)
 
         @if ($this->addLens)
-            <form wire:submit.prevent="inventoryOnAddItem('le')">
+            <form wire:submit.prevent="addInventory('le')">
                 <fieldset>
                     <legend>Add Photo</legend><br>
                     <input type="file" name="" id="">
@@ -79,7 +79,7 @@
 
         @elseif ($this->addFrame)
 
-            <form action="" wire:submit.prevent="inventoryOnAddItem('fr')">
+            <form action="" wire:submit.prevent="addInventory('fr')">
                 <fieldset>
                     <legend>Add Photo</legend><br>
                     <input type="file" name="" id="">
@@ -120,7 +120,7 @@
 
         @elseif ($this->addAccessory)
 
-            <form action="" wire:submit.prevent="inventoryOnAddItem('ac')">
+            <form action="" wire:submit.prevent="addInventory('ac')">
                 <fieldset>
                     <legend>Add Photo</legend><br>
                     <input type="file" name="" id="">
@@ -159,7 +159,9 @@
 
         @elseif ($this->addSupplier)
 
-            <form action="" wire:submit.prevent="inventoryOnAddItem('su')">
+
+            <form action="" wire:submit.prevent="addInventory('su')">
+
                 <fieldset>
                     <legend>Add Photo</legend><br>
                     <input type="file" name="" id="">
@@ -174,19 +176,19 @@
                     <div class="grid grid_col_2 gap_1">
                         <div>
                             <label for="">Supplier Name</label>
-                            <input type="text">
+                            <input wire:model.defer="su_name" type="text" required>
                             <label for="">Contact No.</label>
-                            <input type="text">
+                            <input wire:model.defer="su_contact" type="number">
                             <label for="">Address</label>
-                            <input type="text">
+                            <input wire:model.defer="su_address" type="text">
                         </div>
                         <div>
                             <label for="">Bank</label>
-                            <input type="text">
+                            <input wire:model.defer="su_bank" type="text">
                             <label for="">Account No.</label>
-                            <input type="text">
+                            <input wire:model.defer="su_acc" type="text">
                             <label for="">Branch</label>
-                            <input type="text">
+                            <input wire:model.defer="su_branch" type="text">
                         </div>
                     </div>
                 </fieldset>
@@ -203,9 +205,48 @@
         @elseif($this->updateFrame)
             update frame
         @elseif($this->updateAccessory)
-            update accessory
+
+              accessory
+
         @elseif($this->updateSupplier)   
-            update supplier
+            
+                <form action="" wire:submit.prevent="updateInventory('su', {{ $this->su_id }})">
+
+                    <input type="hidden" wire:model.defer="su_id">
+
+                    <fieldset>
+                        <legend>Add Photo</legend><br>
+                        <input type="file" name="" id="">
+
+                    </fieldset>
+
+                    <br>
+
+                    <fieldset>
+                        <legend>Supplier Details</legend><br>
+
+                        <div class="grid grid_col_2 gap_1">
+                            <div>
+                                <label for="">Supplier Name</label>
+                                <input wire:model.defer="su_name" type="text" required>
+                                <label for="">Contact No.</label>
+                                <input wire:model.defer="su_contact" type="number">
+                                <label for="">Address</label>
+                                <input wire:model.defer="su_address" type="text">
+                            </div>
+                            <div>
+                                <label for="">Bank</label>
+                                <input wire:model.defer="su_bank" type="text">
+                                <label for="">Account No.</label>
+                                <input wire:model.defer="su_acc" type="text">
+                                <label for="">Branch</label>
+                                <input wire:model.defer="su_branch" type="text">
+                            </div>
+                        </div>
+                    </fieldset>
+                    <input id="updateSupplier" type="submit" value="Update" hidden>
+                </form>
+                
         @endif
 
     @endif

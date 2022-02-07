@@ -3,7 +3,7 @@
         <div>
             <h4>@yield('section-page-title')</h4>
         </div>
-        <div class="flex gap_1 mt_10">
+        <div class="flex gap_1 mt_15">
             @yield('section-links')
         </div>
         <br><br>

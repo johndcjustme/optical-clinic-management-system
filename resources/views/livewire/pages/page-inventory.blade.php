@@ -20,4 +20,5 @@
             @includeIf('livewire.components.organisms.modal.modal-inventory');
         @endif
 
+
     </div>

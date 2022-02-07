@@ -8,7 +8,7 @@
             <x-atom.tab-links.link tab-title="Frames" wire-click="inventoryChangeTable(2)" sub-page="{{ $this->myTab() == 2 }}"/>
             <x-atom.tab-links.link tab-title="Accessories" wire-click="inventoryChangeTable(3)" sub-page="{{ $this->myTab() == 3 }}"/>
             <x-atom.tab-links.link tab-title="Suppliers" wire-click="inventoryChangeTable(4)" sub-page="{{ $this->myTab() == 4 }}"/>
-                <x-atom.tab-links.link tab-title="In / out" wire-click="inventoryChangeTable(5)" sub-page="{{ $this->myTab() == 5 }}"/>
+            <x-atom.tab-links.link tab-title="In / out" wire-click="inventoryChangeTable(5)" sub-page="{{ $this->myTab() == 5 }}"/>
         @endsection
 
         @section('section-heading')
@@ -116,7 +116,8 @@
                             </select>
                         </div>
                         <div>
-                            <input type="search" name="" id="" placeholder="Search Supplier">
+                            <x-input.search wire-model="searchSupplier"/>
+                            {{-- <input type="search" name="" id="" placeholder="Search Supplier"> --}}
                         </div>
                         <div>
                             <button wire:click="inventoryShowModal('addSu')"><i class="fas fa-plus"></i> add</button>
@@ -151,7 +152,9 @@
         @endsection
 
         @section('section-main')
+
             <div class="items">
+
                 @if ($this->myTab() == 1)
                             <div class="grid grid_lens title">
                                 <div>{{ Str::title('lens name') }}</div>
@@ -164,18 +167,23 @@
                             </div>
 
                             @for ($i=1; $i<12; $i++)
-                                <div class="grid grid_lens list">
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div class="flex flex_x_end">content</div>
-                                    <div class="flex flex_x_end">
-                                        <a class="action" href="#"><i class='fas fa-trash-alt'></i></a>
-                                        <a wire:click="showModalOnLensUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
+                                <div class="list_container">
+                                    <x-organisms.popup-delete item-id="{{-- $supplier->id  --}}" wire-click="deleteInventory('su', {{-- $supplier->id --}})" />
+
+                                        
+                                    <div class="grid grid_lens list">
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div class="flex flex_x_end">content</div>
+                                        <div class="flex flex_x_end">
+                                            <a class="action" href="#"><i class='fas fa-trash-alt'></i></a>
+                                            <a wire:click="showModalOnLensUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
+                                        </div>
                                     </div>
-                                </div>
+                                </div>                                
                             @endfor
 
                 @elseif ($this->myTab() == 2)
@@ -192,16 +200,20 @@
 
 
                             @for ($i=1; $i<12; $i++)
-                                <div class="grid grid_frame list">
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div class="flex flex_x_end">content</div>
-                                    <div class="flex flex_x_end">
-                                        <a class="action" href="#"><i class='fas fa-trash-alt'></i></a>
-                                        <a wire:click="showModalOnFrameUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
+                                <div class="list_container">
+                                    <x-organisms.popup-delete item-id="{{-- $supplier->id  --}}" wire-click="deleteInventory('su', {{-- $supplier->id --}})" />
+
+                                    <div class="grid grid_frame list">
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div class="flex flex_x_end">content</div>
+                                        <div class="flex flex_x_end">
+                                            <a class="action" href="#"><i class='fas fa-trash-alt'></i></a>
+                                            <a wire:click="showModalOnFrameUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
+                                        </div>
                                     </div>
                                 </div>
                             @endfor       
@@ -220,16 +232,20 @@
                             </div>
 
                             @for ($i=1; $i<12; $i++)
-                                <div class="grid grid_accessory list">
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div class="flex flex_x_end">content</div>
-                                    <div class="flex flex_x_end">
-                                        <a class="action" href="#"><i class='fas fa-trash-alt'></i></a>
-                                        <a wire:click="showModalOnAccessoryUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
+                                <div class="list_container">
+                                    <x-organisms.popup-delete item-id="{{-- $supplier->id  --}}" wire-click="deleteInventory('su', {{-- $supplier->id --}})" />
+
+                                    <div class="grid grid_accessory list">
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div class="flex flex_x_end">content</div>
+                                        <div class="flex flex_x_end">
+                                            <a class="action" href="#"><i class='fas fa-trash-alt'></i></a>
+                                            <a wire:click="showModalOnAccessoryUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
+                                        </div>
                                     </div>
                                 </div>
                             @endfor       
@@ -237,31 +253,43 @@
                             
                 @elseif ($this->myTab() == 4)
                     
-                            <div class="grid grid_supplier title">
-                                <div>{{ Str::title('Supplier name') }}</div>
-                                <div>{{ Str::title('Contact no') }}</div>
-                                <div>{{ Str::title('address') }}</div>
-                                <div>{{ Str::title('bank') }}</div>
-                                <div>{{ Str::title('account no') }}</div>
-                                <div>{{ Str::title('branch') }}</div>
-                                <div class="flex flex_x_end">{{ Str::title('action') }}</div>
-                            </div>
+                    <x-layout.lists-section>               
 
+                        <x-layout.lists-section.lists-title list-for="grid_supplier">
+                            <div>{{ Str::title('Supplier name') }}</div>
+                            <div>{{ Str::title('Contact no') }}</div>
+                            <div>{{ Str::title('address') }}</div>
+                            <div>{{ Str::title('bank') }}</div>
+                            <div>{{ Str::title('account no') }}</div>
+                            <div>{{ Str::title('branch') }}</div>
+                            <div class="flex flex_x_end">{{ Str::title('action') }}</div>
+                        </x-layout.lists-section.lists-title>
 
-                            @for ($i=1; $i<12; $i++)
-                                <div class="grid grid_supplier list">
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div>content</div>
+                        @forelse ($suppliers as $supplier)
+
+                            <x-layout.lists-section.lists-container>
+                                <x-organisms.popup-delete item-id="{{ $supplier->id  }}" wire-click="deleteInventory('su', {{ $supplier->id }})" />
+                                <x-layout.lists-section.lists-list list-for="grid_supplier">
+
+                                    <div>{{ $supplier->supplier_name }}</div>
+                                    <div>{{ $supplier->supplier_contact_no }}</div>
+                                    <div>{{ $supplier->supplier_address }}</div>
+                                    <div>{{ $supplier->supplier_bank }}</div>
+                                    <div>{{ $supplier->supplier_acc_no }}</div>
+                                    <div>{{ $supplier->supplier_branch }}</div>
                                     <div class="flex flex_x_end">
-                                        <a class="action" href="#"><i class='fas fa-trash-alt'></i></a>
-                                        <a wire:click="showModalOnSupplierUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
-                                    </div>
-                                </div>
-                            @endfor       
+                                        <a onclick="getElementById('delete{{ $supplier->id  }}').style.right = '0px'" class="action" href="#"><i class='fas fa-trash-alt'></i></a>
+                                        <a wire:click="showModalOnSupplierUpdate({{ $supplier->id }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
+                                    </div>                                  
+                                    
+                                </x-layout.lists-section.lists-container>
+                            </x-layout.lists-section.lists-container>
+
+                        @empty
+                            <x-layout.lists-section.list-empty empty-message="No Results."/>
+                        @endforelse
+
+                    </x-layout.lists-section>
 
                 @elseif ($this->myTab() == 5)
                     
@@ -276,15 +304,19 @@
 
 
                             @for ($i=1; $i<12; $i++)
-                                <div class="grid grid_inout list">
-                                    <div>content</div>
-                                    <div>content</div>
-                                    <div class="flex flex_x_end">12</div>
-                                    <div class="flex flex_x_end">3</div>
-                                    <div class="flex flex_x_end">1</div>
-                                    <div class="flex flex_x_end">
-                                        <a class="action" href="#"><i class='fas fa-trash-alt'></i></a>
-                                        <a wire:click="showModalOnSupplierUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
+                                <div class="list_container">
+                                    <x-organisms.popup-delete item-id="{{ $i }}" wire-click="hey('va', {{ $i }})" />
+
+                                    <div class="grid grid_inout list">
+                                        <div>content</div>
+                                        <div>content</div>
+                                        <div class="flex flex_x_end">12</div>
+                                        <div class="flex flex_x_end">3</div>
+                                        <div class="flex flex_x_end">1</div>
+                                        <div class="flex flex_x_end">
+                                            <a onclick="getElementById('delete{{ $i  }}').style.right = '0px'" class="action" href="#"><i class='fas fa-trash-alt'></i></a>
+                                            <a wire:click="showModalOnSupplierUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
+                                        </div>
                                     </div>
                                 </div>
                             @endfor       
