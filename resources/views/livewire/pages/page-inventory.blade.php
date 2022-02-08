@@ -10,7 +10,7 @@
 
 
 
-    <div class="full_w main_content_inner overflow">
+    <div class="full_w main_content_inner overflow_scroll">
 
         <div class="inner_content">
             @include('livewire.components.organisms.pagecontents.inventory-content')      
@@ -20,5 +20,10 @@
             @includeIf('livewire.components.organisms.modal.modal-inventory');
         @endif
 
+
+
+        @if(session()->has('message'))
+            <x-alert type="error" message="{{ session('message') }}" />
+        @endif
 
     </div>

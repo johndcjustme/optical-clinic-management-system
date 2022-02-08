@@ -1,7 +1,6 @@
     {{-- Because she competes with no one, no one can compete with her. --}}
 
 
-    
 {{-- active page  --}}
 @section('patients', 'active')
 {{-- current page --}}
@@ -32,4 +31,8 @@
         <x-alert type="error" message="{{ session('message') }}" />
     @endif
 </div>
+
+
+
+
 

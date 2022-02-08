@@ -59,6 +59,7 @@ class PageInventory extends Component
     }
 
 
+
     public function resetSu()
     {
         $this->su_name = '';
@@ -82,6 +83,7 @@ class PageInventory extends Component
 
         if($su) {
             $this->inventoryShowModal('xxx');
+            session()->flash('message','Supplier Successfully Added.');
         }
     }
 
@@ -154,6 +156,9 @@ class PageInventory extends Component
                     'supplier_acc_no' => $this->su_acc,
                     'supplier_branch' => $this->su_branch,
                 ]);     
+
+                session()->flash('message','Supplier updated succesfully.');
+
                 break;
         }
         $this->inventoryShowModal('xxx');

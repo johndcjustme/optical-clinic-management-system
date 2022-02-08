@@ -9,8 +9,8 @@
 </div> --}}
 
 <div id="delete{{ $itemId }}" class="confirm_del">
-    <div class="mr_5 inline">
-        <button wire:click="{{ $wireClick }}" class="small">Delete?</button>
-        <button onclick="getElementById('delete{{ $itemId }}').style.right = '-250px'" class="small"><i class="fas fa-angle-right"></i></button>
+    <div class="mr_5 flex flex_y_center">
+        <button wire:click="{{ $wireClick }}" class="small bg_warning">Delete?</button>
+        <button onclick="getElementById('delete{{ $itemId }}').style.right = '-250px'" class="small ml_6">NO</button>
     </div>
 </div>

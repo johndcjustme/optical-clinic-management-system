@@ -16,7 +16,7 @@
     @livewireStyles
 </head>
 <body>
-    
+
     {{-- main page div  --}}
     <div class="outer_container full_vh overflow_hidden">
         {{-- sidenav  --}}
@@ -34,6 +34,12 @@
         </section>
 
     </div>
+
+
+
+
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
     @livewireScripts
 </body>

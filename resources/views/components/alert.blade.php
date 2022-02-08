@@ -1,3 +1,8 @@
-<div class="alert alert_{{ $type }} mr_20 mb_20 absolute bottom right">
-    {{ $message }} <i class="fas fa-close ml_3"></i>
+<div class="alert success flex alert_{{ $type }}">
+    <div>
+        <i class="fas fa-check mr_8 ml_2" style="font-size: 1rem;"></i>
+    </div>
+    <div>
+        {{ $message }}
+    </div>
 </div>

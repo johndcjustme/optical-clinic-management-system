@@ -1,8 +1,21 @@
 <section class="section_sidenav full_vh overflow_y noscroll">
-    <ul class="selectable p_7 empty">
 
-        {{-- header  --}}
+    
+    <ul class="selectable p_7 empty">
         <div>
+            <div class="flex flex_center text_left mt_7">
+                <div class="flex flex_center">
+                    <img src="{{ asset('images/dango-logo-nolabel.png') }}" alt="" style="max-width:30px">
+                </div>
+                <span class="ml_7 mt_6 flex flex_y_center inline text_center" style="line-height: 1rem; width:80px">
+                    <b style="font-size: 1.3rem;">DANGO</b>                        
+                    <span style="font-size: 0.6rem">OPTICAL CLINIC</span>
+                </span>
+            </div>
+        </div>
+        <br><br>
+        {{-- header  --}}
+        {{-- <div>
             <a href="/users" title="User">
                 <li class="@yield('users')">
                     <i class="fas fa-smile"></i>
@@ -10,10 +23,11 @@
                 </li>
             </a>
             <hr class="my_10">
-        </div>
+        </div> --}}
     
         {{-- body  --}}
         <div>
+            <hr class="mb_10">
             <a href="/dashboard" title="Dashboard">
                 <li class="@yield('dashboard')">
                     <i class="fas fa-chart-area"></i>
@@ -55,6 +69,12 @@
         {{-- footer  --}}
         <div>
             <hr class="my_10">
+            <a href="/users" title="User">
+                <li class="@yield('users')">
+                    <i class="fas fa-smile"></i>
+                    <span>My Account</span>
+                </li>
+            </a>
             <a href="/sign-in" title="Logout">
                 <li>
                     <i class="fas fa-sign-out-alt"></i>

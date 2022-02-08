@@ -14,17 +14,18 @@
         @section('section-heading')
             <div class="flex gap_1">
                 <h5>
-                    @if ($this->myTab() == 1)
-                        LENSES
-                    @elseif ($this->myTab() == 2)
-                        FRAMES
-                    @elseif ($this->myTab() == 3)
-                        ACCESSORRIES
-                    @elseif ($this->myTab() == 4)
-                        SUPPLIERS
-                    @elseif ($this->myTab() == 5)
-                        IN / OUT
-                    @endif
+                    @switch($this->myTab())
+                        @case(1) LENSES
+                            @break
+                        @case(2) FRAMES
+                            @break
+                        @case(3) ACCESSORIES 
+                            @break
+                        @case(4) SUPPLIERS
+                            @break
+                        @case(5) IN / OUT
+                            @break
+                    @endswitch
                 </h5>
             </div>
             <div class="flex flex_y_center gap_1">
@@ -155,7 +156,9 @@
 
             <div class="items">
 
-                @if ($this->myTab() == 1)
+                @switch($this->myTab())
+
+                    @case(1)
                             <div class="grid grid_lens title">
                                 <div>{{ Str::title('lens name') }}</div>
                                 <div>{{ Str::title('lens type') }}</div>
@@ -185,9 +188,10 @@
                                     </div>
                                 </div>                                
                             @endfor
-
-                @elseif ($this->myTab() == 2)
+                        @break
                 
+                    @case(2)
+                    
                             <div class="grid grid_frame title">
                                 <div>{{ Str::title('frame name') }}</div>
                                 <div>{{ Str::title('frame type') }}</div>
@@ -197,7 +201,6 @@
                                 <div class="flex flex_x_end">{{ Str::title('Price') }}</div>
                                 <div class="flex flex_x_end">{{ Str::title('acion') }}</div>
                             </div>
-
 
                             @for ($i=1; $i<12; $i++)
                                 <div class="list_container">
@@ -216,12 +219,12 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endfor       
+                            @endfor     
+                        @break
+                        
+                    @case(3)
 
-                    
-                @elseif ($this->myTab() == 3)
-
-                            <div class="grid grid_accessory title">
+                         <div class="grid grid_accessory title">
                                 <div>{{ Str::title('accessory name') }}</div>
                                 <div>{{ Str::title('accessory type') }}</div>
                                 <div>{{ Str::title('type') }}</div>
@@ -248,51 +251,54 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endfor       
+                            @endfor      
+                        @break
 
-                            
-                @elseif ($this->myTab() == 4)
-                    
-                    <x-layout.lists-section>               
+                    @case(4)
 
-                        <x-layout.lists-section.lists-title list-for="grid_supplier">
-                            <div>{{ Str::title('Supplier name') }}</div>
-                            <div>{{ Str::title('Contact no') }}</div>
-                            <div>{{ Str::title('address') }}</div>
-                            <div>{{ Str::title('bank') }}</div>
-                            <div>{{ Str::title('account no') }}</div>
-                            <div>{{ Str::title('branch') }}</div>
-                            <div class="flex flex_x_end">{{ Str::title('action') }}</div>
-                        </x-layout.lists-section.lists-title>
+                            <x-layout.lists-section>               
 
-                        @forelse ($suppliers as $supplier)
+                                <x-layout.lists-section.lists-title list-for="grid_supplier">
+                                    <div>{{ Str::title('Supplier name') }}</div>
+                                    <div>{{ Str::title('Contact no') }}</div>
+                                    <div>{{ Str::title('address') }}</div>
+                                    <div>{{ Str::title('bank') }}</div>
+                                    <div>{{ Str::title('account no') }}</div>
+                                    <div>{{ Str::title('branch') }}</div>
+                                </x-layout.lists-section.lists-title>
 
-                            <x-layout.lists-section.lists-container>
-                                <x-organisms.popup-delete item-id="{{ $supplier->id  }}" wire-click="deleteInventory('su', {{ $supplier->id }})" />
-                                <x-layout.lists-section.lists-list list-for="grid_supplier">
+                                @forelse ($suppliers as $supplier)
 
-                                    <div>{{ $supplier->supplier_name }}</div>
-                                    <div>{{ $supplier->supplier_contact_no }}</div>
-                                    <div>{{ $supplier->supplier_address }}</div>
-                                    <div>{{ $supplier->supplier_bank }}</div>
-                                    <div>{{ $supplier->supplier_acc_no }}</div>
-                                    <div>{{ $supplier->supplier_branch }}</div>
-                                    <div class="flex flex_x_end">
-                                        <a onclick="getElementById('delete{{ $supplier->id  }}').style.right = '0px'" class="action" href="#"><i class='fas fa-trash-alt'></i></a>
-                                        <a wire:click="showModalOnSupplierUpdate({{ $supplier->id }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
-                                    </div>                                  
-                                    
-                                </x-layout.lists-section.lists-container>
-                            </x-layout.lists-section.lists-container>
+                                    <x-layout.lists-section.lists-container>
+                                        <x-organisms.popup-delete item-id="{{ $supplier->id  }}" wire-click="deleteInventory('su', {{ $supplier->id }})" />
+                                        <x-layout.lists-section.lists-list list-for="grid_supplier">
 
-                        @empty
-                            <x-layout.lists-section.list-empty empty-message="No Results."/>
-                        @endforelse
+                                            <div>{{ $supplier->supplier_name }}</div>
+                                            <div>{{ $supplier->supplier_contact_no }}</div>
+                                            <div>{{ $supplier->supplier_address }}</div>
+                                            <div>{{ $supplier->supplier_bank }}</div>
+                                            <div>{{ $supplier->supplier_acc_no }}</div>
+                                            <div>{{ $supplier->supplier_branch }}</div>
 
-                    </x-layout.lists-section>
+                                            {{-- <div class="flex flex_x_end">
+                                                <a onclick="getElementById('delete{{ $supplier->id  }}').style.right = '0px'" class="action" href="#"><i class='fas fa-trash-alt'></i></a>
+                                                <a wire:click="showModalOnSupplierUpdate({{ $supplier->id }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
+                                            </div>                                  
+                                             --}}
+                                        </x-layout.lists-section.lists-container>
+                                        <x-layout.lists-section.action  delete-id="{{ $supplier->id }}" wire-click="showModalOnSupplierUpdate({{ $supplier->id }})"/>
 
-                @elseif ($this->myTab() == 5)
-                    
+                                    </x-layout.lists-section.lists-container>
+
+                                @empty
+                                    <x-layout.lists-section.list-empty empty-message="No Results."/>
+                                @endforelse
+
+                            </x-layout.lists-section>
+                        @break
+
+                    @case(5)
+
                             <div class="grid grid_inout title">
                                 <div>{{ Str::title('Patient name') }}</div>
                                 <div>{{ Str::title('date') }}</div>
@@ -301,7 +307,6 @@
                                 <div class="flex flex_x_end">{{ Str::title('balance') }}</div>
                                 <div class="flex flex_x_end">{{ Str::title('action') }}</div>
                             </div>
-
 
                             @for ($i=1; $i<12; $i++)
                                 <div class="list_container">
@@ -319,11 +324,12 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endfor       
-                @endif
+                            @endfor      
+                        @break
+                        
+                @endswitch
             </div>
+
         @endsection
-
-
-
+        
 </x-layout.page-content>
