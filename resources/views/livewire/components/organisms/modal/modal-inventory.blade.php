@@ -5,7 +5,8 @@
 
         <div></div>
         <div>
-            <button class="mr_5" wire:click.prevent="inventoryShowModal('xxx')">Cancel</button>
+
+            <x-atom.btn-close-modal wire-click="inventoryCloseModal"/>
 
             @if ($this->isAddItem)
 
@@ -164,28 +165,26 @@
 
             @elseif ($this->addSupplier)
 
-
                 <form action="" wire:submit.prevent="addInventory('su')">
 
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
-
                     </fieldset>
-
                     <br>
-
                     <fieldset>
                         <legend>Supplier Details</legend><br>
 
                         <div class="grid grid_col_2 gap_1">
                             <div>
                                 <label for="">Supplier Name</label>
-                                <input wire:model.defer="su_name" type="text" required>
+                                <input wire:model.defer="su_name" type="text" placeholder="Last name, First name" required>
                                 <label for="">Contact No.</label>
                                 <input wire:model.defer="su_contact" type="number">
                                 <label for="">Address</label>
                                 <input wire:model.defer="su_address" type="text">
+                                <label for="">Email</label>
+                                <input wire:model.defer="su_email" type="text">
                             </div>
                             <div>
                                 <label for="">Bank</label>
@@ -238,6 +237,8 @@
                                     <input wire:model.defer="su_contact" type="number">
                                     <label for="">Address</label>
                                     <input wire:model.defer="su_address" type="text">
+                                    <label for="">Email</label>
+                                    <input wire:model.defer="su_email" type="text">
                                 </div>
                                 <div>
                                     <label for="">Bank</label>

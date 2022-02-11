@@ -27,6 +27,7 @@ class SupplierSeeder extends Seeder
             'supplier_bank' => Str::random(7),
             'supplier_acc_no' => '12345677account',
             'supplier_branch' => Str::random(10) . 'branch',
+            'supplier_email' => Str::random(7) . '@email.com',
         ]);
     }
 }

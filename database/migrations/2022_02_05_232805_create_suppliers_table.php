@@ -21,6 +21,7 @@ class CreateSuppliersTable extends Migration
             $table->string('supplier_bank')->nullable();
             $table->string('supplier_acc_no')->nullable();
             $table->string('supplier_branch')->nullable();
+            $table->string('supplier_email')->nullable();
             $table->timestamps();
         });
     }

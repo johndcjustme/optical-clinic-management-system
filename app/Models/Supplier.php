@@ -16,5 +16,11 @@ class Supplier extends Model
         'supplier_bank',
         'supplier_acc_no',
         'supplier_branch',
+        'supplier_email',
     ];
+
+    public function lense()
+    {
+        return $this->hasMany(Lense::class);
+    }
 }

@@ -1,4 +1,4 @@
 
-<div class="grid list {{ $listFor }}">
+<div class="grid {{ $listFor }}">
     {{ $slot }}
 </div>

@@ -10,10 +10,16 @@ use App\Models\User;
 use App\Models\Tab;
 use App\Models\Patient;
 use App\Models\Supplier;
+use App\Models\Lense;
 
 class PageInventory extends Component
 {
     // declarations for modal 
+
+    public $su_session_added = ' Supplier added successfully.';
+    public $su_session_updated = 'Supplier updated successfully.';
+    
+
     public
         $inventoryShowModal = false,
             $isAddItem = false,
@@ -28,8 +34,6 @@ class PageInventory extends Component
                 $updateAccessory = false,
                 $updateSupplier = false;
 
-    // change table 
-    public $inventoryChangeTable;
 
     public 
         $su_name,
@@ -37,20 +41,37 @@ class PageInventory extends Component
         $su_address,
         $su_bank,
         $su_acc,
-        $su_branch;
+        $su_branch,
+        $su_email;
+
+    public 
+        $sort_direction = 'asc',
+        
+        $su_defaultOrder = 'supplier_name';
+        // $su_orderByDate = 'created_at';
 
     public $suppliers, $searchSupplier;
+        // change table 
+    public $inventoryChangeTable;
 
+
+    public $lenses, $mySupplier;
+    
     public function render()
     {
+        $this->lenseSupplier = Lense::find(1)->supplier;
+
+
+        
+        $this->lenses = Lense::all();
+
 
         $searchSupplier = '%' . $this->searchSupplier . '%';
         $this->suppliers = Supplier::where('supplier_name', 'like', $searchSupplier)
             ->orWhere('supplier_address', 'like', $searchSupplier)
-            ->orWhere('supplier_bank', 'like', $searchSupplier)
-            ->orWhere('supplier_branch', 'like', $searchSupplier)
-            ->orWhere('supplier_acc_no', 'like', $searchSupplier)
             ->orWhere('supplier_contact_no', 'like', $searchSupplier)
+            ->orWhere('supplier_email', 'like', $searchSupplier)
+            ->orderBy($this->su_defaultOrder, $this->sort_direction)
             ->get();
 
         return view('livewire.pages.page-inventory')
@@ -58,55 +79,42 @@ class PageInventory extends Component
             ->section('content');
     }
 
-
-
-    public function resetSu()
+    public function moun($mySupplier)
     {
-        $this->su_name = '';
-        $this->su_contact = '';
-        $this->su_address = '';
-        $this->su_bank = '';
-        $this->su_acc = '';
-        $this->su_branch = '';
     }
 
-    public function addSu() {
 
-        $su = Supplier::create([
-            'supplier_name' => $this->su_name,
-            'supplier_contact_no' => $this->su_contact,
-            'supplier_address' => $this->su_address,
-            'supplier_bank' => $this->su_bank,
-            'supplier_acc_no' => $this->su_acc,
-            'supplier_branch' => $this->su_branch,
-        ]);
-
-        if($su) {
-            $this->inventoryShowModal('xxx');
-            session()->flash('message','Supplier Successfully Added.');
-        }
-    }
-
-    public function deleteInventory($data, $id)
+    public function resetField($caseToReset)
     {
-        switch($data) {
+
+        switch ($caseToReset) {
             case 'le':
-                dd('lens');
+                dd('reset lens');
                 break;
 
             case 'fr':
-                dd('frame');
+                dd('reset frame');
                 break;
 
             case 'ac':
-                dd('accessory');
+                dd('reset accessory');
                 break;
 
             case 'su':
-                Supplier::find($id)->delete();
+                $this->reset([
+                    'su_name',
+                    'su_contact',
+                    'su_address',
+                    'su_bank',
+                    'su_acc',
+                    'su_branch',
+                    'su_email',
+                ]);
                 break;
         }
     }
+
+
 
     public function addInventory($itemType) 
     {
@@ -124,7 +132,20 @@ class PageInventory extends Component
                 break;
 
             case 'su': 
-                $this->addSU();
+                $su = Supplier::create([
+                    'supplier_name' => $this->su_name,
+                    'supplier_contact_no' => $this->su_contact,
+                    'supplier_address' => $this->su_address,
+                    'supplier_bank' => $this->su_bank,
+                    'supplier_acc_no' => $this->su_acc,
+                    'supplier_branch' => $this->su_branch,
+                    'supplier_email' => $this->su_email,
+                ]);
+        
+                if($su) {
+                    $this->inventoryCloseModal();
+                    session()->flash('message', $this->su_session_added);
+                }
                 break;
         }
     }
@@ -145,8 +166,6 @@ class PageInventory extends Component
                 break;
 
             case 'su': 
-                $id = $this->su_id;
-    
                 $su = Supplier::find($id);
                 $su->update([
                     'supplier_name' => $this->su_name,
@@ -155,26 +174,35 @@ class PageInventory extends Component
                     'supplier_bank' => $this->su_bank,
                     'supplier_acc_no' => $this->su_acc,
                     'supplier_branch' => $this->su_branch,
+                    'supplier_email' => $this->su_email,
                 ]);     
 
-                session()->flash('message','Supplier updated succesfully.');
-
+                session()->flash('message', $this->su_session_updated);
                 break;
         }
-        $this->inventoryShowModal('xxx');
+        $this->inventoryCloseModal();
     }
 
 
-    public function inventoryChangeTable($value) {
-        $activeTab = Tab::find(1);
-        $activeTab->inventory_active_tab = $value;
-        $activeTab->save();
-    }
-
-    public function myTab()
+    public function deleteInventory($data, $deleteId)
     {
-        $userid = 1;
-        return Tab::find($userid)->inventory_active_tab;
+        switch($data) {
+            case 'le':
+                dd('lens');
+                break;
+
+            case 'fr':
+                dd('frame');
+                break;
+
+            case 'ac':
+                dd('accessory');
+                break;
+
+            case 'su':
+                Supplier::find($deleteId)->delete();
+                break;
+        }
     }
 
 
@@ -203,61 +231,98 @@ class PageInventory extends Component
 
         // action here 
     }
-
-    public function showModalOnSupplierUpdate($id)
+   
+    
+    public function inventoryShowModal($action, $item, $updateId) 
     {
-        $this->inventoryShowModal = true;
-        $this->isUpdateItem = true;
-        $this->updateSupplier = true;
+        if ($action === 'isAdd') {
+            switch ($item) {
+                case 'le':
+                    $this->inventoryShowModal = true;
+                    $this->isAddItem = true;
+                    $this->addLens = true;
+                    break;
+    
+                case 'fr':
+                    $this->inventoryShowModal = true;
+                    $this->isAddItem = true;
+                    $this->addFrame = true;
+                    break;
+    
+                case 'ac':
+                    $this->inventoryShowModal = true;
+                    $this->isAddItem = true;
+                    $this->addAccessory = true;
+                    break;
+    
+                case 'su':
+                    $this->resetField('su');
+                    $this->inventoryShowModal = true;
+                    $this->isAddItem = true;
+                    $this->addSupplier = true;
+                    break;
+            }
+        }
 
-        $su = Supplier::findOrFail($id);
-            $this->su_id = $id;
-            $this->su_name = Str::title($su->supplier_name);
-            $this->su_contact = Str::title($su->supplier_contact_no);
-            $this->su_address = Str::title($su->supplier_address);
-            $this->su_bank = Str::title($su->supplier_bank);
-            $this->su_acc = Str::title($su->supplier_acc_no);
-            $this->su_branch = Str::title($su->supplier_branch);
+        if ($action === 'isUpdate') {
+            switch ($item) {
+                case 'le':
+                    dd('update lens');
+                    break;
+    
+                case 'fr':
+                    dd('update frame');
+                    break;
+    
+                case 'ac':
+                    dd('update accessory');
+                    break;
+    
+                case 'su':
+                    $this->inventoryShowModal = true;
+                    $this->isUpdateItem = true;
+                    $this->updateSupplier = true;
+
+                    $su = Supplier::findOrFail($updateId);
+                    $this->su_id = $updateId;
+                    $this->su_name = Str::title($su->supplier_name);
+                    $this->su_contact = Str::title($su->supplier_contact_no);
+                    $this->su_address = Str::title($su->supplier_address);
+                    $this->su_bank = Str::title($su->supplier_bank);
+                    $this->su_acc = Str::title($su->supplier_acc_no);
+                    $this->su_branch = Str::title($su->supplier_branch);
+                    $this->su_email = Str::title($su->supplier_email);
+                    break;
+            }
+        }
     }
 
-    
-    
-    public function inventoryShowModal($itemType) 
+    public function inventoryCloseModal() {
+        $this->reset([
+            'inventoryShowModal',
+                'isAddItem',
+                    'addLens',
+                    'addFrame',
+                    'addAccessory',
+                    'addSupplier',
+
+                'isUpdateItem',
+                    'updateLens',
+                    'updateFrame',
+                    'updateAccessory',
+                    'updateSupplier',
+        ]);
+    }
+
+    public function inventoryChangeTable($value) {
+        $activeTab = Tab::find(1);
+        $activeTab->inventory_active_tab = $value;
+        $activeTab->save();
+    }
+
+    public function myTab()
     {
-        if($itemType === 'addLe') {
-            $this->inventoryShowModal = true;
-            $this->isAddItem = true;
-            $this->addLens = true;
-        }
-        elseif($itemType === 'addFr') {
-            $this->inventoryShowModal = true;
-            $this->isAddItem = true;
-            $this->addFrame = true;
-        }
-        elseif($itemType === 'addAc') {
-            $this->inventoryShowModal = true;
-            $this->isAddItem = true;
-            $this->addAccessory = true;
-        }
-        elseif($itemType === 'addSu') {
-            $this->resetSu();
-            $this->inventoryShowModal = true;
-            $this->isAddItem = true;
-            $this->addSupplier = true;
-        }
-        elseif($itemType === 'xxx') {
-            $this->inventoryShowModal = false;
-                $this->isAddItem = false;
-                    $this->addLens = false;
-                    $this->addFrame = false;
-                    $this->addAccessory = false;
-                    $this->addSupplier = false;
-           
-                $this->isUpdateItem = false;
-                    $this->updateLens = false;
-                    $this->updateFrame = false;
-                    $this->updateAccessory = false;
-                    $this->updateSupplier = false;
-        }
+        $userid = 1;
+        return Tab::find($userid)->inventory_active_tab;
     }
 }

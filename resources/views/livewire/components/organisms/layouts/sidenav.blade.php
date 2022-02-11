@@ -5,9 +5,9 @@
         <div>
             <div class="flex flex_center text_left mt_7">
                 <div class="flex flex_center">
-                    <img src="{{ asset('images/dango-logo-nolabel.png') }}" alt="" style="max-width:30px">
+                    <img src="{{ asset('images/dango-logo-nolabel.png') }}" alt="" style="width:60%">
                 </div>
-                <span class="ml_7 mt_6 flex flex_y_center inline text_center" style="line-height: 1rem; width:80px">
+                <span class="mt_6 flex flex_y_center text_left" style="line-height: 1rem; width:auto;">
                     <b style="font-size: 1.3rem;">DANGO</b>                        
                     <span style="font-size: 0.6rem">OPTICAL CLINIC</span>
                 </span>
@@ -80,6 +80,7 @@
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </li>
+
             </a>
         </div>
     </ul>

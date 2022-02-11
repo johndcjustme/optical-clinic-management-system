@@ -20,10 +20,6 @@
             @includeIf('livewire.components.organisms.modal.modal-inventory');
         @endif
 
-
-
-        @if(session()->has('message'))
-            <x-alert type="error" message="{{ session('message') }}" />
-        @endif
+        <x-alert type="error" message="{{ session('message') }}" />
 
     </div>
