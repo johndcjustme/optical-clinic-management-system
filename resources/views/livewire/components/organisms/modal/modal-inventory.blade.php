@@ -10,7 +10,7 @@
 
             @if ($this->isAddItem)
 
-                @if ($this->addLens)        
+                @if ($this->addLense)        
                     <label class="button" for="submitLens">save lens</label>
                 @elseif ($this->addFrame)
                     <label class="button" for="submitFrame">save frame</label>
@@ -22,7 +22,7 @@
 
             @elseif ($this->isUpdateItem)
 
-                @if ($this->updateLens)        
+                @if ($this->updateLense)        
                     <label class="button" for="updateLens">update lens</label>
                 @elseif ($this->updateFrame)
                     <label class="button" for="updateFrame">update frame</label>
@@ -43,7 +43,7 @@
 
         @if($this->isAddItem)
 
-            @if ($this->addLens)
+            @if ($this->addLense)
                 <form wire:submit.prevent="addInventory('le')">
                     <fieldset>
                         <legend>Add Photo</legend><br>
@@ -59,24 +59,29 @@
                         <div class="grid grid_col_2 gap_1">
                             <div>
                                 <label for="">Lens Name</label>
-                                <input type="text">
+                                <input wire:model.defer="le_name" type="text" required>
                                 <label for="">Lens Type</label>
-                                <input type="text">
+                                <input wire:model.defer="item_type" type="text">
                                 <label for="">Lens Tint</label>
-                                <input type="text">
+                                <input wire:model.defer="le_tint" type="text">
                             </div>
                             <div>
+                     
                                 <label for="">Supplier</label>
-                                <input type="text" list="supplier">
-                                <datalist id="supplier">
-                                    <option value="supplier name">Address</option>
-                                    <option value="supplier name">Address</option>
-                                    <option value="supplier name">Address</option>
-                                </datalist>
+                                <select wire:model.defer="le_supplier" name="" id="">
+                                    <option value="" selected hidden> --select-- </option>
+                                    @forelse ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }}</option>
+                                    @empty
+                                        
+                                    @endforelse
+                                </select>
+                                <label for="">Lens Description</label>
+                                <input wire:model.defer="le_desc" type="text">
                                 <label for="">Lens Qty</label>
-                                <input type="number">
+                                <input wire:model.defer="le_qty" type="number">
                                 <label for="">Lens Price</label>
-                                <input type="number">
+                                <input wire:model.defer="le_price" type="number">
                             </div>
                         </div>
                     </fieldset>
@@ -85,82 +90,78 @@
 
             @elseif ($this->addFrame)
 
-                <form action="" wire:submit.prevent="addInventory('fr')">
+                <form wire:submit.prevent="addInventory('fr')">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
-
                     </fieldset>
-
                     <br>
-
                     <fieldset>
-                        <legend>Frame Details</legend><br>
+                        <legend>Lens Details</legend><br>
 
                         <div class="grid grid_col_2 gap_1">
                             <div>
                                 <label for="">Frame Name</label>
-                                <input type="text">
+                                <input wire:model.defer="fr_name" type="text">
                                 <label for="">Frame Type</label>
-                                <input type="text">
-                                <label for="">Size</label>
-                                <input type="text">
+                                <input wire:model.defer="item_type" type="text">
+                                <label for="">Fram Size</label>
+                                <input wire:model.defer="fr_size" type="text">
                             </div>
                             <div>
                                 <label for="">Supplier</label>
-                                <input type="text" list="supplier">
-                                <datalist id="supplier">
-                                    <option value="supplier name">Address</option>
-                                    <option value="supplier name">Address</option>
-                                    <option value="supplier name">Address</option>
-                                </datalist>
+                                <select wire:model.defer="fr_supplier">
+                                    <option value="" selected hidden>--select--</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }}</option>
+                                    @endforeach
+                                </select>
+                                <label for="">Frame Description</label>
+                                <input wire:model.defer="fr_desc" type="text">
                                 <label for="">Frame Qty</label>
-                                <input type="number">
+                                <input wire:model.defer="fr_qty" type="number">
                                 <label for="">Frame Price</label>
-                                <input type="number">
+                                <input wire:model.defer="fr_price" type="number">
                             </div>
                         </div>
                     </fieldset>
-                    <input id="submitFrame" type="submit" value="" hidden>
+                    <input type="submit" id="submitFrame" value="" hidden>
                 </form>
 
             @elseif ($this->addAccessory)
 
-                <form action="" wire:submit.prevent="addInventory('ac')">
+                <form wire:submit.prevent="addInventory('ac')">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
-
                     </fieldset>
-
                     <br>
-
                     <fieldset>
-                        <legend>Accessory Details</legend><br>
+                        <legend>Acessory Details</legend><br>
 
                         <div class="grid grid_col_2 gap_1">
                             <div>
                                 <label for="">Accessory Name</label>
-                                <input type="text">
-                                <label for="">Accessory Type</label>
-                                <input type="text">
+                                <input wire:model.defer="ac_name" type="text" required>
+                                <label for="">Accessory Description</label>
+                                <input wire:model.defer="ac_desc" type="text">
                             </div>
                             <div>
                                 <label for="">Supplier</label>
-                                <input type="text" list="supplier">
-                                <datalist id="supplier">
-                                    <option value="supplier name">Address</option>
-                                    <option value="supplier name">Address</option>
-                                    <option value="supplier name">Address</option>
-                                </datalist>
-                                <label for="">Acessory Qty</label>
-                                <input type="number">
-                                <label for="">Accessory Price</label>
-                                <input type="number">
+                                <select wire:model.defer="ac_supplier">
+                                    <option value="" selected hidden>--select--</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }}</option>
+                                    @endforeach
+                                </select>
+                                <label for="">Qunatiry</label>
+                                <input wire:model.defer="ac_qty" type="number">
+                                <label for="">Price</label>
+                                <input wire:model.defer="ac_price" type="number">
                             </div>
                         </div>
                     </fieldset>
-                    <input id="submitAccessory" type="submit" value="" hidden>
+                    <input type="submit" id="submitAccessory" value="" hidden>
                 </form>
 
             @elseif ($this->addSupplier)
@@ -204,13 +205,120 @@
 
         @elseif($this->isUpdateItem)
 
-            @if($this->updateLens)        
-                update lens
+            @if($this->updateLense)        
+                <form wire:submit.prevent="updateInventory('le', {{ $this->le_id }})">
+                    <fieldset>
+                        <legend>Add Photo</legend><br>
+                        <input type="file" name="" id="">
+                    </fieldset>
+                    <br>
+                    <fieldset>
+                        <legend>Lens Details</legend><br>
+
+                        <div class="grid grid_col_2 gap_1">
+                            <div>
+                                <label for="">Lens Name</label>
+                                <input wire:model.defer="le_name" type="text">
+                                <label for="">Lens Type</label>
+                                <input wire:model.defer="item_type" type="text">
+                                <label for="">Lens Tint</label>
+                                <input wire:model.defer="le_tint" type="text">
+                            </div>
+                            <div>
+                                <label for="">Supplier</label>
+                                <select wire:model.defer="le_supplier" name="" id="">
+                                    <option value="" selected hidden>--select--</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }}</option>
+                                    @endforeach
+                                </select>
+                                <label for="">Lens Description</label>
+                                <input wire:model.defer="le_desc" type="text">
+                                <label for="">Lens Qty</label>
+                                <input wire:model.defer="le_qty" type="number">
+                                <label for="">Lens Price</label>
+                                <input wire:model.defer="le_price" type="number">
+                            </div>
+                        </div>
+                    </fieldset>
+                    <input type="submit" id="updateLens" value="" hidden>
+                </form>
+
             @elseif($this->updateFrame)
-                update frame
+
+                <form wire:submit.prevent="updateInventory('fr', {{ $this->fr_id }})">
+                    <fieldset>
+                        <legend>Add Photo</legend><br>
+                        <input type="file" name="" id="">
+                    </fieldset>
+                    <br>
+                    <fieldset>
+                        <legend>Lens Details</legend><br>
+
+                        <div class="grid grid_col_2 gap_1">
+                            <div>
+                                <label for="">Frame Name</label>
+                                <input wire:model.defer="fr_name" type="text">
+                                <label for="">Frame Type</label>
+                                <input wire:model.defer="item_type" type="text">
+                                <label for="">Fram Size</label>
+                                <input wire:model.defer="fr_size" type="text">
+                            </div>
+                            <div>
+                                <label for="">Supplier</label>
+                                <select wire:model.defer="fr_supplier">
+                                    <option value="" selected hidden>--select--</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }}</option>
+                                    @endforeach
+                                </select>
+                                <label for="">Frame Description</label>
+                                <input wire:model.defer="fr_desc" type="text">
+                                <label for="">Frame Qty</label>
+                                <input wire:model.defer="fr_qty" type="number">
+                                <label for="">Frame Price</label>
+                                <input wire:model.defer="fr_price" type="number">
+                            </div>
+                        </div>
+                    </fieldset>
+                    <input type="submit" id="updateFrame" value="" hidden>
+                </form>
+
             @elseif($this->updateAccessory)
 
-                accessory
+                <form wire:submit.prevent="updateInventory('ac', {{ $this->ac_id }})">
+                    <fieldset>
+                        <legend>Add Photo</legend><br>
+                        <input type="file" name="" id="">
+                    </fieldset>
+                    <br>
+                    <fieldset>
+                        <legend>Acessory Details</legend><br>
+
+                        <div class="grid grid_col_2 gap_1">
+                            <div>
+                                <label for="">Accessory Name</label>
+                                <input wire:model.defer="ac_name" type="text">
+                                <label for="">Accessory Description</label>
+                                <input wire:model.defer="ac_desc" type="text">
+                            </div>
+                            <div>
+                                <label for="">Supplier</label>
+                                <select wire:model.defer="ac_supplier">
+                                    <option value="" selected hidden>--select--</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }}</option>
+                                    @endforeach
+                                </select>
+                                <label for="">Qunatiry</label>
+                                <input wire:model.defer="ac_qty" type="number">
+                                <label for="">Price</label>
+                                <input wire:model.defer="ac_price" type="number">
+                            </div>
+                        </div>
+                    </fieldset>
+                    <input type="submit" id="updateAccessory" value="" hidden>
+                </form>
 
             @elseif($this->updateSupplier)   
                 
@@ -221,7 +329,6 @@
                         <fieldset>
                             <legend>Add Photo</legend><br>
                             <input type="file" name="" id="">
-
                         </fieldset>
 
                         <br>

@@ -6,11 +6,11 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use App\Models\Lense;
+use App\Models\Frame;
 use Carbon;
 use Faker;
 
-class LenseSeeder extends Seeder
+class FrameSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -20,18 +20,18 @@ class LenseSeeder extends Seeder
     public function run()
     {
         $faker = Faker\Factory::create();
-
-        $lense = Lense::create([
+        
+        $frame = Frame::create([
             'supplier_id' => 1,
-            'lense_photo_path' => 'photo_path',
-            'lense_name' => Str::random(10),
-            'lense_desc' => Str::random(8),
-            'lense_qty' => 15,
-            'lense_tint' => Str::random(7),
-            'item_type' => 'lense',
-            'lense_price' => 3000,
+            'frame_photo_path' => Str::random(5),
+            'frame_name' => Str::random(4) . " " . Str::random(7),
+            'frame_size' => '24 x 28',
+            'frame_qty' => 45,
+            'frame_desc' => Str::random(8),
+            'item_type' => Str::random(4),
+            'frame_price' => 1500,
             'created_at' => now(),
             'updated_at' => now(),
-        ]);
+        ]);    
     }
 }

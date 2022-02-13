@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLensesTable extends Migration
+class CreateFramesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,18 @@ class CreateLensesTable extends Migration
      */
     public function up()
     {
-        Schema::create('lenses', function (Blueprint $table) {
+        Schema::create('frames', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('supplier_id')->nullable();
-            $table->string('lense_photo_path')->nullable();
-            $table->string('lense_name')->nullable();
-            $table->string('lense_desc')->nullable();
-            $table->integer('lense_qty')->nullable();
-            $table->string('lense_tint')->nullable();
+            $table->string('frame_photo_path')->nullable();
+            $table->string('frame_name')->nullable();
+            $table->string('frame_size')->nullable();
+            $table->integer('frame_qty')->nullable();
+            $table->string('frame_desc')->nullable();
             $table->string('item_type')->nullable();
-            $table->integer('lense_price')->nullable();
+            $table->integer('frame_price')->nullable();
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
-            // $table->timestamps();
 
             $table->foreign('supplier_id')
                 ->references('id')
@@ -41,6 +40,6 @@ class CreateLensesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lenses');
+        Schema::dropIfExists('frames');
     }
 }

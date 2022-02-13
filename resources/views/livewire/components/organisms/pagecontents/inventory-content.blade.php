@@ -34,20 +34,19 @@
                     @case(1)
                         <div class="flex gap_1">
                             <div class="flex gap_1">
-                                <select class="font_small noformat">
-                                    <option value="" selected>Name</option>
-                                    <option value="">Type</option>
-                                    <option value="">Tint</option>
-                                    <option value="">Qty</option>
-                                    <option value="">Price</option>
+                                <select wire:model.prevent="le_defaultOrder" class="font_small noformat">
+                                    <option value="lense_name" selected>Name</option>
+                                    <option value="item_type">Type</option>
+                                    <option value="lense_qty">Qty</option>
+                                    <option value="lense_price">Price</option>
                                 </select>
-                                <select class="font_small noformat">
-                                    <option value="">ASC</option>
-                                    <option value="">DESC</option>
+                                <select wire:model.prevent="le_sort_direction" class="font_small noformat">
+                                    <option value="asc">ASC</option>
+                                    <option value="desc">DESC</option>
                                 </select>
                             </div>
                             <div>
-                                <input type="search" name="" id="" placeholder="Search Lens">
+                                <x-input.search wire-model="searchLense"/>
                             </div>
                             <div>
                                 <button wire:click="inventoryShowModal('isAdd', 'le', null)"><i class="fas fa-plus"></i> add</button>
@@ -58,20 +57,19 @@
                     @case(2)
                         <div class="flex gap_1">
                             <div class="flex gap_1">
-                                <select class="font_small noformat" name="" id="">
-                                    <option value="" selected>Name</option>
-                                    <option value="">Type</option>
-                                    <option value="">Tint</option>
-                                    <option value="">Qty</option>
-                                    <option value="">Price</option>
+                                <select wire:model.prevent="fr_defaultOrder" class="font_small noformat" name="" id="">
+                                    <option value="frame_name" selected>Name</option>
+                                    <option value="item_type">Type</option>
+                                    <option value="frame_qty">Qty</option>
+                                    <option value="frame_price">Price</option>
                                 </select>
-                                <select class="font_small noformat" name="" id="">
-                                    <option value="" selected>ASC</option>
-                                    <option value="">DESC</option>
+                                <select wire:model.prevent="fr_sort_direction" class="font_small noformat" name="" id="">
+                                    <option value="asc" selected>ASC</option>
+                                    <option value="desc">DESC</option>
                                 </select>
                             </div>
                             <div>
-                                <input type="search" name="" id="" placeholder="Search Frame">
+                                <x-input.search wire-model="searchFrame"/>
                             </div>
                             <div>
                                 <button wire:click="inventoryShowModal('isAdd', 'fr', null)"><i class="fas fa-plus"></i> add</button>
@@ -82,20 +80,18 @@
                     @case(3)
                         <div class="flex gap_1">
                             <div class="flex gap_1">
-                                <select class="font_small noformat" name="" id="">
-                                    <option value="" selected>Name</option>
-                                    <option value="">Type</option>
-                                    <option value="">Tint</option>
-                                    <option value="">Qty</option>
-                                    <option value="">Price</option>
+                                <select wire:model.prevent="ac_defaultOrder" class="font_small noformat" name="" id="">
+                                    <option value="accessory_name" selected>Name</option>
+                                    <option value="accessory_qty">Qty</option>
+                                    <option value="accessory_price">Price</option>
                                 </select>
-                                <select class="font_small noformat" name="" id="">
-                                    <option value="" selected>ASC</option>
-                                    <option value="">DESC</option>
+                                <select wire:model.prevent="ac_sort_direction" class="font_small noformat" name="" id="">
+                                    <option value="asc" selected>ASC</option>
+                                    <option value="desc">DESC</option>
                                 </select>
                             </div>
                             <div>
-                                <input type="search" name="" id="" placeholder="Search Accessory">
+                                <x-input.search wire-model="searchAccessory"/>
                             </div>
                             <div>
                                 <button wire:click="inventoryShowModal('isAdd', 'ac', null)"><i class="fas fa-plus"></i> add</button>
@@ -110,7 +106,7 @@
                                     <option value="supplier_name" selected>Name</option>
                                     <option value="created_at">Date Added</option>
                                 </select>
-                                <select wire:model.prevent="sort_direction" class="font_small noformat">
+                                <select wire:model.prevent="su_sort_direction" class="font_small noformat">
                                     <option value="asc" selected>ASC</option>
                                     <option value="desc">DESC</option>
                                 </select>
@@ -160,7 +156,7 @@
 
                     @case(1)
                         <x-layout.lists-section>               
-
+ 
                             <x-layout.lists-section.lists-list list-for="grid_lens title">
                                 <div>{{ Str::title('Name') }}</div>
                                 <div></div>
@@ -181,17 +177,23 @@
                                                 <label for="">More details</label><br><br>
                                                 <label for="">Tint</label>
                                                 <p>{{ $lense->lense_tint }}</p>
+                                                <label for="">Description</label>
+                                                <p>{{ $lense->lense_desc }}</p>
                                             </x-organisms.more>
                                         </div>
-                                        <div>{{ $lense->lense_desc }}</div>
-                                        <div>{{ $this->lenseSupplier['supplier_name'] }}</div>
+                                        <div>{{ $lense->item_type }}</div>
+                                        @if ($lense->supplier_id == null)
+                                            <div><i>[Empty]</i></div>
+                                        @else
+                                            <div>{{ $lense->supplier->supplier_name }}</div>                                            
+                                        @endif
                                         <div>{{ $lense->lense_qty }}</div>
                                         <div>{{ $lense->lense_price }}</div>
 
                                     </x-layout.lists-section.lists-list>
                                     <div class="actions">
-                                        <x-organisms.popup-delete item-id="{{ $lense->id  }}" wire-click="deleteInventory('su', {{ $lense->id }})" />
-                                        <x-layout.lists-section.action  delete-id="{{ $lense->id }}" wire-click="inventoryShowModal('isUpdate', 'su', '{{ $lense->id }}')"/>
+                                        <x-organisms.popup-delete item-id="{{ $lense->id  }}" wire-click="deleteInventory('le', {{ $lense->id }})" />
+                                        <x-layout.lists-section.action  delete-id="{{ $lense->id }}" wire-click="inventoryShowModal('isUpdate', 'le', '{{ $lense->id }}')"/>
                                     </div>
 
                                 </x-layout.lists-section.lists-container>
@@ -202,9 +204,100 @@
                         @break
                 
                     @case(2)
-                                          
+                        <x-layout.lists-section>               
+
+                            <x-layout.lists-section.lists-list list-for="grid_lens title">
+                                <div>{{ Str::title('Name') }}</div>
+                                <div></div>
+                                <div>{{ Str::title('Type') }}</div>
+                                <div>{{ Str::title('Supplier') }}</div>
+                                <div>{{ Str::title('Qty') }}</div>
+                                <div>{{ Str::title('Price') }}</div>
+                            </x-layout.lists-section.lists-list>
+
+                            @forelse ($frames as $frame)
+
+                                <x-layout.lists-section.lists-container>
+                                    <x-layout.lists-section.lists-list list-for="grid_lens list">
+
+                                        <div>{{ $frame->frame_name }}</div>
+                                        <div class="flex_center">
+                                            <x-organisms.more image="{{ asset('images/sample-image.jpg') }}">
+                                                <label for="">More details</label><br><br>
+                                                <label for="">Size</label>
+                                                <p>{{ $frame->frame_size }}</p>
+                                                <label for="">Description</label>
+                                                <p>{{ $frame->frame_desc }}</p>
+                                            </x-organisms.more>
+                                        </div>
+                                        <div>{{ $frame->item_type }}</div>
+                                        @if ($frame->supplier_id == null)
+                                            <div><i>[Empty]</i></div>
+                                        @else
+                                            <div>{{ $frame->supplier->supplier_name }}</div>
+                                        @endif
+
+                                        <div>{{ $frame->frame_qty }}</div>
+                                        <div>{{ $frame->frame_price }}</div>
+
+                                    </x-layout.lists-section.lists-list>
+                                    <div class="actions">
+                                        <x-organisms.popup-delete item-id="{{ $frame->id  }}" wire-click="deleteInventory('fr', {{ $frame->id }})" />
+                                        <x-layout.lists-section.action  delete-id="{{ $frame->id }}" wire-click="inventoryShowModal('isUpdate', 'fr', '{{ $frame->id }}')"/>
+                                    </div>
+
+                                </x-layout.lists-section.lists-container>
+                            @empty
+                                <x-layout.lists-section.list-empty empty-message="No Results."/>
+                            @endforelse
+                        </x-layout.lists-section>          
+                        @break
+
                     @case(3)
-  
+                        <x-layout.lists-section>               
+
+                            <x-layout.lists-section.lists-list list-for="grid_lens title">
+                                <div>{{ Str::title('Name') }}</div>
+                                <div></div>
+                                <div>{{ Str::title('Description') }}</div>
+                                <div>{{ Str::title('Supplier') }}</div>
+                                <div>{{ Str::title('Qty') }}</div>
+                                <div>{{ Str::title('Price') }}</div>
+                            </x-layout.lists-section.lists-list>
+
+                            @forelse ($accessories as $accessory)
+
+                                <x-layout.lists-section.lists-container>
+                                    <x-layout.lists-section.lists-list list-for="grid_lens list">
+
+                                        <div>{{ $accessory->accessory_name }}</div>
+                                        <div class="flex_center">
+                                            <x-organisms.more image="{{ asset('images/sample-image.jpg') }}">
+                                                <label for="">More details</label><br><br>
+                                                <label for="">Item type</label>
+                                                <p>{{ $accessory->item_type }}</p>
+                                            </x-organisms.more>
+                                        </div>
+                                        <div>{{ $accessory->accessory_desc }}</div>
+                                        @if ($accessory->supplier_id == null)
+                                            <div><i>[Empty]</i></div>
+                                        @else
+                                            <div>{{ $accessory->supplier->supplier_name }}</div>
+                                        @endif
+                                        <div>{{ $accessory->accessory_qty }}</div>
+                                        <div>{{ $accessory->accessory_price }}</div>
+
+                                    </x-layout.lists-section.lists-list>
+                                    <div class="actions">
+                                        <x-organisms.popup-delete item-id="{{ $accessory->id  }}" wire-click="deleteInventory('ac', {{ $accessory->id }})" />
+                                        <x-layout.lists-section.action  delete-id="{{ $accessory->id }}" wire-click="inventoryShowModal('isUpdate', 'ac', '{{ $accessory->id }}')"/>
+                                    </div>
+
+                                </x-layout.lists-section.lists-container>
+                            @empty
+                                <x-layout.lists-section.list-empty empty-message="No Results."/>
+                            @endforelse
+                        </x-layout.lists-section>
                         @break
 
                     @case(4)

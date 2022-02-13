@@ -9,6 +9,7 @@ class Supplier extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
         'supplier_name',
         'supplier_contact_no',
@@ -22,5 +23,15 @@ class Supplier extends Model
     public function lense()
     {
         return $this->hasMany(Lense::class);
+    }
+
+    public function frame()
+    {
+        return $this->hasMany(Frame::class);
+    }
+
+    public function accessory()
+    {
+        return $this->hasMany(Accessory::class);
     }
 }

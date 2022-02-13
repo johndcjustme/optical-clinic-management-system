@@ -5,32 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Lense extends Model
+class Accessory extends Model
 {
     use HasFactory;
 
     public $timestamps = false;
 
-    // const CREATED_AT = null;
-    // const UPDATED_AT = null;
-
-    protected $fillable = [
+    public $fillable = [
         'supplier_id',
-        'lense_photo_path',
-        'lense_name',
-        'lense_desc',
-        'lense_qty',
-        'lense_tint',
+        'accessory_photo_path',
+        'accessory_name',
+        'accessory_desc',
+        'accessory_qty',
+        'accessory_price',
         'item_type',
-        'lense_price',
         'created_at',
         'updated_at',
     ];
-
-
+    
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
     }
-
 }

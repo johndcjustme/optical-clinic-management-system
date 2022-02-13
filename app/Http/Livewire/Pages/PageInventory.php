@@ -9,33 +9,65 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Tab;
 use App\Models\Patient;
-use App\Models\Supplier;
 use App\Models\Lense;
+use App\Models\Frame;
+use App\Models\Accessory;
+use App\Models\Supplier;
+use DateTime;
 
 class PageInventory extends Component
 {
     // declarations for modal 
+    public $le_session_added = 'Lense added successfully.';
+    public $le_session_updated = 'Lense updated successfully.';
 
-    public $su_session_added = ' Supplier added successfully.';
+    public $fr_session_added = 'Frame added successfully.';
+    public $fr_session_updated = 'Frame updated successfully.';    
+
+    public $ac_session_added = 'Accessory added successfully.';
+    public $ac_session_updated = 'Accessory updated successfully.';  
+    
+    public $su_session_added = 'Supplier added successfully.';
     public $su_session_updated = 'Supplier updated successfully.';
     
 
     public
         $inventoryShowModal = false,
             $isAddItem = false,
-                $addLens = false,
+                $addLense = false,
                 $addFrame = false,
                 $addAccessory = false,
                 $addSupplier = false,
             
             $isUpdateItem = false,
-                $updateLens = false,
+                $updateLense = false,
                 $updateFrame = false,
                 $updateAccessory = false,
                 $updateSupplier = false;
 
 
     public 
+        $item_type,
+        $le_name,
+        $le_tint,
+        $le_supplier,
+        $le_desc,
+        $le_qty,
+        $le_price,
+
+        $fr_name,
+        $fr_size,
+        $fr_qty,
+        $fr_desc,
+        $fr_price,
+        $fr_supplier,
+
+        $ac_name,
+        $ac_desc,
+        $ac_qty,
+        $ac_price,
+        $ac_supplier,
+
         $su_name,
         $su_contact,
         $su_address,
@@ -45,33 +77,72 @@ class PageInventory extends Component
         $su_email;
 
     public 
-        $sort_direction = 'asc',
-        
+        $le_sort_direction = 'asc',
+        $fr_sort_direction = 'asc',
+        $ac_sort_direction = 'asc',
+        $su_sort_direction = 'asc',
+
+        $le_defaultOrder = 'lense_name',
+        $fr_defaultOrder = 'frame_name',
+        $ac_defaultOrder = 'accessory_name',
         $su_defaultOrder = 'supplier_name';
         // $su_orderByDate = 'created_at';
 
-    public $suppliers, $searchSupplier;
+    public 
+        $lenses,
+        $searchLense,
+
+        $accessories,
+        $searchAccessory,
+
+        $frames,
+        $searchFrame,
+
+        $suppliers, 
+        $searchSupplier;
         // change table 
     public $inventoryChangeTable;
 
 
-    public $lenses, $mySupplier;
+
+    // protected $rules = [
+    //     'le_name' => 'required',
+    //     'le_supplier' => 'required',
+    // ];
+ 
     
     public function render()
-    {
-        $this->lenseSupplier = Lense::find(1)->supplier;
+    {   //lens
+        $searchLense = '%' . $this->searchLense . '%';
+        $this->lenses = Lense::with('supplier')
+            ->where('lense_name', 'like', $searchLense)
+            ->orWhere('item_type', 'like', $searchLense)
+            ->orWhere('lense_qty', 'like', $searchLense)
+            ->orWhere('lense_price', 'like', $searchLense)
+            ->orderBy($this->le_defaultOrder, $this->le_sort_direction)
+            ->get();
 
+        //frame
+        $searchFrame = '%' . $this->searchFrame . '%';
+        $this->frames = Frame::with('supplier')
+            ->where('frame_name', 'like', $searchFrame)
+            ->orderBy($this->fr_defaultOrder, $this->fr_sort_direction)
+            ->get();
 
-        
-        $this->lenses = Lense::all();
+        //accessory
+        $searchAccessory = '%' . $this->searchAccessory . '%';
+        $this->accessories = Accessory::with('supplier')
+            ->where('accessory_name' , 'like', $searchAccessory)
+            ->orderBy($this->ac_defaultOrder, $this->ac_sort_direction)
+            ->get();
 
-
+        //supplier
         $searchSupplier = '%' . $this->searchSupplier . '%';
         $this->suppliers = Supplier::where('supplier_name', 'like', $searchSupplier)
             ->orWhere('supplier_address', 'like', $searchSupplier)
             ->orWhere('supplier_contact_no', 'like', $searchSupplier)
             ->orWhere('supplier_email', 'like', $searchSupplier)
-            ->orderBy($this->su_defaultOrder, $this->sort_direction)
+            ->orderBy($this->su_defaultOrder, $this->su_sort_direction)
             ->get();
 
         return view('livewire.pages.page-inventory')
@@ -79,25 +150,42 @@ class PageInventory extends Component
             ->section('content');
     }
 
-    public function moun($mySupplier)
-    {
-    }
-
-
     public function resetField($caseToReset)
     {
 
         switch ($caseToReset) {
             case 'le':
-                dd('reset lens');
+                $this->reset([
+                    'le_name',
+                    'item_type',
+                    'le_tint',
+                    'le_desc',
+                    'le_supplier',
+                    'le_qty',
+                    'le_price',
+                ]);
                 break;
 
             case 'fr':
-                dd('reset frame');
+                $this->reset([
+                    'fr_name',
+                    'item_type',
+                    'fr_desc',
+                    'fr_size',
+                    'fr_supplier',
+                    'fr_qty',
+                    'fr_price',
+                ]);
                 break;
 
             case 'ac':
-                dd('reset accessory');
+                $this->reset([
+                    'ac_name',
+                    'ac_desc',
+                    'ac_qty',
+                    'ac_price',
+                    'ac_supplier',
+                ]);
                 break;
 
             case 'su':
@@ -120,15 +208,57 @@ class PageInventory extends Component
     {
         switch($itemType) {
             case 'le': 
-                dd('lens');
+                $validateData = $this->validate([
+                    'le_name' => 'required',
+                ]); 
+                $le = Lense::create([
+                    'supplier_id' => $this->le_supplier,
+                    'lense_name' => $this->le_name,
+                    'item_type' => $this->item_type,
+                    'lense_tint' => $this->le_tint,
+                    'lense_desc' => $this->le_desc,
+                    'lense_qty' => $this->le_qty,
+                    'lense_price' => $this->le_price,
+                    'created_at' => new DateTime(),
+                    'updated_at' => new DateTime(),
+                ]);
+        
+                if($le) {
+                    $this->inventoryCloseModal();
+                    session()->flash('message', $this->le_session_added);
+                }
+                $this->resetField('le');
                 break;
 
             case 'fr': 
-                dd('frame');
+                $fr = Frame::create([
+                    'supplier_id' => $this->fr_supplier,
+                    'frame_name' => $this->fr_name,
+                    'item_type' => $this->item_type,
+                    'frame_desc' => $this->fr_desc,
+                    'frame_size' => $this->fr_size,
+                    'frame_qty' => $this->fr_qty,
+                    'frame_price' => $this->fr_price,
+                    'created_at' => new DateTime(),
+                    'updated_at' => new DateTime(),
+                ]);
+                $this->inventoryCloseModal();
+                session()->flash('message', $this->fr_session_added);
                 break;
 
             case 'ac': 
-                dd('accessory');
+                $ac = Accessory::create([
+                    'accessory_name' => $this->ac_name,
+                    'accessory_desc' => $this->ac_desc,
+                    'accessory_qty' => $this->ac_qty,
+                    'accessory_price' => $this->ac_price,
+                    'supplier_id' => $this->ac_supplier,
+                    'item_type' => 'accessory',
+                    'created_at' => new DateTime(),
+                    'updated_at' => new DateTime(),
+                ]);
+                $this->inventoryCloseModal();
+                session()->flash('message', $this->ac_session_added);
                 break;
 
             case 'su': 
@@ -146,6 +276,7 @@ class PageInventory extends Component
                     $this->inventoryCloseModal();
                     session()->flash('message', $this->su_session_added);
                 }
+                $this->resetField('su');
                 break;
         }
     }
@@ -153,19 +284,54 @@ class PageInventory extends Component
     public function updateInventory($data, $id) {
 
         switch ($data) {
-            case 'le': 
-                dd('update lens');
+            case 'le': // lense
+                $le = Lense::findOrFail($id);
+                $le->update([
+                    'supplier_id' => $this->le_supplier,
+                    'lense_name' => $this->le_name,
+                    'item_type' => $this->item_type,
+                    'lense_tint' => $this->le_tint,
+                    'lense_desc' => $this->le_desc,
+                    'lense_qty' => $this->le_qty,
+                    'lense_price' => $this->le_price,
+                    'updated_at' => new DateTime(),
+                ]);
+                session()->flash('message', $this->le_session_updated);
+                $this->resetField('le');
+
                 break;
                 
-            case 'fr': 
-                dd('update frame');
+            case 'fr': // frame
+                $fr = Frame::find($id);
+                $fr->update([
+                    'supplier_id' => $this->fr_supplier,
+                    'frame_name' => $this->fr_name,
+                    'item_type' => $this->item_type,
+                    'frame_desc' => $this->fr_desc,
+                    'frame_size' => $this->fr_size,
+                    'frame_qty' => $this->fr_qty,
+                    'frame_price' => $this->fr_price,
+                    'updated_at' => new DateTime(),
+                ]);
+                session()->flash('message', $this->fr_session_updated);
+                $this->resetField('fr');
                 break;
 
-            case 'ac': 
-                dd('update accessory');
+            case 'ac': // accessory
+                $ac = Accessory::find($id);
+                $ac->update([
+                    'supplier_id' => $this->ac_supplier,
+                   'accessory_name' => $this->ac_name,
+                   'accessory_desc' => $this->ac_desc,
+                   'accessory_qty' => $this->ac_qty,
+                   'accessory_price' => $this->ac_price,
+                   'updated_at' => new DateTime(),
+                ]);
+                session()->flash('message', $this->ac_session_updated);
+                $this->resetField('ac');
                 break;
 
-            case 'su': 
+            case 'su': // suppliers
                 $su = Supplier::find($id);
                 $su->update([
                     'supplier_name' => $this->su_name,
@@ -175,9 +341,10 @@ class PageInventory extends Component
                     'supplier_acc_no' => $this->su_acc,
                     'supplier_branch' => $this->su_branch,
                     'supplier_email' => $this->su_email,
+                    'updated_at' => date('Y-m-d H:i:s'),
                 ]);     
-
                 session()->flash('message', $this->su_session_updated);
+                $this->resetField('su');
                 break;
         }
         $this->inventoryCloseModal();
@@ -188,15 +355,15 @@ class PageInventory extends Component
     {
         switch($data) {
             case 'le':
-                dd('lens');
+                Lense::find($deleteId)->delete();
                 break;
 
             case 'fr':
-                dd('frame');
+                Frame::find($deleteId)->delete();
                 break;
 
             case 'ac':
-                dd('accessory');
+                Accessory::find($deleteId)->delete();
                 break;
 
             case 'su':
@@ -238,18 +405,21 @@ class PageInventory extends Component
         if ($action === 'isAdd') {
             switch ($item) {
                 case 'le':
+                    $this->resetField('le');
                     $this->inventoryShowModal = true;
                     $this->isAddItem = true;
-                    $this->addLens = true;
+                    $this->addLense = true;
                     break;
     
                 case 'fr':
+                    $this->resetField('fr');
                     $this->inventoryShowModal = true;
                     $this->isAddItem = true;
                     $this->addFrame = true;
                     break;
     
                 case 'ac':
+                    $this->resetField('ac');
                     $this->inventoryShowModal = true;
                     $this->isAddItem = true;
                     $this->addAccessory = true;
@@ -267,15 +437,55 @@ class PageInventory extends Component
         if ($action === 'isUpdate') {
             switch ($item) {
                 case 'le':
-                    dd('update lens');
+                    $this->inventoryShowModal = true;
+                    $this->isUpdateItem = true;
+                    $this->updateLense = true;
+
+                    $le = Lense::findOrFail($updateId);
+                    $this->le_id = $updateId;
+                    $this->le_name = Str::title($le->lense_name);
+                    $this->item_type = Str::title($le->item_type);
+                    $this->le_tint = Str::title($le->lense_tint);
+                    $this->le_desc = Str::title($le->lense_desc);
+                    $this->le_qty = Str::title($le->lense_qty);
+                    $this->le_price = Str::title($le->lense_price);
+                    $le->supplier_id == null ?
+                        $this->le_supplier = '' :
+                        $this->le_supplier = Str::title($le->supplier_id);
                     break;
     
                 case 'fr':
-                    dd('update frame');
+                    $this->inventoryShowModal = true;
+                    $this->isUpdateItem = true;
+                    $this->updateFrame = true;
+
+                    $fr = Frame::findOrFail($updateId);
+                    $this->fr_id = $updateId;
+                    $this->fr_name = Str::title($fr->frame_name);
+                    $this->item_type = Str::title($fr->item_type);
+                    $this->fr_size = Str::title($fr->frame_size);
+                    $this->fr_desc = Str::title($fr->frame_desc);
+                    $this->fr_qty = Str::title($fr->frame_qty);
+                    $this->fr_price = Str::title($fr->frame_price);
+                    $fr->supplier_id == null ?
+                        $this->fr_supplier = '' :
+                        $this->fr_supplier = Str::title($fr->supplier_id);
                     break;
     
                 case 'ac':
-                    dd('update accessory');
+                    $this->inventoryShowModal = true;
+                    $this->isUpdateItem = true;
+                    $this->updateAccessory = true;
+
+                    $ac = Accessory::findOrFail($updateId);
+                    $this->ac_id = $updateId;
+                    $this->ac_name = Str::title($ac->accessory_name);
+                    $this->ac_desc = Str::title($ac->accessory_desc);
+                    $this->ac_qty = Str::title($ac->accessory_qty);
+                    $this->ac_price = Str::title($ac->accessory_price);
+                    $ac->supplier_id == null ? 
+                        $this->ac_supplier = '' : 
+                        $this->ac_supplier = Str::title($ac->supplier_id);
                     break;
     
                 case 'su':
@@ -298,23 +508,28 @@ class PageInventory extends Component
     }
 
     public function inventoryCloseModal() {
+        $this->resetField('le');
+        $this->resetField('fr');
+        $this->resetField('ac');
+        $this->resetField('su');
         $this->reset([
             'inventoryShowModal',
                 'isAddItem',
-                    'addLens',
+                    'addLense',
                     'addFrame',
                     'addAccessory',
                     'addSupplier',
 
                 'isUpdateItem',
-                    'updateLens',
+                    'updateLense',
                     'updateFrame',
                     'updateAccessory',
                     'updateSupplier',
         ]);
     }
 
-    public function inventoryChangeTable($value) {
+    public function inventoryChangeTable($value) 
+    {
         $activeTab = Tab::find(1);
         $activeTab->inventory_active_tab = $value;
         $activeTab->save();
