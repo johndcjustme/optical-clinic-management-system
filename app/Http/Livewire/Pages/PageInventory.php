@@ -77,16 +77,10 @@ class PageInventory extends Component
         $su_email;
 
     public 
-        $le_sort_direction = 'asc',
-        $fr_sort_direction = 'asc',
-        $ac_sort_direction = 'asc',
-        $su_sort_direction = 'asc',
-
-        $le_defaultOrder = 'lense_name',
-        $fr_defaultOrder = 'frame_name',
-        $ac_defaultOrder = 'accessory_name',
-        $su_defaultOrder = 'supplier_name';
-        // $su_orderByDate = 'created_at';
+        $le_sortDirection = 'asc',
+        $fr_sortDirection = 'asc',
+        $ac_SortDirection = 'asc',
+        $su_sortDirection = 'asc';
 
     public 
         $lenses,
@@ -103,13 +97,9 @@ class PageInventory extends Component
         // change table 
     public $inventoryChangeTable;
 
-
-
-    // protected $rules = [
-    //     'le_name' => 'required',
-    //     'le_supplier' => 'required',
-    // ];
- 
+    public $le_sortColumn = 'lense_name';
+    public $su_sortColumn = 'supplier_name';
+    // public $sortDirection = 'asc';
     
     public function render()
     {   //lens
@@ -119,22 +109,66 @@ class PageInventory extends Component
             ->orWhere('item_type', 'like', $searchLense)
             ->orWhere('lense_qty', 'like', $searchLense)
             ->orWhere('lense_price', 'like', $searchLense)
-            ->orderBy($this->le_defaultOrder, $this->le_sort_direction)
-            ->get();
+            ->orderBy($this->le_sortColumn, $this->le_sortDirection)
+            ->get();    
 
+
+            // switch ($this->le_sortDirection) {
+            //     case 'asc':
+            //         $this->lenses = $this->lenses->orderBy('lense_name', 'asc')->get();
+            //         break;
+            //     case 'desc':
+            //         $this->lenses = $this->lenses->orderBy('lense_name', 'desc')->get();
+            //         break;
+            //     case 'last_modified':
+            //         $this->lenses = $this->lenses->latest('updated_at')->get();
+            //         break;
+            //     case 'first_modified':
+            //         $this->lenses = $this->lenses->oldest('updated_at')->get();
+            //         break;
+            // }
+
+        
         //frame
         $searchFrame = '%' . $this->searchFrame . '%';
         $this->frames = Frame::with('supplier')
-            ->where('frame_name', 'like', $searchFrame)
-            ->orderBy($this->fr_defaultOrder, $this->fr_sort_direction)
-            ->get();
+            ->where('frame_name', 'like', $searchFrame);
+
+            switch ($this->fr_sortDirection) {
+                case 'asc':
+                    $this->frames = $this->frames->orderBy('frame_name', 'asc')->get();
+                    break;
+                case 'desc':
+                    $this->frames = $this->frames->orderBy('frame_name', 'desc')->get();    
+                    break;
+                case 'last_modified':
+                    $this->frames = $this->frames->latest('updated_at')->get();
+                    break;
+                case 'first_modified':
+                    $this->frames = $this->frames->oldest('updated_at')->get();
+                    break;
+            }
+
 
         //accessory
         $searchAccessory = '%' . $this->searchAccessory . '%';
         $this->accessories = Accessory::with('supplier')
-            ->where('accessory_name' , 'like', $searchAccessory)
-            ->orderBy($this->ac_defaultOrder, $this->ac_sort_direction)
-            ->get();
+            ->where('accessory_name' , 'like', $searchAccessory);
+
+            switch ($this->ac_SortDirection) {
+                case 'asc':
+                    $this->accessories = $this->accessories->orderBy('accessory_name', 'asc')->get();
+                    break;
+                case 'desc':
+                    $this->accessories = $this->accessories->orderBy('accessory_name', 'desc')->get();
+                    break;
+                case 'last_modified':
+                    $this->accessories = $this->accessories->latest('updated_at')->get();
+                    break;
+                case 'first_modified':
+                    $this->accessories = $this->accessories->oldest('updated_at')->get();
+                    break;
+            }
 
         //supplier
         $searchSupplier = '%' . $this->searchSupplier . '%';
@@ -142,13 +176,60 @@ class PageInventory extends Component
             ->orWhere('supplier_address', 'like', $searchSupplier)
             ->orWhere('supplier_contact_no', 'like', $searchSupplier)
             ->orWhere('supplier_email', 'like', $searchSupplier)
-            ->orderBy($this->su_defaultOrder, $this->su_sort_direction)
-            ->get();
+            ->orderBy($this->su_sortColumn, $this->su_sortDirection)
+            ->get();  
+
+            // switch ($this->ac_SortDirection) {
+            //     case 'asc':
+            //         $this->suppliers = $this->suppliers->orderBy('supplier_name', 'asc')->get();
+            //         break;
+            //     case 'desc':
+            //         $this->suppliers = $this->suppliers->orderBy('supplier_name', 'desc')->get();
+            //         break;
+            //     case 'last_modified':
+            //         $this->suppliers = $this->suppliers->latest('updated_at')->get();
+            //         break;
+            //     case 'first_modified':
+            //         $this->suppliers = $this->suppliers->oldest('updated_at')->get();
+            //         break;
+            // }
 
         return view('livewire.pages.page-inventory')
             ->extends('layouts.app')
             ->section('content');
     }
+
+
+
+    public function sortBy($itemType, $columnName)
+    {
+        switch ($itemType) {
+            case 'le':
+                if ($this->le_sortColumn == $columnName) {
+                    $this->le_sortDirection = $this->le_sortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    $this->le_sortDirection = 'asc';
+                }
+                $this->le_sortColumn = $columnName;
+                break;
+
+                case 'su':
+                    if ($this->su_sortColumn == $columnName) {
+                        $this->su_sortDirection = $this->su_sortDirection === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        $this->su_sortDirection = 'asc';
+                    }
+                    $this->su_sortColumn = $columnName;
+
+                    break;
+            }
+    }
+
+    public function sortDirection()
+    {
+        return $this->sortDirection === 'asc' ? 'desc' : 'asc';
+    }
+
 
     public function resetField($caseToReset)
     {
@@ -203,7 +284,6 @@ class PageInventory extends Component
     }
 
 
-
     public function addInventory($itemType) 
     {
         switch($itemType) {
@@ -222,11 +302,8 @@ class PageInventory extends Component
                     'created_at' => new DateTime(),
                     'updated_at' => new DateTime(),
                 ]);
-        
-                if($le) {
-                    $this->inventoryCloseModal();
-                    session()->flash('message', $this->le_session_added);
-                }
+                $this->inventoryCloseModal();
+                session()->flash('message', $this->le_session_added);
                 $this->resetField('le');
                 break;
 
@@ -244,6 +321,7 @@ class PageInventory extends Component
                 ]);
                 $this->inventoryCloseModal();
                 session()->flash('message', $this->fr_session_added);
+                $this->resetField('fr');
                 break;
 
             case 'ac': 
@@ -259,6 +337,7 @@ class PageInventory extends Component
                 ]);
                 $this->inventoryCloseModal();
                 session()->flash('message', $this->ac_session_added);
+                $this->resetField('ac');
                 break;
 
             case 'su': 
@@ -271,11 +350,8 @@ class PageInventory extends Component
                     'supplier_branch' => $this->su_branch,
                     'supplier_email' => $this->su_email,
                 ]);
-        
-                if($su) {
-                    $this->inventoryCloseModal();
-                    session()->flash('message', $this->su_session_added);
-                }
+                $this->inventoryCloseModal();
+                session()->flash('message', $this->su_session_added);
                 $this->resetField('su');
                 break;
         }
@@ -298,7 +374,6 @@ class PageInventory extends Component
                 ]);
                 session()->flash('message', $this->le_session_updated);
                 $this->resetField('le');
-
                 break;
                 
             case 'fr': // frame
@@ -371,39 +446,12 @@ class PageInventory extends Component
                 break;
         }
     }
-
-
-    public function showModalOnLensUpdate($id)
-    {
-        $this->inventoryShowModal = true;
-        $this->isUpdateItem = true;
-        $this->updateLens = true;
-    }
-
-    public function showModalOnFrameUpdate($id)
-    {
-        $this->inventoryShowModal = true;
-        $this->isUpdateItem = true;
-        $this->updateFrame = true;
-
-        // action here 
-    }
-
-    public function showModalOnAccessoryUpdate($id)
-    {
-        $this->inventoryShowModal = true;
-        $this->isUpdateItem = true;
-        $this->updateAccessory = true;
-
-
-        // action here 
-    }
    
     
-    public function inventoryShowModal($action, $item, $updateId) 
+    public function inventoryShowModal($action, $data, $updateId) 
     {
         if ($action === 'isAdd') {
-            switch ($item) {
+            switch ($data) {
                 case 'le':
                     $this->resetField('le');
                     $this->inventoryShowModal = true;
@@ -435,7 +483,7 @@ class PageInventory extends Component
         }
 
         if ($action === 'isUpdate') {
-            switch ($item) {
+            switch ($data) {
                 case 'le':
                     $this->inventoryShowModal = true;
                     $this->isUpdateItem = true;

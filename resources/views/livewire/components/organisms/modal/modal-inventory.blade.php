@@ -10,26 +10,26 @@
 
             @if ($this->isAddItem)
 
-                @if ($this->addLense)        
-                    <label class="button" for="submitLens">save lens</label>
+                @if ($this->addLense)      
+                    <x-atom.btn-save-modal form="submitLense" val="save" />  
                 @elseif ($this->addFrame)
-                    <label class="button" for="submitFrame">save frame</label>
+                    <x-atom.btn-save-modal form="submitFrame" val="save" />  
                 @elseif ($this->addAccessory)
-                    <label class="button" for="submitAccessory">save Accessory</label>
+                    <x-atom.btn-save-modal form="submitAccessory" val="save" />  
                 @elseif ($this->addSupplier)
-                    <label class="button" for="submitSupplier">save Supplier</label>
+                    <x-atom.btn-save-modal form="submitSupplier" val="save" />  
                 @endif
 
             @elseif ($this->isUpdateItem)
 
                 @if ($this->updateLense)        
-                    <label class="button" for="updateLens">update lens</label>
+                    <x-atom.btn-save-modal form="updateLens" val="update" />  
                 @elseif ($this->updateFrame)
-                    <label class="button" for="updateFrame">update frame</label>
+                    <x-atom.btn-save-modal form="updateFrame" val="update" />  
                 @elseif ($this->updateAccessory)
-                    <label class="button" for="updateAccessory">update Accessory</label>
+                    <x-atom.btn-save-modal form="updateAccessory" val="update" />  
                 @elseif ($this->updateSupplier)
-                    <label class="button" for="updateSupplier">update Supplier</label>
+                    <x-atom.btn-save-modal form="updateSupplier" val="update" />  
                 @endif
 
             @endif
@@ -44,7 +44,7 @@
         @if($this->isAddItem)
 
             @if ($this->addLense)
-                <form wire:submit.prevent="addInventory('le')">
+                <form id="submitLense" wire:submit.prevent="addInventory('le')">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
@@ -85,12 +85,11 @@
                             </div>
                         </div>
                     </fieldset>
-                    <input type="submit" id="submitLens" value="" hidden>
                 </form>
 
             @elseif ($this->addFrame)
 
-                <form wire:submit.prevent="addInventory('fr')">
+                <form id="submitFrame" wire:submit.prevent="addInventory('fr')">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
@@ -125,12 +124,11 @@
                             </div>
                         </div>
                     </fieldset>
-                    <input type="submit" id="submitFrame" value="" hidden>
                 </form>
 
             @elseif ($this->addAccessory)
 
-                <form wire:submit.prevent="addInventory('ac')">
+                <form id="submitAccessory" wire:submit.prevent="addInventory('ac')">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
@@ -161,12 +159,11 @@
                             </div>
                         </div>
                     </fieldset>
-                    <input type="submit" id="submitAccessory" value="" hidden>
                 </form>
 
             @elseif ($this->addSupplier)
 
-                <form action="" wire:submit.prevent="addInventory('su')">
+                <form id="submitSupplier" wire:submit.prevent="addInventory('su')">
 
                     <fieldset>
                         <legend>Add Photo</legend><br>
@@ -197,7 +194,6 @@
                             </div>
                         </div>
                     </fieldset>
-                    <input id="submitSupplier" type="submit" value="" hidden>
                 </form>
 
             @endif
@@ -206,7 +202,7 @@
         @elseif($this->isUpdateItem)
 
             @if($this->updateLense)        
-                <form wire:submit.prevent="updateInventory('le', {{ $this->le_id }})">
+                <form id="updateLens" wire:submit.prevent="updateInventory('le', {{ $this->le_id }})">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
@@ -241,12 +237,11 @@
                             </div>
                         </div>
                     </fieldset>
-                    <input type="submit" id="updateLens" value="" hidden>
                 </form>
 
             @elseif($this->updateFrame)
 
-                <form wire:submit.prevent="updateInventory('fr', {{ $this->fr_id }})">
+                <form id="updateFrame" wire:submit.prevent="updateInventory('fr', {{ $this->fr_id }})">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
@@ -281,12 +276,11 @@
                             </div>
                         </div>
                     </fieldset>
-                    <input type="submit" id="updateFrame" value="" hidden>
                 </form>
 
             @elseif($this->updateAccessory)
 
-                <form wire:submit.prevent="updateInventory('ac', {{ $this->ac_id }})">
+                <form id="updateAccessory" wire:submit.prevent="updateInventory('ac', {{ $this->ac_id }})">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
@@ -317,12 +311,11 @@
                             </div>
                         </div>
                     </fieldset>
-                    <input type="submit" id="updateAccessory" value="" hidden>
                 </form>
 
             @elseif($this->updateSupplier)   
                 
-                    <form action="" wire:submit.prevent="updateInventory('su', {{ $this->su_id }})">
+                    <form id="updateSupplier" action="" wire:submit.prevent="updateInventory('su', {{ $this->su_id }})">
 
                         <input type="hidden" wire:model.defer="su_id">
 
@@ -357,7 +350,6 @@
                                 </div>
                             </div>
                         </fieldset>
-                        <input id="updateSupplier" type="submit" value="Update" hidden>
                     </form>
                     
             @endif

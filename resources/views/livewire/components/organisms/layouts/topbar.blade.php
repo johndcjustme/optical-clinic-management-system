@@ -8,5 +8,4 @@
         </h5>
     </div>
     <div><i class="fas fa-bell"></i></div>
-    <div class="bottom_shadow"></div>
 </div>

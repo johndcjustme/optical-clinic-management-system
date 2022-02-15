@@ -32,90 +32,190 @@
 
                 @switch($this->myTab())
                     @case(1)
-                        <div class="flex gap_1">
-                            <div class="flex gap_1">
-                                <select wire:model.prevent="le_defaultOrder" class="font_small noformat">
-                                    <option value="lense_name" selected>Name</option>
-                                    <option value="item_type">Type</option>
-                                    <option value="lense_qty">Qty</option>
-                                    <option value="lense_price">Price</option>
-                                </select>
-                                <select wire:model.prevent="le_sort_direction" class="font_small noformat">
-                                    <option value="asc">ASC</option>
-                                    <option value="desc">DESC</option>
-                                </select>
-                            </div>
+                        <div class="flex" style="gap: 0.5em">
                             <div>
                                 <x-input.search wire-model="searchLense"/>
                             </div>
+                            <div class="flex gap_1">
+                                <x-atom.sort>
+                                    <x-atom.sort.sort-content 
+                                        for="az"
+                                        span="A-Z"
+                                        wire-model="le_sortDirection"
+                                        name="sort"
+                                        val="asc" 
+                                    />
+
+                                    <x-atom.sort.sort-content 
+                                        for="za"
+                                        span="Z-A"
+                                        wire-model="le_sortDirection"
+                                        name="sort"
+                                        val="desc" 
+                                    />
+
+                                    <x-atom.sort.sort-content 
+                                        for="l_modified"
+                                        span="Last Modified"
+                                        wire-model="le_sortDirection"
+                                        name="sort"
+                                        val="last_modified" 
+                                    />
+
+                                    <x-atom.sort.sort-content 
+                                        for="f_modified"
+                                        span="First Modified"
+                                        wire-model="le_sortDirection"
+                                        name="sort"
+                                        val="first_modified" 
+                                    />
+                                </x-atom.sort>
+                                
+                            </div>
+                            
                             <div>
-                                <button wire:click="inventoryShowModal('isAdd', 'le', null)"><i class="fas fa-plus"></i> add</button>
+                                <x-atom.btn-circle wire-click="inventoryShowModal('isAdd', 'le', null)"/>
                             </div>
                         </div>
                         @break
                     
                     @case(2)
-                        <div class="flex gap_1">
-                            <div class="flex gap_1">
-                                <select wire:model.prevent="fr_defaultOrder" class="font_small noformat" name="" id="">
-                                    <option value="frame_name" selected>Name</option>
-                                    <option value="item_type">Type</option>
-                                    <option value="frame_qty">Qty</option>
-                                    <option value="frame_price">Price</option>
-                                </select>
-                                <select wire:model.prevent="fr_sort_direction" class="font_small noformat" name="" id="">
-                                    <option value="asc" selected>ASC</option>
-                                    <option value="desc">DESC</option>
-                                </select>
-                            </div>
+                        <div class="flex" style="gap: 0.5em">
                             <div>
                                 <x-input.search wire-model="searchFrame"/>
                             </div>
+                            <div class="flex gap_1">
+                                <x-atom.sort>
+                                    <x-atom.sort.sort-content 
+                                        for="az"
+                                        span="A-Z"
+                                        wire-model="fr_sortDirection"
+                                        name="sort"
+                                        val="asc" 
+                                    />
+
+                                    <x-atom.sort.sort-content 
+                                        for="za"
+                                        span="Z-A"
+                                        wire-model="fr_sortDirection"
+                                        name="sort"
+                                        val="desc" 
+                                    />
+
+                                    <x-atom.sort.sort-content 
+                                        for="l_modified"
+                                        span="Last Modified"
+                                        wire-model="fr_sortDirection"
+                                        name="sort"
+                                        val="last_modified" 
+                                    />
+
+                                    <x-atom.sort.sort-content 
+                                        for="f_modified"
+                                        span="First Modified"
+                                        wire-model="fr_sortDirection"
+                                        name="sort"
+                                        val="first_modified" 
+                                    />
+                                </x-atom.sort>
+                            </div>
+                            
                             <div>
-                                <button wire:click="inventoryShowModal('isAdd', 'fr', null)"><i class="fas fa-plus"></i> add</button>
+                                <x-atom.btn-circle wire-click="inventoryShowModal('isAdd', 'fr', null)"/>
                             </div>
                         </div>
                         @break
 
                     @case(3)
-                        <div class="flex gap_1">
-                            <div class="flex gap_1">
-                                <select wire:model.prevent="ac_defaultOrder" class="font_small noformat" name="" id="">
-                                    <option value="accessory_name" selected>Name</option>
-                                    <option value="accessory_qty">Qty</option>
-                                    <option value="accessory_price">Price</option>
-                                </select>
-                                <select wire:model.prevent="ac_sort_direction" class="font_small noformat" name="" id="">
-                                    <option value="asc" selected>ASC</option>
-                                    <option value="desc">DESC</option>
-                                </select>
-                            </div>
+                        <div class="flex" style="gap: 0.5em">
                             <div>
                                 <x-input.search wire-model="searchAccessory"/>
                             </div>
+                            <div class="flex gap_1">
+                                <x-atom.sort>
+                                    <x-atom.sort.sort-content 
+                                        for="az"
+                                        span="A-Z"
+                                        wire-model="ac_SortDirection"
+                                        name="sort"
+                                        val="asc" 
+                                    />
+
+                                    <x-atom.sort.sort-content 
+                                        for="za"
+                                        span="Z-A"
+                                        wire-model="ac_SortDirection"
+                                        name="sort"
+                                        val="desc" 
+                                    />
+
+                                    <x-atom.sort.sort-content 
+                                        for="l_modified"
+                                        span="Last Modified"
+                                        wire-model="ac_SortDirection"
+                                        name="sort"
+                                        val="last_modified" 
+                                    />
+
+                                    <x-atom.sort.sort-content 
+                                        for="f_modified"
+                                        span="First Modified"
+                                        wire-model="ac_SortDirection"
+                                        name="sort"
+                                        val="first_modified" 
+                                    />
+                                </x-atom.sort>
+                            </div>
+                          
                             <div>
-                                <button wire:click="inventoryShowModal('isAdd', 'ac', null)"><i class="fas fa-plus"></i> add</button>
+                                <x-atom.btn-circle wire-click="inventoryShowModal('isAdd', 'ac', null)"/>
                             </div>
                         </div>
                         @break
 
                     @case(4)
-                        <div class="flex gap_1">
-                            <div class="flex gap_1">
-                                <select wire:model.prevent="su_defaultOrder" class="font_small noformat">
-                                    <option value="supplier_name" selected>Name</option>
-                                    <option value="created_at">Date Added</option>
-                                </select>
-                                <select wire:model.prevent="su_sort_direction" class="font_small noformat">
-                                    <option value="asc" selected>ASC</option>
-                                    <option value="desc">DESC</option>
-                                </select>
-                            </div>
+                        <div class="flex" style="gap: 0.5em">
                             <div>
                                 <x-input.search wire-model="searchSupplier"/>
                             </div>
+                            <div class="flex gap_1">
+                                <x-atom.sort>
+                                    <x-atom.sort.sort-content 
+                                        for="az"
+                                        span="A-Z"
+                                        wire-model="su_sortDirection"
+                                        name="sort"
+                                        val="asc" 
+                                    />
+
+                                    <x-atom.sort.sort-content 
+                                        for="za"
+                                        span="Z-A"
+                                        wire-model="su_sortDirection"
+                                        name="sort"
+                                        val="desc" 
+                                    />
+
+                                    <x-atom.sort.sort-content 
+                                        for="l_modified"
+                                        span="Last Modified"
+                                        wire-model="su_sortDirection"
+                                        name="sort"
+                                        val="last_modified" 
+                                    />
+
+                                    <x-atom.sort.sort-content 
+                                        for="f_modified"
+                                        span="First Modified"
+                                        wire-model="su_sortDirection"
+                                        name="sort"
+                                        val="first_modified" 
+                                    />
+                                </x-atom.sort>
+                            </div>
+                         
                             <div>
-                                <button wire:click="inventoryShowModal('isAdd', 'su', null)"><i class="fas fa-plus"></i> add</button>
+                                <x-atom.btn-circle wire-click="inventoryShowModal('isAdd', 'su', null)"/>
                             </div>
                         </div>
                         @break                        
@@ -143,8 +243,6 @@
                         @break
                 @endswitch
 
-
-
             </div>
         @endsection
 
@@ -158,12 +256,36 @@
                         <x-layout.lists-section>               
  
                             <x-layout.lists-section.lists-list list-for="grid_lens title">
-                                <div>{{ Str::title('Name') }}</div>
-                                <div></div>
-                                <div>{{ Str::title('Type') }}</div>
-                                <div>{{ Str::title('Supplier') }}</div>
-                                <div>{{ Str::title('Qty') }}</div>
-                                <div>{{ Str::title('Price') }}</div>
+                                <x-atom.column-title  
+                                    wire-click="sortBy('le', 'lense_name')"
+                                    col-title="Name"
+                                    arrow-direction="{{ $this->le_sortColumn === 'lense_name' && $this->le_sortDirection === 'asc' }}"
+                                />
+                                <x-atom.column-title  
+                                    wire-click=""
+                                    col-title=""
+                                    arrow-direction=""
+                                />
+                                <x-atom.column-title  
+                                    wire-click="sortBy('le', 'lense_desc')"
+                                    col-title="Description"
+                                    arrow-direction="{{ $this->le_sortColumn === 'lense_desc' && $this->le_sortDirection === 'asc' }}"
+                                />
+                                <x-atom.column-title  
+                                    wire-click=""
+                                    col-title="Supplier"
+                                    arrow-direction=""
+                                />
+                                <x-atom.column-title  
+                                    wire-click="sortBy('le', 'lense_qty')"
+                                    col-title="Qty"
+                                    arrow-direction="{{ $this->le_sortColumn === 'lense_qty' && $this->le_sortDirection === 'asc' }}"
+                                />
+                                <x-atom.column-title  
+                                    wire-click="sortBy('le', 'lense_price')"
+                                    col-title="Price"
+                                    arrow-direction="{{ $this->le_sortColumn === 'lense_price' && $this->le_sortDirection === 'asc' }}"
+                                />
                             </x-layout.lists-section.lists-list>
 
                             @forelse ($lenses as $lense)
@@ -177,16 +299,14 @@
                                                 <label for="">More details</label><br><br>
                                                 <label for="">Tint</label>
                                                 <p>{{ $lense->lense_tint }}</p>
-                                                <label for="">Description</label>
-                                                <p>{{ $lense->lense_desc }}</p>
+                                                <label for="">Date Added</label>
+                                                <p>{{ $lense->created_at }}</p>
                                             </x-organisms.more>
                                         </div>
-                                        <div>{{ $lense->item_type }}</div>
-                                        @if ($lense->supplier_id == null)
-                                            <div><i>[Empty]</i></div>
-                                        @else
+                                        <div>{{ $lense->lense_desc }}</div>
+                                        @isset ($lense->supplier_id)
                                             <div>{{ $lense->supplier->supplier_name }}</div>                                            
-                                        @endif
+                                        @endisset
                                         <div>{{ $lense->lense_qty }}</div>
                                         <div>{{ $lense->lense_price }}</div>
 
@@ -206,37 +326,32 @@
                     @case(2)
                         <x-layout.lists-section>               
 
-                            <x-layout.lists-section.lists-list list-for="grid_lens title">
+                            <x-layout.lists-section.lists-list list-for="grid_frame title">
                                 <div>{{ Str::title('Name') }}</div>
                                 <div></div>
-                                <div>{{ Str::title('Type') }}</div>
+                                <div>{{ Str::title('Description') }}</div>
                                 <div>{{ Str::title('Supplier') }}</div>
                                 <div>{{ Str::title('Qty') }}</div>
                                 <div>{{ Str::title('Price') }}</div>
                             </x-layout.lists-section.lists-list>
 
                             @forelse ($frames as $frame)
-
                                 <x-layout.lists-section.lists-container>
-                                    <x-layout.lists-section.lists-list list-for="grid_lens list">
-
+                                    <x-layout.lists-section.lists-list list-for="grid_frame list">
                                         <div>{{ $frame->frame_name }}</div>
                                         <div class="flex_center">
                                             <x-organisms.more image="{{ asset('images/sample-image.jpg') }}">
                                                 <label for="">More details</label><br><br>
                                                 <label for="">Size</label>
                                                 <p>{{ $frame->frame_size }}</p>
-                                                <label for="">Description</label>
-                                                <p>{{ $frame->frame_desc }}</p>
+                                                <label for="">Date Added</label>
+                                                <p>{{ $frame->created_at }}</p>
                                             </x-organisms.more>
                                         </div>
-                                        <div>{{ $frame->item_type }}</div>
-                                        @if ($frame->supplier_id == null)
-                                            <div><i>[Empty]</i></div>
-                                        @else
+                                        <div>{{ $frame->frame_desc }}</div>
+                                        @isset ($frame->supplier_id)
                                             <div>{{ $frame->supplier->supplier_name }}</div>
-                                        @endif
-
+                                        @endisset
                                         <div>{{ $frame->frame_qty }}</div>
                                         <div>{{ $frame->frame_price }}</div>
 
@@ -256,7 +371,7 @@
                     @case(3)
                         <x-layout.lists-section>               
 
-                            <x-layout.lists-section.lists-list list-for="grid_lens title">
+                            <x-layout.lists-section.lists-list list-for="grid_accessory title">
                                 <div>{{ Str::title('Name') }}</div>
                                 <div></div>
                                 <div>{{ Str::title('Description') }}</div>
@@ -268,7 +383,7 @@
                             @forelse ($accessories as $accessory)
 
                                 <x-layout.lists-section.lists-container>
-                                    <x-layout.lists-section.lists-list list-for="grid_lens list">
+                                    <x-layout.lists-section.lists-list list-for="grid_accessory list">
 
                                         <div>{{ $accessory->accessory_name }}</div>
                                         <div class="flex_center">
@@ -279,11 +394,9 @@
                                             </x-organisms.more>
                                         </div>
                                         <div>{{ $accessory->accessory_desc }}</div>
-                                        @if ($accessory->supplier_id == null)
-                                            <div><i>[Empty]</i></div>
-                                        @else
+                                        @isset($accessory->supplier_id)
                                             <div>{{ $accessory->supplier->supplier_name }}</div>
-                                        @endif
+                                        @endisset
                                         <div>{{ $accessory->accessory_qty }}</div>
                                         <div>{{ $accessory->accessory_price }}</div>
 
@@ -305,7 +418,18 @@
                             <x-layout.lists-section>               
 
                                 <x-layout.lists-section.lists-list list-for="grid_supplier title">
-                                    <div>{{ Str::title('Supplier name') }}</div>
+                                    <div wire:click.prevent="sortBy('su', 'supplier_name')">
+                                        <label for="checDesk" class="flex flex_x_between flex_y_center">
+                                            <span>
+                                                {{ Str::title('Supplier name') }}
+                                            </span>
+                                            @if($this->su_sortColumn === 'supplier_name' && $this->su_sortDirection === 'asc')
+                                                <i class="fa-solid fa-angle-down"></i>
+                                            @else
+                                                <i class="fa-solid fa-angle-up"></i>
+                                            @endif
+                                        </label>
+                                    </div>
                                     <div></div>
                                     <div>{{ Str::title('Contact no') }}</div>
                                     <div>{{ Str::title('Email') }}</div>
@@ -361,7 +485,6 @@
                             @for ($i=1; $i<12; $i++)
                                 <div class="list_container">
                                     <x-organisms.popup-delete item-id="{{ $i }}" wire-click="hey('va', {{ $i }})" />
-
                                     <div class="grid grid_inout list">
                                         <div>content</div>
                                         <div>content</div>
@@ -378,6 +501,7 @@
                         @break
                         
                 @endswitch
+
             </div>
 
         @endsection
