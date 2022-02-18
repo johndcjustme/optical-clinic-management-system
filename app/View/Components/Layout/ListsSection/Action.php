@@ -12,13 +12,17 @@ class Action extends Component
      * @return void
      */
 
-    public $deleteId;
-    public $wireClick;
+    public $itemId;
+    public $wireClickEdit;
+    public $wireClickDelete;
+    public $photo;
     
-    public function __construct($deleteId, $wireClick)
+    public function __construct($itemId, $wireClickEdit, $wireClickDelete, $photo)
     {
-        $this->deleteId = $deleteId;
-        $this->wireClick = $wireClick;
+        $this->itemId = $itemId;
+        $this->wireClickEdit = $wireClickEdit;
+        $this->wireClickDelete = $wireClickDelete;
+        $this->photo = $photo;
     }
 
     /**

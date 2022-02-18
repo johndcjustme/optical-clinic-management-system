@@ -39,6 +39,13 @@
                             <div class="flex gap_1">
                                 <x-atom.sort>
                                     <x-atom.sort.sort-content 
+                                        for=""
+                                        span="Entries"
+                                        wire-model="le_paginateVal"
+                                        name=""
+                                        val="" 
+                                    />                                
+                                    <x-atom.sort.sort-content 
                                         for="az"
                                         span="A-Z"
                                         wire-model="le_sortDirection"
@@ -57,9 +64,9 @@
                                     <x-atom.sort.sort-content 
                                         for="l_modified"
                                         span="Last Modified"
-                                        wire-model="le_sortDirection"
+                                        wire-model="sortBy('le', 'created_at')"
                                         name="sort"
-                                        val="last_modified" 
+                                        val="" 
                                     />
 
                                     <x-atom.sort.sort-content 
@@ -86,6 +93,13 @@
                             </div>
                             <div class="flex gap_1">
                                 <x-atom.sort>
+                                    <x-atom.sort.sort-content 
+                                        for=""
+                                        span="Entries"
+                                        wire-model="fr_paginateVal"
+                                        name=""
+                                        val="" 
+                                    /> 
                                     <x-atom.sort.sort-content 
                                         for="az"
                                         span="A-Z"
@@ -134,6 +148,13 @@
                             <div class="flex gap_1">
                                 <x-atom.sort>
                                     <x-atom.sort.sort-content 
+                                        for=""
+                                        span="Entries"
+                                        wire-model="ac_paginateVal"
+                                        name=""
+                                        val="" 
+                                    />  
+                                    <x-atom.sort.sort-content 
                                         for="az"
                                         span="A-Z"
                                         wire-model="ac_SortDirection"
@@ -180,6 +201,13 @@
                             </div>
                             <div class="flex gap_1">
                                 <x-atom.sort>
+                                    <x-atom.sort.sort-content 
+                                        for=""
+                                        span="Entries"
+                                        wire-model="su_paginateVal"
+                                        name=""
+                                        val="" 
+                                    /> 
                                     <x-atom.sort.sort-content 
                                         for="az"
                                         span="A-Z"
@@ -262,11 +290,6 @@
                                     arrow-direction="{{ $this->le_sortColumn === 'lense_name' && $this->le_sortDirection === 'asc' }}"
                                 />
                                 <x-atom.column-title  
-                                    wire-click=""
-                                    col-title=""
-                                    arrow-direction=""
-                                />
-                                <x-atom.column-title  
                                     wire-click="sortBy('le', 'lense_desc')"
                                     col-title="Description"
                                     arrow-direction="{{ $this->le_sortColumn === 'lense_desc' && $this->le_sortDirection === 'asc' }}"
@@ -287,22 +310,12 @@
                                     arrow-direction="{{ $this->le_sortColumn === 'lense_price' && $this->le_sortDirection === 'asc' }}"
                                 />
                             </x-layout.lists-section.lists-list>
-
                             @forelse ($lenses as $lense)
 
                                 <x-layout.lists-section.lists-container>
                                     <x-layout.lists-section.lists-list list-for="grid_lens list">
 
                                         <div>{{ $lense->lense_name }}</div>
-                                        <div class="flex_center">
-                                            <x-organisms.more image="{{ asset('images/sample-image.jpg') }}">
-                                                <label for="">More details</label><br><br>
-                                                <label for="">Tint</label>
-                                                <p>{{ $lense->lense_tint }}</p>
-                                                <label for="">Date Added</label>
-                                                <p>{{ $lense->created_at }}</p>
-                                            </x-organisms.more>
-                                        </div>
                                         <div>{{ $lense->lense_desc }}</div>
                                         @isset ($lense->supplier_id)
                                             <div>{{ $lense->supplier->supplier_name }}</div>                                            
@@ -312,14 +325,27 @@
 
                                     </x-layout.lists-section.lists-list>
                                     <div class="actions">
-                                        <x-organisms.popup-delete item-id="{{ $lense->id  }}" wire-click="deleteInventory('le', {{ $lense->id }})" />
-                                        <x-layout.lists-section.action  delete-id="{{ $lense->id }}" wire-click="inventoryShowModal('isUpdate', 'le', '{{ $lense->id }}')"/>
+                                        <x-layout.lists-section.action 
+                                            item-id="{{ $lense->id }}" 
+                                            wire-click-delete="deleteInventory('le', {{ $lense->id }})"
+                                            wire-click-edit="inventoryShowModal('isUpdate', 'le', '{{ $lense->id }}')"
+                                            photo="{{ asset('images/sample-image.jpg') }}"
+                                        >
+                                            <label for="">Tint</label>
+                                            <p>{{ $lense->lense_tint }}</p>
+                                            <label for="">Date Added</label>
+                                            <p>{{ $lense->created_at }}</p>
+                                        </x-layout.lists-section.action>
                                     </div>
 
                                 </x-layout.lists-section.lists-container>
+
                             @empty
                                 <x-layout.lists-section.list-empty empty-message="No Results."/>
                             @endforelse
+
+                            {{$lenses->links('livewire.components.paginator')}}
+                            
                         </x-layout.lists-section>
                         @break
                 
@@ -327,27 +353,33 @@
                         <x-layout.lists-section>               
 
                             <x-layout.lists-section.lists-list list-for="grid_frame title">
-                                <div>{{ Str::title('Name') }}</div>
-                                <div></div>
-                                <div>{{ Str::title('Description') }}</div>
+                                <x-atom.column-title  
+                                    wire-click="sortBy('fr', 'frame_name')"
+                                    col-title="Name"    
+                                    arrow-direction="{{ $this->fr_sortColumn === 'frame_name' && $this->fr_sortDirection === 'asc' }}"
+                                />
+                                <x-atom.column-title  
+                                    wire-click="sortBy('fr', 'frame_desc')"
+                                    col-title="Description"    
+                                    arrow-direction="{{ $this->fr_sortColumn === 'frame_desc' && $this->fr_sortDirection === 'asc' }}"
+                                />
                                 <div>{{ Str::title('Supplier') }}</div>
-                                <div>{{ Str::title('Qty') }}</div>
-                                <div>{{ Str::title('Price') }}</div>
+                                <x-atom.column-title  
+                                    wire-click="sortBy('fr', 'frame_qty')"
+                                    col-title="Qty"    
+                                    arrow-direction="{{ $this->fr_sortColumn === 'frame_qty' && $this->fr_sortDirection === 'asc' }}"
+                                />
+                                <x-atom.column-title  
+                                    wire-click="sortBy('fr', 'frame_price')"
+                                    col-title="Price"    
+                                    arrow-direction="{{ $this->fr_sortColumn === 'frame_price' && $this->fr_sortDirection === 'asc' }}"
+                                />
                             </x-layout.lists-section.lists-list>
 
                             @forelse ($frames as $frame)
                                 <x-layout.lists-section.lists-container>
                                     <x-layout.lists-section.lists-list list-for="grid_frame list">
                                         <div>{{ $frame->frame_name }}</div>
-                                        <div class="flex_center">
-                                            <x-organisms.more image="{{ asset('images/sample-image.jpg') }}">
-                                                <label for="">More details</label><br><br>
-                                                <label for="">Size</label>
-                                                <p>{{ $frame->frame_size }}</p>
-                                                <label for="">Date Added</label>
-                                                <p>{{ $frame->created_at }}</p>
-                                            </x-organisms.more>
-                                        </div>
                                         <div>{{ $frame->frame_desc }}</div>
                                         @isset ($frame->supplier_id)
                                             <div>{{ $frame->supplier->supplier_name }}</div>
@@ -357,27 +389,52 @@
 
                                     </x-layout.lists-section.lists-list>
                                     <div class="actions">
-                                        <x-organisms.popup-delete item-id="{{ $frame->id  }}" wire-click="deleteInventory('fr', {{ $frame->id }})" />
-                                        <x-layout.lists-section.action  delete-id="{{ $frame->id }}" wire-click="inventoryShowModal('isUpdate', 'fr', '{{ $frame->id }}')"/>
+                                        <x-layout.lists-section.action 
+                                            item-id="{{ $frame->id }}" 
+                                            wire-click-delete="deleteInventory('fr', {{ $frame->id }})"
+                                            wire-click-edit="inventoryShowModal('isUpdate', 'fr', '{{ $frame->id }}')"
+                                            photo="{{ asset('images/sample-image.jpg') }}"
+                                        >
+                                            <label for="">Size</label>
+                                            <p>{{ $frame->frame_size }}</p>
+                                            <label for="">Date Added</label>
+                                            <p>{{ $frame->created_at }}</p>
+                                        </x-layout.lists-section.action>
                                     </div>
 
                                 </x-layout.lists-section.lists-container>
                             @empty
                                 <x-layout.lists-section.list-empty empty-message="No Results."/>
                             @endforelse
+                            {{$frames->links('livewire.components.paginator')}}
                         </x-layout.lists-section>          
                         @break
 
                     @case(3)
                         <x-layout.lists-section>               
 
-                            <x-layout.lists-section.lists-list list-for="grid_accessory title">
-                                <div>{{ Str::title('Name') }}</div>
-                                <div></div>
-                                <div>{{ Str::title('Description') }}</div>
+                            <x-layout.lists-section.lists-list list-for="grid_accessory title"> 
+                                <x-atom.column-title  
+                                    wire-click="sortBy('ac', 'accessory_name')"
+                                    col-title="Name"    
+                                    arrow-direction="{{ $this->ac_sortColumn === 'accessory_name' && $this->ac_sortDirection === 'asc' }}"
+                                />
+                                <x-atom.column-title  
+                                    wire-click="sortBy('ac', 'accessory_desc')"
+                                    col-title="Description"    
+                                    arrow-direction="{{ $this->ac_sortColumn === 'accessory_desc' && $this->ac_sortDirection === 'asc' }}"
+                                />
                                 <div>{{ Str::title('Supplier') }}</div>
-                                <div>{{ Str::title('Qty') }}</div>
-                                <div>{{ Str::title('Price') }}</div>
+                                <x-atom.column-title  
+                                    wire-click="sortBy('ac', 'accessory_qty')"
+                                    col-title="Qty"    
+                                    arrow-direction="{{ $this->ac_sortColumn === 'accessory_qty' && $this->ac_sortDirection === 'asc' }}"
+                                />
+                                <x-atom.column-title  
+                                    wire-click="sortBy('ac', 'accessory_price')"
+                                    col-title="Price"    
+                                    arrow-direction="{{ $this->ac_sortColumn === 'accessory_price' && $this->ac_sortDirection === 'asc' }}"
+                                />
                             </x-layout.lists-section.lists-list>
 
                             @forelse ($accessories as $accessory)
@@ -386,13 +443,6 @@
                                     <x-layout.lists-section.lists-list list-for="grid_accessory list">
 
                                         <div>{{ $accessory->accessory_name }}</div>
-                                        <div class="flex_center">
-                                            <x-organisms.more image="{{ asset('images/sample-image.jpg') }}">
-                                                <label for="">More details</label><br><br>
-                                                <label for="">Item type</label>
-                                                <p>{{ $accessory->item_type }}</p>
-                                            </x-organisms.more>
-                                        </div>
                                         <div>{{ $accessory->accessory_desc }}</div>
                                         @isset($accessory->supplier_id)
                                             <div>{{ $accessory->supplier->supplier_name }}</div>
@@ -402,14 +452,22 @@
 
                                     </x-layout.lists-section.lists-list>
                                     <div class="actions">
-                                        <x-organisms.popup-delete item-id="{{ $accessory->id  }}" wire-click="deleteInventory('ac', {{ $accessory->id }})" />
-                                        <x-layout.lists-section.action  delete-id="{{ $accessory->id }}" wire-click="inventoryShowModal('isUpdate', 'ac', '{{ $accessory->id }}')"/>
+                                        <x-layout.lists-section.action 
+                                            item-id="{{ $accessory->id }}" 
+                                            wire-click-delete="deleteInventory('ac', {{ $accessory->id }})"
+                                            wire-click-edit="inventoryShowModal('isUpdate', 'ac', '{{ $accessory->id }}')"
+                                            photo="{{ asset('images/sample-image.jpg') }}"
+                                        >
+                                            <label for="">Item type</label>
+                                            <p>{{ $accessory->item_type }}</p>
+                                        </x-layout.lists-section.action>
                                     </div>
 
                                 </x-layout.lists-section.lists-container>
                             @empty
                                 <x-layout.lists-section.list-empty empty-message="No Results."/>
                             @endforelse
+                            {{$accessories->links('livewire.components.paginator')}}
                         </x-layout.lists-section>
                         @break
 
@@ -418,20 +476,16 @@
                             <x-layout.lists-section>               
 
                                 <x-layout.lists-section.lists-list list-for="grid_supplier title">
-                                    <div wire:click.prevent="sortBy('su', 'supplier_name')">
-                                        <label for="checDesk" class="flex flex_x_between flex_y_center">
-                                            <span>
-                                                {{ Str::title('Supplier name') }}
-                                            </span>
-                                            @if($this->su_sortColumn === 'supplier_name' && $this->su_sortDirection === 'asc')
-                                                <i class="fa-solid fa-angle-down"></i>
-                                            @else
-                                                <i class="fa-solid fa-angle-up"></i>
-                                            @endif
-                                        </label>
-                                    </div>
-                                    <div></div>
-                                    <div>{{ Str::title('Contact no') }}</div>
+                                    <x-atom.column-title  
+                                        wire-click="sortBy('su', 'supplier_name')"
+                                        col-title="Supplier Name"    
+                                        arrow-direction="{{ $this->su_sortColumn === 'supplier_name' && $this->su_sortDirection === 'asc' }}"
+                                    />
+                                    <x-atom.column-title  
+                                        wire-click=""
+                                        col-title="Phone"    
+                                        arrow-direction=""
+                                    />
                                     <div>{{ Str::title('Email') }}</div>
                                     <div>{{ Str::title('address') }}</div>
                                 </x-layout.lists-section.lists-list>
@@ -442,31 +496,31 @@
                                         <x-layout.lists-section.lists-list list-for="grid_supplier list">
 
                                             <div>{{ $supplier->supplier_name }}</div>
-                                            <div class="flex_center">
-                                                <x-organisms.more image="{{ asset('images/sample-image.jpg') }}">
-                                                    <label for="">More details</label><br><br>
-                                                    <label for="">Bank</label>
-                                                    <p>{{ $supplier->supplier_bank }}</p>
-                                                    <label for="">Account no.</label>
-                                                    <p>{{ $supplier->supplier_acc_no }}</p>
-                                                    <label for="">Branch</label>
-                                                    <p>{{ $supplier->supplier_branch }}</p>
-                                                </x-organisms.more>
-                                            </div>
                                             <div>{{ $supplier->supplier_contact_no }}</div>
                                             <div>{{ $supplier->supplier_email }}</div>
                                             <div>{{ $supplier->supplier_address }}</div>
 
                                         </x-layout.lists-section.lists-list>
                                         <div class="actions">
-                                            <x-organisms.popup-delete item-id="{{ $supplier->id  }}" wire-click="deleteInventory('su', {{ $supplier->id }})" />
-                                            <x-layout.lists-section.action  delete-id="{{ $supplier->id }}" wire-click="inventoryShowModal('isUpdate', 'su', '{{ $supplier->id }}')"/>
+                                            <x-layout.lists-section.action 
+                                                item-id="{{ $supplier->id }}" 
+                                                wire-click-delete="deleteInventory('su', {{ $supplier->id }})"
+                                                wire-click-edit="inventoryShowModal('isUpdate', 'su', '{{ $supplier->id }}')"
+                                                photo="{{ asset('images/sample-image.jpg') }}"
+                                            >
+                                                <label for="">Bank</label>
+                                                <p>{{ $supplier->supplier_bank }}</p>
+                                                <label for="">Account no.</label>
+                                                <p>{{ $supplier->supplier_acc_no }}</p>
+                                                <label for="">Branch</label>
+                                                <p>{{ $supplier->supplier_branch }}</p>
+                                            </x-layout.lists-section.action>
                                         </div>
-
                                     </x-layout.lists-section.lists-container>
                                 @empty
                                     <x-layout.lists-section.list-empty empty-message="No Results."/>
                                 @endforelse
+
                             </x-layout.lists-section>
 
                         @break
@@ -482,22 +536,7 @@
                                 <div class="flex flex_x_end">{{ Str::title('action') }}</div>
                             </div>
 
-                            @for ($i=1; $i<12; $i++)
-                                <div class="list_container">
-                                    <x-organisms.popup-delete item-id="{{ $i }}" wire-click="hey('va', {{ $i }})" />
-                                    <div class="grid grid_inout list">
-                                        <div>content</div>
-                                        <div>content</div>
-                                        <div class="flex flex_x_end">12</div>
-                                        <div class="flex flex_x_end">3</div>
-                                        <div class="flex flex_x_end">1</div>
-                                        <div class="flex flex_x_end">
-                                            <a onclick="getElementById('delete{{ $i  }}').style.right = '0px'" class="action" href="#"><i class='fas fa-trash-alt'></i></a>
-                                            <a wire:click="showModalOnSupplierUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endfor      
+                               
                         @break
                         
                 @endswitch

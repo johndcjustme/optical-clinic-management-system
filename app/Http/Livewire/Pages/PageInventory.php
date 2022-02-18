@@ -13,10 +13,15 @@ use App\Models\Lense;
 use App\Models\Frame;
 use App\Models\Accessory;
 use App\Models\Supplier;
+use Livewire\WithPagination;
+
 use DateTime;
 
 class PageInventory extends Component
 {
+    
+    use WithPagination;
+
     // declarations for modal 
     public $le_session_added = 'Lense added successfully.';
     public $le_session_updated = 'Lense updated successfully.';
@@ -79,161 +84,92 @@ class PageInventory extends Component
     public 
         $le_sortDirection = 'asc',
         $fr_sortDirection = 'asc',
-        $ac_SortDirection = 'asc',
-        $su_sortDirection = 'asc';
+        $ac_sortDirection = 'asc',
+        $su_sortDirection = 'asc',
+        
+        $le_sortColumn = 'lense_name',
+        $fr_sortColumn = 'frame_name',
+        $ac_sortColumn = 'accessory_name',
+        $su_sortColumn = 'supplier_name';
 
     public 
-        $lenses,
         $searchLense,
-
-        $accessories,
-        $searchAccessory,
-
-        $frames,
         $searchFrame,
+        $searchAccessory,
+        $searchSupplier,
 
-        $suppliers, 
-        $searchSupplier;
+        $le_paginateVal = 5,
+        $fr_paginateVal = 5,
+        $ac_paginateVal = 5,
+        $su_paginateVal = 5;
         // change table 
     public $inventoryChangeTable;
 
-    public $le_sortColumn = 'lense_name';
-    public $su_sortColumn = 'supplier_name';
-    // public $sortDirection = 'asc';
-    
+ 
     public function render()
     {   //lens
+
         $searchLense = '%' . $this->searchLense . '%';
-        $this->lenses = Lense::with('supplier')
+        $lenses = Lense::with('supplier')
             ->where('lense_name', 'like', $searchLense)
             ->orWhere('item_type', 'like', $searchLense)
             ->orWhere('lense_qty', 'like', $searchLense)
             ->orWhere('lense_price', 'like', $searchLense)
             ->orderBy($this->le_sortColumn, $this->le_sortDirection)
-            ->get();    
-
-
-            // switch ($this->le_sortDirection) {
-            //     case 'asc':
-            //         $this->lenses = $this->lenses->orderBy('lense_name', 'asc')->get();
-            //         break;
-            //     case 'desc':
-            //         $this->lenses = $this->lenses->orderBy('lense_name', 'desc')->get();
-            //         break;
-            //     case 'last_modified':
-            //         $this->lenses = $this->lenses->latest('updated_at')->get();
-            //         break;
-            //     case 'first_modified':
-            //         $this->lenses = $this->lenses->oldest('updated_at')->get();
-            //         break;
-            // }
+            ->paginate($this->le_paginateVal);
+            // ->get();    
 
         
         //frame
         $searchFrame = '%' . $this->searchFrame . '%';
-        $this->frames = Frame::with('supplier')
-            ->where('frame_name', 'like', $searchFrame);
-
-            switch ($this->fr_sortDirection) {
-                case 'asc':
-                    $this->frames = $this->frames->orderBy('frame_name', 'asc')->get();
-                    break;
-                case 'desc':
-                    $this->frames = $this->frames->orderBy('frame_name', 'desc')->get();    
-                    break;
-                case 'last_modified':
-                    $this->frames = $this->frames->latest('updated_at')->get();
-                    break;
-                case 'first_modified':
-                    $this->frames = $this->frames->oldest('updated_at')->get();
-                    break;
-            }
-
+        $frames = Frame::with('supplier')
+            ->where('frame_name', 'like', $searchFrame)
+            ->orderBy($this->fr_sortColumn, $this->fr_sortDirection)
+            ->paginate($this->fr_paginateVal);
+            // ->get(); 
 
         //accessory
         $searchAccessory = '%' . $this->searchAccessory . '%';
-        $this->accessories = Accessory::with('supplier')
-            ->where('accessory_name' , 'like', $searchAccessory);
+        $accessories = Accessory::with('supplier')
+            ->where('accessory_name' , 'like', $searchAccessory)
+            ->orderBy($this->ac_sortColumn, $this->ac_sortDirection)
+            ->paginate($this->ac_paginateVal);
+            // ->get();
 
-            switch ($this->ac_SortDirection) {
-                case 'asc':
-                    $this->accessories = $this->accessories->orderBy('accessory_name', 'asc')->get();
-                    break;
-                case 'desc':
-                    $this->accessories = $this->accessories->orderBy('accessory_name', 'desc')->get();
-                    break;
-                case 'last_modified':
-                    $this->accessories = $this->accessories->latest('updated_at')->get();
-                    break;
-                case 'first_modified':
-                    $this->accessories = $this->accessories->oldest('updated_at')->get();
-                    break;
-            }
 
-        //supplier
+        //supplier    
         $searchSupplier = '%' . $this->searchSupplier . '%';
-        $this->suppliers = Supplier::where('supplier_name', 'like', $searchSupplier)
+        $suppliers = Supplier::where('supplier_name', 'like', $searchSupplier)
             ->orWhere('supplier_address', 'like', $searchSupplier)
             ->orWhere('supplier_contact_no', 'like', $searchSupplier)
             ->orWhere('supplier_email', 'like', $searchSupplier)
             ->orderBy($this->su_sortColumn, $this->su_sortDirection)
-            ->get();  
+            ->get();
+            // ->get();  
 
-            // switch ($this->ac_SortDirection) {
-            //     case 'asc':
-            //         $this->suppliers = $this->suppliers->orderBy('supplier_name', 'asc')->get();
-            //         break;
-            //     case 'desc':
-            //         $this->suppliers = $this->suppliers->orderBy('supplier_name', 'desc')->get();
-            //         break;
-            //     case 'last_modified':
-            //         $this->suppliers = $this->suppliers->latest('updated_at')->get();
-            //         break;
-            //     case 'first_modified':
-            //         $this->suppliers = $this->suppliers->oldest('updated_at')->get();
-            //         break;
-            // }
-
-        return view('livewire.pages.page-inventory')
+        return view('livewire.pages.page-inventory', ['lenses' => $lenses, 'frames' => $frames, 'accessories' => $accessories, 'suppliers' => $suppliers])
             ->extends('layouts.app')
             ->section('content');
     }
 
-
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
 
     public function sortBy($itemType, $columnName)
     {
-        switch ($itemType) {
-            case 'le':
-                if ($this->le_sortColumn == $columnName) {
-                    $this->le_sortDirection = $this->le_sortDirection === 'asc' ? 'desc' : 'asc';
-                } else {
-                    $this->le_sortDirection = 'asc';
-                }
-                $this->le_sortColumn = $columnName;
-                break;
-
-                case 'su':
-                    if ($this->su_sortColumn == $columnName) {
-                        $this->su_sortDirection = $this->su_sortDirection === 'asc' ? 'desc' : 'asc';
-                    } else {
-                        $this->su_sortDirection = 'asc';
-                    }
-                    $this->su_sortColumn = $columnName;
-
-                    break;
-            }
-    }
-
-    public function sortDirection()
-    {
-        return $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        if ($itemType === $itemType) {
+            $sortColumn = $itemType . '_sortColumn';
+            $sortDirection = $itemType . '_sortDirection';
+            $this->$sortColumn == $columnName ? $this->$sortDirection = $this->$sortDirection === 'asc' ? 'desc' : 'asc' : '';
+            $this->$sortColumn = $columnName;
+        }
     }
 
 
     public function resetField($caseToReset)
     {
-
         switch ($caseToReset) {
             case 'le':
                 $this->reset([

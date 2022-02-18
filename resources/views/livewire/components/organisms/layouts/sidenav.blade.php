@@ -14,18 +14,6 @@
             </div>
         </div>
         <br><br>
-        {{-- header  --}}
-        {{-- <div>
-            <a href="/users" title="User">
-                <li class="@yield('users')">
-                    <i class="fas fa-smile"></i>
-                    <span>John@admin</span>
-                </li>
-            </a>
-            <hr class="my_10">
-        </div> --}}
-    
-        {{-- body  --}}
         <div>
             <hr class="mb_10">
             <a href="/dashboard" title="Dashboard">
@@ -58,29 +46,22 @@
                     <span>Appointments</span>
                 </li>
             </a>
-            <a href="/schedules" title="Schedules">
-                <li class="@yield('schedules')">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Schedules</span>
-                </li>
-            </a>
-        </div>
-
-        {{-- footer  --}}
-        <div>
-            <hr class="my_10">
             <a href="/users" title="User">
                 <li class="@yield('users')">
                     <i class="fas fa-smile"></i>
                     <span>My Account</span>
                 </li>
             </a>
+        </div>
+        
+        {{-- footer  --}}
+        <div>
+            <hr class="my_10">
             <a href="/sign-in" title="Logout">
                 <li>
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </li>
-
             </a>
         </div>
     </ul>

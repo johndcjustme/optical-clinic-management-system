@@ -27,4 +27,3 @@ Route::get('/patients', App\Http\Livewire\Pages\PagePatient::class);
 Route::get('/inventory', App\Http\Livewire\Pages\PageInventory::class);
 Route::get('/orders', App\Http\Livewire\Pages\PageOrders::class);
 Route::get('/appointments', App\Http\Livewire\Pages\PageAppointments::class);
-Route::get('/schedules', App\Http\Livewire\Pages\PageSchedules::class);

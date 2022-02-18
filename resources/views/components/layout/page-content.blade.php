@@ -1,5 +1,5 @@
 <div class="mt_5 w_lg" style="margin:auto; min-width: 624px;">
-    <div class="p_7">
+    <div class="px_7 overflow_hidden" style="padding-bottom: 100px">
         <div class="animate_top">
             <h4>@yield('section-page-title')</h4>
         </div>

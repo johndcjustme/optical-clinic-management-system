@@ -101,7 +101,7 @@
                         <div class="grid grid_col_2 gap_1">
                             <div>
                                 <label for="">Frame Name</label>
-                                <input wire:model.defer="fr_name" type="text">
+                                <input wire:model.defer="fr_name" type="text" required>
                                 <label for="">Frame Type</label>
                                 <input wire:model.defer="item_type" type="text">
                                 <label for="">Fram Size</label>

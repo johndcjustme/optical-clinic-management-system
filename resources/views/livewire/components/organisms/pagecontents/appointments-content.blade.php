@@ -87,7 +87,10 @@
                     <div class="flex flex_x_end">{{ Str::title('action') }}</div>
                 </div>
 
-                @for ($i=1; $i<12; $i++)
+                {{-- @foreach ($schedsettings as $schedsetting)
+                 {{ $schedsetting->schedset_name }}
+                 @endforeach --}}
+                {{-- @for ($i=1; $i<12; $i++)
                     <div class="grid grid_appointment list">
                         <div>
                             <input class="noformat" list="suggest_name" type="text" value="John Doe">
@@ -119,7 +122,7 @@
                             <a wire:click="showModalOnLensUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
                         </div>
                     </div>
-                @endfor
+                @endfor --}}
 
             @elseif($this->myTab == 2)
 
@@ -167,7 +170,19 @@
             @endif
 
         </div>
-    @endsection
 
+
+        @if ($this->shedsettings_isOpen == true) 
+            <x-organisms.panel-settings title="Schedule Settings">
+                @includeIf('livewire.components.organisms.pagecontents.appointments-content.appointment-settings')
+                {{-- <x-organisms.panel-settings.appointment-settings/> --}}
+            </x-organisms.panel-settings>
+        @endif
+
+        <button wire:click="$toggle('shedsettings_isOpen')" class="circle panel_settings_button">
+            <i class="fa-solid fa-gear"></i>
+        </button>
+
+    @endsection
 
 </x-layout.page-content>
