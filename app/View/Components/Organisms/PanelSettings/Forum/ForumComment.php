@@ -1,24 +1,19 @@
 <?php
 
-namespace App\View\Components\Organisms;
+namespace App\View\Components\Organisms\PanelSettings\Forum;
 
 use Illuminate\View\Component;
 
-class PanelSettings extends Component
+class ForumComment extends Component
 {
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public $title;
-    public $wireToggle;
-
-
-    public function __construct($title, $wireToggle)
+    public function __construct()
     {
-        $this->title = $title;
-        $this->wireToggle = $wireToggle;
+        //
     }
 
     /**
@@ -28,6 +23,6 @@ class PanelSettings extends Component
      */
     public function render()
     {
-        return view('components.organisms.panel-settings');
+        return view('components.organisms.panel-settings.forum.forum-comment');
     }
 }

@@ -8,26 +8,28 @@
         </div>
     </div>
     <div class="action_content">
-        <div>
-            <div class="more">
-                <div class="card_nopadding more_content animate_mini_zoom">
-                    <div class="more_content_image">
-                        <img src="{{ $photo }}" alt="image">   
+        @if(!empty($photo))
+            <div>
+                <div class="more">
+                    <div class="card_nopadding more_content animate_mini_zoom">
+                        <div class="more_content_image">
+                            <img src="{{ $photo }}" alt="image">   
+                        </div>
+                        <div class="more_content_body">
+                            <label for="">More Details</label><br><br>
+                            
+                            {{ $slot }}
+                
+                        </div>
                     </div>
-                    <div class="more_content_body">
-                        <label for="">More Details</label><br><br>
-                        
-                        {{ $slot }}
-            
+                    <div class="more_btn">
+                        <a href="#">
+                            <i class="fa-solid fa-ellipsis clickable"></i>
+                        </a>
                     </div>
-                </div>
-                <div class="more_btn">
-                    <a href="#">
-                        <i class="fa-solid fa-ellipsis clickable"></i>
-                    </a>
                 </div>
             </div>
-        </div>
+        @endif
         <div>
             <a  href="#"><i wire:click="{{ $wireClickEdit }}" class="fas fa-edit clickable"></i></a>
         </div>

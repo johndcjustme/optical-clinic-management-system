@@ -11,8 +11,7 @@
             <x-atom.tab-links.link tab-title="In / out" wire-click="inventoryChangeTable(5)" sub-page="{{ $this->myTab() == 5 }}"/>
         @endsection
 
-        @section('section-heading')
-            <div class="flex gap_1">
+        @section('section-heading-left')
                 <h5>
                     @switch($this->myTab())
                         @case(1) LENSES
@@ -27,12 +26,10 @@
                             @break
                     @endswitch
                 </h5>
-            </div>
-            <div class="flex flex_y_center gap_1">
-
+        @endsection
+        @section('section-heading-right')
                 @switch($this->myTab())
                     @case(1)
-                        <div class="flex" style="gap: 0.5em">
                             <div>
                                 <x-input.search wire-model="searchLense"/>
                             </div>
@@ -79,15 +76,13 @@
                                 </x-atom.sort>
                                 
                             </div>
-                            
                             <div>
                                 <x-atom.btn-circle wire-click="inventoryShowModal('isAdd', 'le', null)"/>
                             </div>
-                        </div>
                         @break
                     
                     @case(2)
-                        <div class="flex" style="gap: 0.5em">
+                        {{-- <div class="flex" style="gap: 0.5em"> --}}
                             <div>
                                 <x-input.search wire-model="searchFrame"/>
                             </div>
@@ -137,11 +132,11 @@
                             <div>
                                 <x-atom.btn-circle wire-click="inventoryShowModal('isAdd', 'fr', null)"/>
                             </div>
-                        </div>
+                        {{-- </div> --}}
                         @break
 
                     @case(3)
-                        <div class="flex" style="gap: 0.5em">
+                        {{-- <div class="flex" style="gap: 0.5em"> --}}
                             <div>
                                 <x-input.search wire-model="searchAccessory"/>
                             </div>
@@ -191,11 +186,11 @@
                             <div>
                                 <x-atom.btn-circle wire-click="inventoryShowModal('isAdd', 'ac', null)"/>
                             </div>
-                        </div>
+                        {{-- </div> --}}
                         @break
 
                     @case(4)
-                        <div class="flex" style="gap: 0.5em">
+                        {{-- <div class="flex" style="gap: 0.5em"> --}}
                             <div>
                                 <x-input.search wire-model="searchSupplier"/>
                             </div>
@@ -245,33 +240,13 @@
                             <div>
                                 <x-atom.btn-circle wire-click="inventoryShowModal('isAdd', 'su', null)"/>
                             </div>
-                        </div>
+                        {{-- </div> --}}
                         @break                        
 
                     @case(5)
-                        <div class="flex gap_1">
-                            <div class="flex gap_1">
-                                <select class="font_small noformat" name="" id="">
-                                    <option value="" selected>Name</option>
-                                    <option value="">Address</option>
-                                    <option value="">Branch</option>
-                                </select>
-                                <select class="font_small noformat" name="" id="">
-                                    <option value="" selected>ASC</option>
-                                    <option value="">DESC</option>
-                                </select>
-                            </div>
-                            <div>
-                                <input type="search" name="" id="" placeholder="Search Supplier">
-                            </div>
-                            <div>
-                                <button wire:click="inventoryShowModal('addSu')"><i class="fas fa-plus"></i> add</button>
-                            </div>
-                        </div>
+                        
                         @break
                 @endswitch
-
-            </div>
         @endsection
 
         @section('section-main')
@@ -279,7 +254,6 @@
             <div class="items">
 
                 @switch($this->myTab())
-
                     @case(1)
                         <x-layout.lists-section>               
  

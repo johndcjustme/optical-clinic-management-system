@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Pages;
 
 use Livewire\Component;
 use App\Models\Schedsetting;
+use App\Models\Appointment;
 
 class PageAppointments extends Component
 {
@@ -33,7 +34,9 @@ class PageAppointments extends Component
 
         $schedsetting = Schedsetting::all();
 
-        return view('livewire.pages.page-appointments', ['schedsettings' => $schedsetting])
+        $appts = Appointment::with('patient')->get();
+
+        return view('livewire.pages.page-appointments', ['schedsettings' => $schedsetting, 'appts' => $appts])
             ->extends('layouts.app')
             ->section('content');
     }

@@ -26,4 +26,14 @@ class Patient extends Model
     {
         return $this->hasMany(Exam::class);
     }
+
+    public function appointment()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    public function post()
+    {
+        return $this->hasMany(Post::class);
+    }
 }

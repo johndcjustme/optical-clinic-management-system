@@ -8,7 +8,15 @@
         </div>
         <br><br>
         <div class="flex flex_x_between flex-Y_center animate_opacity">
-            @yield('section-heading')
+            
+            <div class="flex gap_1">
+                @yield('section-heading-left')
+            </div>
+
+            <div class="flex flex_y_center gap_1">
+                @yield('section-heading-right')
+            </div>
+
         </div><br>
 
         <div class="animate_bottom">
