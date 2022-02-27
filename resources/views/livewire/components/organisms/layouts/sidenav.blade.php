@@ -9,13 +9,14 @@
                 </div>
                 <span class="mt_6 flex flex_y_center text_left" style="line-height: 1rem; width:auto;">
                     <b style="font-size: 1.3rem;">DANGO</b>                        
-                    <span style="font-size: 0.6rem">OPTICAL CLINIC</span>
+                    <span style="font-size: 0.6rem;">OPTICAL CLINIC</span>
                 </span>
             </div>
         </div>
         <br><br>
         <div>
-            <hr class="mb_10">
+            {{-- <p class="light_500 font_bold font_s">NAVIGATION</p>
+            <hr class="mb_10"> --}}
             <a href="/dashboard" title="Dashboard">
                 <li class="@yield('dashboard')">
                     <i class="fas fa-chart-area"></i>
@@ -46,18 +47,18 @@
                     <span>Appointments</span>
                 </li>
             </a>
-            <a href="/users" title="User">
+            {{-- <a href="/users" title="User">
                 <li class="@yield('users')">
                     <i class="fas fa-smile"></i>
                     <span>My Account</span>
                 </li>
-            </a>
+            </a> --}}
         </div>
         
         {{-- footer  --}}
         <div>
             <hr class="my_10">
-            <a href="/sign-in" title="Logout">
+            <a href="/login" title="Logout">
                 <li>
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>

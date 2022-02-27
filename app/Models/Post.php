@@ -10,7 +10,7 @@ class Post extends Model
     use HasFactory;
 
     protected $fillable = [
-        'patient_admin_id',
+        'patient_user_id',
         'role',
         'post_content',
         'created_at',
@@ -19,10 +19,14 @@ class Post extends Model
     
     public function patient()
     {
-        return $this->belongsTo(Patient::class, 'patient_admin_id', 'id');
+        return $this->belongsTo(Patient::class, 'patient_user_id', 'id');
     }
     public function user()
     {
-        return $this->belongsTo(User::class, 'patient_admin_id', 'id');
+        return $this->belongsTo(User::class, 'patient_user_id', 'id');
+    }
+    public function like()
+    {
+        return $this->hasMany(Like::class);
     }
 }

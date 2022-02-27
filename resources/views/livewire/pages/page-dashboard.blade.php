@@ -7,6 +7,7 @@
 {{-- current page --}}
 @section('pageTitle', 'Dashboard')
 
+<x-layout.main-page>
 
     <div class="full_w main_content_inner overflow_scroll">
 
@@ -15,3 +16,5 @@
         </div>
 
     </div>
+    
+</x-layout.main-page>

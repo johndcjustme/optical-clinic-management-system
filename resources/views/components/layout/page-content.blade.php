@@ -13,7 +13,7 @@
                 @yield('section-heading-left')
             </div>
 
-            <div class="flex flex_y_center gap_1">
+            <div class="flex flex_y_center">
                 @yield('section-heading-right')
             </div>
 

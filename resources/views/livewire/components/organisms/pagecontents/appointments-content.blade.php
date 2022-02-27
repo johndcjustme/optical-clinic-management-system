@@ -4,7 +4,9 @@
 
     @section('section-links')
             <x-atom.tab-links.link tab-title="Ongoing" wire-click="myTab(1)" sub-page="{{ $this->myTab == 1 }}"/>
-            <x-atom.tab-links.link tab-title="Completed" wire-click="myTab(2)" sub-page="{{ $this->myTab == 2 }}"/>
+            <x-atom.tab-links.link tab-title="For Approval" wire-click="myTab(2)" sub-page="{{ $this->myTab == 2 }}">
+                <span class="absolute right bg_red flex flex_center" style="top: -1.2em; background:red; color:white; font-size: 0.55rem; height: 1.9em; width: 1.9em; border-radius: 50%;">{{ $appts->where('appt_confirmed', null)->where('appt_confirmed', 0)->count() }}</span>
+            </x-atom.tab-links.link>
     @endsection
 
     @section('section-heading-left')
@@ -15,7 +17,7 @@
                     ONGOING
                     @break
                 @case(2)
-                    COMPLETED
+                    FOR APPROVAL
                     @break
                 @default
                     
@@ -78,7 +80,55 @@
                 @break
 
             @case(2)
-                COMPLETED
+                <div>
+                    <x-input.search wire-model="searchAppt"/>
+                </div>
+                <div class="flex gap_1">
+                    <x-atom.sort>
+                        <x-atom.sort.sort-content 
+                            for=""
+                            span="Entries"
+                            wire-model="le_paginateVal"
+                            name=""
+                            val="" 
+                        />                                
+                        <x-atom.sort.sort-content 
+                            for="az"
+                            span="A-Z"
+                            wire-model="le_sortDirection"
+                            name="sort"
+                            val="asc" 
+                        />
+
+                        <x-atom.sort.sort-content 
+                            for="za"
+                            span="Z-A"
+                            wire-model="le_sortDirection"
+                            name="sort"
+                            val="desc" 
+                        />
+
+                        <x-atom.sort.sort-content 
+                            for="l_modified"
+                            span="Last Modified"
+                            wire-model="sortBy('le', 'created_at')"
+                            name="sort"
+                            val="" 
+                        />
+
+                        <x-atom.sort.sort-content 
+                            for="f_modified"
+                            span="First Modified"
+                            wire-model="le_sortDirection"
+                            name="sort"
+                            val="first_modified" 
+                        />
+                    </x-atom.sort>
+                    
+                </div>
+                <div>
+                    <x-atom.btn-circle wire-click="inventoryShowModal('isAdd', 'le', null)"/>
+                </div>
                 @break
             @default
         @endswitch
@@ -119,15 +169,17 @@
                         />
                     </x-layout.lists-section.lists-list>
 
-                    @forelse ($appts as $appt)
+                    @forelse ($appts->where('appt_confirmed', 1) as $appt)
                         <x-layout.lists-section.lists-container>
                             <x-layout.lists-section.lists-list list-for="grid_appointment list">
 
                                 <div>{{ $appt->patient->patient_fname . ' ' . $appt->patient->patient_mname . ' ' . $appt->patient->patient_lname  }}</div>
-                                <div style="padding: 0">
+                                <div style="padding: 0 1em 0 0">
                                     <input type="date" name="" id="" value="{{ $appt->appt_date }}" class="noformat"> 
                                 </div>
-                                <div>{{ $appt->appt_resched }}</div>
+                                <div style="padding: 0 1em 0 0">
+                                    <input type="date" value="{{ $appt->appt_resched }}" class="noformat">
+                                </div>
                                 <div style="padding: 0">
                                     <select name="" id="" class="noformat" style="color:{{ Str::title($appt->appt_status) === 'Missed' ? 'red' : '' }}">
                                         <option value=""selected>{{ Str::title($appt->appt_status) }}</option>
@@ -157,41 +209,6 @@
                         <x-layout.lists-section.list-empty empty-message="No Results."/>
                     @endforelse
                     
-                    {{-- @forelse ($lenses as $lense)
-
-                        <x-layout.lists-section.lists-container>
-                            <x-layout.lists-section.lists-list list-for="grid_lens list">
-
-                                <div>{{ $lense->lense_name }}</div>
-                                <div>{{ $lense->lense_desc }}</div>
-                                @isset ($lense->supplier_id)
-                                    <div>{{ $lense->supplier->supplier_name }}</div>                                            
-                                @endisset
-                                <div>{{ $lense->lense_qty }}</div>
-                                <div>{{ $lense->lense_price }}</div>
-
-                            </x-layout.lists-section.lists-list>
-                            <div class="actions">
-                                <x-layout.lists-section.action 
-                                    item-id="{{ $lense->id }}" 
-                                    wire-click-delete="deleteInventory('le', {{ $lense->id }})"
-                                    wire-click-edit="inventoryShowModal('isUpdate', 'le', '{{ $lense->id }}')"
-                                    photo="{{ asset('images/sample-image.jpg') }}"
-                                >
-                                    <label for="">Tint</label>
-                                    <p>{{ $lense->lense_tint }}</p>
-                                    <label for="">Date Added</label>
-                                    <p>{{ $lense->created_at }}</p>
-                                </x-layout.lists-section.action>
-                            </div>
-
-                        </x-layout.lists-section.lists-container>
-
-                    @empty
-                        <x-layout.lists-section.list-empty empty-message="No Results."/>
-                    @endforelse --}}
-
-                    
                 </x-layout.lists-section>
                 
 
@@ -203,98 +220,70 @@
                         <x-atom.column-title  
                             wire-click="sortBy('le', 'lense_name')"
                             col-title="Patient Name"
-                            arrow-direction="{{ $this->le_sortColumn === 'lense_name' && $this->le_sortDirection === 'asc' }}"
+                            arrow-direction=""
                         />
                         <x-atom.column-title  
                             wire-click="sortBy('le', 'lense_desc')"
                             col-title="Appointment Date"
-                            arrow-direction="{{ $this->le_sortColumn === 'lense_desc' && $this->le_sortDirection === 'asc' }}"
+                            arrow-direction=""
                         />
                         <x-atom.column-title  
                             wire-click="sortBy('le', 'lense_qty')"
-                            col-title="Reschedule"
-                            arrow-direction="{{ $this->le_sortColumn === 'lense_qty' && $this->le_sortDirection === 'asc' }}"
-                        />
-                        <x-atom.column-title  
-                            wire-click="sortBy('le', 'lense_price')"
                             col-title="Status"
-                            arrow-direction="{{ $this->le_sortColumn === 'lense_price' && $this->le_sortDirection === 'asc' }}"
+                            arrow-direction=""
                         />
                         <x-atom.column-title  
                             wire-click="sortBy('le', 'lense_price')"
-                            col-title="Phone No>"
-                            arrow-direction="{{ $this->le_sortColumn === 'lense_price' && $this->le_sortDirection === 'asc' }}"
+                            col-title="Phone No."
+                            arrow-direction=""
+                        />
+                        <x-atom.column-title  
+                            wire-click="sortBy('le', 'lense_price')"
+                            col-title="Action"
+                            arrow-direction=""
                         />
                     </x-layout.lists-section.lists-list>
                     
-                    {{-- @forelse ($lenses as $lense)
-
+                    @forelse ($appts->where('appt_confirmed', 0) as $appt)
                         <x-layout.lists-section.lists-container>
-                            <x-layout.lists-section.lists-list list-for="grid_lens list">
+                            <x-layout.lists-section.lists-list list-for="grid_appointment list">
+                              
+                                <x-layout.lists-section.list-item 
+                                    item-name="{{ $appt->patient->patient_fname . ' ' . $appt->patient->patient_mname . ' ' . $appt->patient->patient_lname  }}" 
+                                    item-desc=""
+                                />
 
-                                <div>{{ $lense->lense_name }}</div>
-                                <div>{{ $lense->lense_desc }}</div>
-                                @isset ($lense->supplier_id)
-                                    <div>{{ $lense->supplier->supplier_name }}</div>                                            
-                                @endisset
-                                <div>{{ $lense->lense_qty }}</div>
-                                <div>{{ $lense->lense_price }}</div>
-
+                                {{-- <div></div> --}}
+                                <div style="padding: 0">
+                                    <input type="date" name="" id="" value="{{ $appt->appt_date }}" class="noformat"> 
+                                </div>
+                                <div style="padding: 0">
+                                    <select name="" id="" class="noformat" style="color:{{ Str::title($appt->appt_status) === 'Missed' ? 'red' : '' }}">
+                                        <option value=""selected>{{ Str::title($appt->appt_status) }}</option>
+                                    </select>
+                                </div>
+                                <div>{{ $appt->patient->patient_mobile }}</div>
+                                <div style="padding: 0">
+                                    <div class="flex flex_center gap_1 full_w">
+                                        <div><button class="circle small"><i class="fa-solid fa-check"></i></button></div>
+                                        <div><button class="circle small bg_red"><i class="fa-solid fa-xmark"></i></button></div>
+                                    </div>
+                                </div>
                             </x-layout.lists-section.lists-list>
-                            <div class="actions">
+                            <div class="actions" style="pointer-events:none">
                                 <x-layout.lists-section.action 
-                                    item-id="{{ $lense->id }}" 
-                                    wire-click-delete="deleteInventory('le', {{ $lense->id }})"
-                                    wire-click-edit="inventoryShowModal('isUpdate', 'le', '{{ $lense->id }}')"
-                                    photo="{{ asset('images/sample-image.jpg') }}"
+                                    item-id="{{ $appt->id }}" 
+                                    wire-click-delete="deleteInventory('le', {{ $appt->id }})"
+                                    wire-click-edit="inventoryShowModal('isUpdate', 'le', '{{ $appt->id }}')"
+                                    photo=""
                                 >
-                                    <label for="">Tint</label>
-                                    <p>{{ $lense->lense_tint }}</p>
-                                    <label for="">Date Added</label>
-                                    <p>{{ $lense->created_at }}</p>
                                 </x-layout.lists-section.action>
                             </div>
-
                         </x-layout.lists-section.lists-container>
-
                     @empty
                         <x-layout.lists-section.list-empty empty-message="No Results."/>
-                    @endforelse --}}
-
-                    
+                    @endforelse
                 </x-layout.lists-section>
-
-                @for ($i=1; $i<12; $i++)
-                    <div class="grid grid_appointment list">
-                        <div>
-                            <input class="noformat" list="suggest_name" type="text" value="John Doe">
-                            <datalist id="suggest_name">
-                                <option value="data 1">Lianga</option>
-                                <option value="data 2"></option>
-                                <option value="data 3"></option>
-                                <option value="data 4"></option>
-                            </datalist>
-                        </div>
-                        <div><input class="noformat" type="date"></div>
-                        <div><input class="noformat" type="date"></div>
-                        <div>
-                            <select class="noformat" name="" id="">
-                                <option value="" selected>Completed</option>
-                                <option value="">Missed</option>
-                            </select>
-                        </div>
-                        <div>
-                            <input class="noformat" type="number" min="0" value="0947482393457">
-                        </div>
-                        <div>
-                            <input id="barcolor" class=" action noformat" type="color"value="#2B4FFF" style="height: 20px; width:20px; border-radius: 50%;">
-                        </div>
-                        <div class="flex flex_x_end">
-                            <a class="action" href="#"><i class='fas fa-trash-alt'></i></a>
-                            <a wire:click="showModalOnLensUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
-                        </div>
-                    </div>
-                @endfor
             @endif
 
         </div>

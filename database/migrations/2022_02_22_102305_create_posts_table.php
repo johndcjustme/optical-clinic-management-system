@@ -15,20 +15,22 @@ class CreatePostsTable extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('patient_admin_id');
-            $table->string('role');
+            $table->unsignedBigInteger('patient_user_id');
+            $table->string('role')->nullable();
             $table->string('post_content');
-            $table->datetime('created_at');
-            $table->datetime('updated_at');
+            $table->dateTime('created_at');
+            $table->dateTime('updated_at');
 
-            $table->foreign('patient_admin_id')
-                ->references('id')
-                ->on('patients')
-                ->onDelete('cascade');
-            $table->foreign('patient_admin_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
+            // $table->foreign('patient_user_id')
+            //     ->references('id')
+            //     ->on('patients')
+            //     ->on('users')
+            //     ->onDelete('cascade');
+
+            // $table->foreign('patient_user_id')
+            //     ->references('id')
+            //     ->on('users')
+            //     ->onDelete('cascade');
         });
     }
 

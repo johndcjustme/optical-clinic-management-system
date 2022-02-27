@@ -289,13 +289,39 @@
                                 <x-layout.lists-section.lists-container>
                                     <x-layout.lists-section.lists-list list-for="grid_lens list">
 
-                                        <div>{{ $lense->lense_name }}</div>
-                                        <div>{{ $lense->lense_desc }}</div>
+                                        <x-layout.lists-section.list-item 
+                                            item-name="{{ $lense->lense_name }} fontBold" 
+                                            item-desc="{{ $lense->lense_tint }}"
+                                        />
+                                        <x-layout.lists-section.list-item 
+                                            item-name="{{ $lense->lense_desc }}" 
+                                            item-desc=""
+                                        />
+                                        {{-- <div>
+                                            <div>
+                                                <b>
+                                                    {{ $lense->lense_name }}
+                                                </b>
+                                                <p class="dark_200" style="font-size: 0.8rem">
+                                                    {{ $lense->lense_tint }}
+                                                </p>
+                                            </div>
+                                        </div> --}}
+                                        {{-- <div>{{ $lense->lense_desc }}</div> --}}
                                         @isset ($lense->supplier_id)
-                                            <div>{{ $lense->supplier->supplier_name }}</div>                                            
+                                            <x-layout.lists-section.list-item 
+                                                item-name="{{ $lense->supplier->supplier_name }}" 
+                                                item-desc=""
+                                            />
                                         @endisset
-                                        <div>{{ $lense->lense_qty }}</div>
-                                        <div>{{ $lense->lense_price }}</div>
+                                        <x-layout.lists-section.list-item 
+                                            item-name="{{ $lense->lense_qty }}" 
+                                            item-desc=""
+                                        />
+                                        <x-layout.lists-section.list-item 
+                                            item-name="{{ $lense->lense_price }}" 
+                                            item-desc=""
+                                        />
 
                                     </x-layout.lists-section.lists-list>
                                     <div class="actions">

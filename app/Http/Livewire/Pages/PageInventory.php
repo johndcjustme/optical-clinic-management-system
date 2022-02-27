@@ -293,7 +293,8 @@ class PageInventory extends Component
         }
     }
 
-    public function updateInventory($data, $id) {
+    public function updateInventory($data, $id) 
+    {
 
         switch ($data) {
             case 'le': // lense

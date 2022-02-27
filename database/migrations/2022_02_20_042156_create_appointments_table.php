@@ -19,6 +19,9 @@ class CreateAppointmentsTable extends Migration
             $table->string('appt_date')->nullable();
             $table->string('appt_resched')->nullable();
             $table->string('appt_status')->nullable();
+            $table->boolean('appt_confirmed')->nullable();
+            $table->dateTime('created_at');
+            $table->dateTime('updated_at');
 
             $table->foreign('patient_id')
                 ->references('id')

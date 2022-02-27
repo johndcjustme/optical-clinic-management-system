@@ -17,7 +17,6 @@ class Link extends Component
     
     public function __construct($tabTitle, $wireClick, $subPage)
     {
-        //
         $this->tabTitle = $tabTitle;
         $this->wireClick = $wireClick;
         $this->subPage = $subPage;

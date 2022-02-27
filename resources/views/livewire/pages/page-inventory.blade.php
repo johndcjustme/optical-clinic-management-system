@@ -8,7 +8,7 @@
 {{-- @section('pageTitle', 'Inventory') --}}
 
 
-
+<x-layout.main-page>
 
     <div class="full_w main_content_inner overflow_scroll">
 
@@ -23,3 +23,5 @@
         <x-alert type="error" message="{{ session('message') }}" />
 
     </div>
+    
+</x-layout.main-page>

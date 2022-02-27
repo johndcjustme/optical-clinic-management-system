@@ -7,10 +7,25 @@
 @section('pageTitle', 'Patients')
 
 
-<div class="flex flex_x_between full_w main_content_inner overflow_hidden relative">
+<x-layout.main-page>
 
+    <div class="full_w main_content_inner overflow_scroll">
+        <div class="inner_content">
+            @include('livewire.components.organisms.pagecontents.patient-content')      
+        </div>
+
+        {{-- @if ($this->inventoryShowModal)
+            @includeIf('livewire.components.organisms.modal.modal-inventory');
+        @endif --}}
+
+        <x-alert type="error" message="{{ session('message') }}" />
+
+    </div>
+
+
+</x-layout.main-page>
         {{-- modal    --}}
-    @if($modalPatientShow)
+    {{-- @if($modalPatientShow)
         @includeIf('livewire.components.organisms.modal.modal-patient')
     @endif
 
@@ -25,11 +40,9 @@
         </div>
     @endif
     
-    @includeIf('livewire.components.organisms.forms.patient-list')                   
+    @includeIf('livewire.components.organisms.forms.patient-list')                    --}}
 
-    <x-alert type="error" message="{{ session('message') }}" />
     
-</div>
 
 
 

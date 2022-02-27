@@ -1,10 +1,14 @@
 
-    <div class="panel_settings full_h fixed bottom right" style="display: block;  width: 350px">
+    <div class="panel_settings full_h fixed bottom right" style="display: block;  width: 370px; max-width: 370px; min-width: 300px;">
         <div class="relative full_h">
+
+            @yield('create-post')
+            
             <div class="panel_settings_content flex flex_column gap_1 flex_x_between  full_h overflow_y absolute right top">
                 <div>
                     <div>
-                        <h5 style="text-transform: uppercase">{{ $title }}</h5>
+                        <h5 style="text-transform: uppercase">@yield('title')</h5>
+                        <p style="font-size: 0.8rem">@yield('desc')</p>
                     </div>
                     <div>
             
@@ -15,7 +19,7 @@
             </div>
 
             
-            <div wire:click="$toggle('{{ $wireToggle }}')" class="absolute" 
+            <div wire:click.prevent="{{ $wireToggle }}" class="absolute" 
                 style="
                     background:white:
                     border:1px solid red;

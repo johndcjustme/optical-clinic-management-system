@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,10 +19,12 @@ use Illuminate\Support\Facades\Route;
 //     return view('livewire.show-posts');
 // });
 
-Route::get('/', App\Http\Livewire\ShowPosts::class);
+Route::view("/", 'welcome');
 
+Route::post('user',[UserController::class, 'testRequest']);
 
 // Route::get('/landing', App\Http\Livewire\Pages\PageLanding::class);
+Route::get('/login', App\Http\Livewire\Pages\PageLogin::class);
 Route::get('/users', App\Http\Livewire\Pages\PageUsers::class);
 Route::get('/dashboard', App\Http\Livewire\Pages\PageDashboard::class);
 Route::get('/patients', App\Http\Livewire\Pages\PagePatient::class);

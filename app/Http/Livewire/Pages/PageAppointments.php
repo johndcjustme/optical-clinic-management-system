@@ -24,6 +24,11 @@ class PageAppointments extends Component
         $amStart,
         $pmEnd;
 
+
+    public $schedset_am;
+
+
+
     public function myTab($value)
     {
         return $this->myTab = $value;

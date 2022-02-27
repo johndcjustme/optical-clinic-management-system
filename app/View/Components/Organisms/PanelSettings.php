@@ -10,14 +10,12 @@ class PanelSettings extends Component
      * Create a new component instance.
      *
      * @return void
-     */
-    public $title;
+     */    public $title;
     public $wireToggle;
 
 
-    public function __construct($title, $wireToggle)
+    public function __construct($wireToggle)
     {
-        $this->title = $title;
         $this->wireToggle = $wireToggle;
     }
 
@@ -30,4 +28,5 @@ class PanelSettings extends Component
     {
         return view('components.organisms.panel-settings');
     }
+
 }

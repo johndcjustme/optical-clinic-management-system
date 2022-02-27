@@ -48,4 +48,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class, 'patient_admin_id');
     }
+
+
+    public function comment()
+    {
+        return $this->hasMany(Comment::class);
+    }
+    
+    public function like()
+    {
+        return $this->hasMany(Like::class);
+    }
 }

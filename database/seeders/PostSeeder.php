@@ -16,7 +16,7 @@ class PostSeeder extends Seeder
     public function run()
     {
         $post = Post::create([
-            'patient_admin_id' => 4,
+            'patient_user_id' => 4,
             'role' => 'admin',
             'post_content' => 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe deserunt perspiciatis quam repudiandae molestias! Reiciendis labore adipisci quos ipsa in!',
         ]);

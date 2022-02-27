@@ -7,6 +7,7 @@
 {{-- current page --}}
 @section('pageTitle', 'Users')
 
+<x-layout.main-page>
 
     <div class="flex full_w main_content_inner overflow_hidden">
         <div class="overflow full_w">
@@ -31,7 +32,7 @@
             </div>
         </div>
 
-
+</x-layout.main-page>
 
         {{-- // modal  --}}
         {{-- @includeIf('livewire.components.organisms.modal.modal-user') --}}
