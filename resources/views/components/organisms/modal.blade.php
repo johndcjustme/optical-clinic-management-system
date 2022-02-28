@@ -1,5 +1,5 @@
 {{-- put to your modals  --}}
-<div id="1" class="modal" style="display: block">
+<div id="1" class="modal noscroll" style="display: block">
     <div class="modal_content animate_top" style="margin-bottom: 50px;">
         <div class="card">
 

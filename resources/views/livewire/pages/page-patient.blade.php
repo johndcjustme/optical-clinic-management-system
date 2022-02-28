@@ -14,9 +14,9 @@
             @include('livewire.components.organisms.pagecontents.patient-content')      
         </div>
 
-        {{-- @if ($this->inventoryShowModal)
-            @includeIf('livewire.components.organisms.modal.modal-inventory');
-        @endif --}}
+        @if ($this->patientShowModal)
+            @includeIf('livewire.components.organisms.modal.modal-patient');
+        @endif
 
         <x-alert type="error" message="{{ session('message') }}" />
 

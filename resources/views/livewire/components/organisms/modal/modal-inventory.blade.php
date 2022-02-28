@@ -1,37 +1,30 @@
 {{-- @includeIf('livewire.components.organisms.modal.modal-include-top') --}}
+@php
+    if ($isAddItem) {
+        if ($addLense)      { $formId = 'addLense'; }
+        if ($addFrame)      { $formId = 'addFrame'; }
+        if ($addAccessory)  { $formId = 'addAccessory'; }
+        if ($addSupplier)   { $formId = 'addSupplier'; }
+    }
+    if ($isUpdateItem) {
+        if ($updateLense)      { $formId = 'updateLense'; }
+        if ($updateFrame)      { $formId = 'updateFrame'; }
+        if ($updateAccessory)  { $formId = 'updateAccessory'; }
+        if ($updateSupplier)   { $formId = 'updateSupplier'; }
+    }
+@endphp
+
 <x-organisms.modal>
 
     @section('modal_title')
 
         <div></div>
         <div>
-
             <x-atom.btn-close-modal wire-click="inventoryCloseModal"/>
-
-            @if ($this->isAddItem)
-
-                @if ($this->addLense)      
-                    <x-atom.btn-save-modal form="submitLense" val="save" />  
-                @elseif ($this->addFrame)
-                    <x-atom.btn-save-modal form="submitFrame" val="save" />  
-                @elseif ($this->addAccessory)
-                    <x-atom.btn-save-modal form="submitAccessory" val="save" />  
-                @elseif ($this->addSupplier)
-                    <x-atom.btn-save-modal form="submitSupplier" val="save" />  
-                @endif
-
-            @elseif ($this->isUpdateItem)
-
-                @if ($this->updateLense)        
-                    <x-atom.btn-save-modal form="updateLens" val="update" />  
-                @elseif ($this->updateFrame)
-                    <x-atom.btn-save-modal form="updateFrame" val="update" />  
-                @elseif ($this->updateAccessory)
-                    <x-atom.btn-save-modal form="updateAccessory" val="update" />  
-                @elseif ($this->updateSupplier)
-                    <x-atom.btn-save-modal form="updateSupplier" val="update" />  
-                @endif
-
+            @if ($isAddItem)
+                <x-atom.btn-save-modal form="{{ $formId }}" val="save" />  
+            @elseif ($isUpdateItem)
+                <x-atom.btn-save-modal form="{{ $formId }}" val="update" />  
             @endif
         </div>
 
@@ -44,7 +37,7 @@
         @if($this->isAddItem)
 
             @if ($this->addLense)
-                <form id="submitLense" wire:submit.prevent="addInventory('le')">
+                <form id="addLense" wire:submit.prevent="addInventory('le')">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
@@ -89,7 +82,7 @@
 
             @elseif ($this->addFrame)
 
-                <form id="submitFrame" wire:submit.prevent="addInventory('fr')">
+                <form id="addFrame" wire:submit.prevent="addInventory('fr')">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
@@ -128,7 +121,7 @@
 
             @elseif ($this->addAccessory)
 
-                <form id="submitAccessory" wire:submit.prevent="addInventory('ac')">
+                <form id="addAccessory" wire:submit.prevent="addInventory('ac')">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
@@ -163,7 +156,7 @@
 
             @elseif ($this->addSupplier)
 
-                <form id="submitSupplier" wire:submit.prevent="addInventory('su')">
+                <form id="addSupplier" wire:submit.prevent="addInventory('su')">
 
                     <fieldset>
                         <legend>Add Photo</legend><br>
@@ -202,7 +195,7 @@
         @elseif($this->isUpdateItem)
 
             @if($this->updateLense)        
-                <form id="updateLens" wire:submit.prevent="updateInventory('le', {{ $this->le_id }})">
+                <form id="{{ $formId }}" wire:submit.prevent="updateInventory('le', {{ $this->le_id }})">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
@@ -241,7 +234,7 @@
 
             @elseif($this->updateFrame)
 
-                <form id="updateFrame" wire:submit.prevent="updateInventory('fr', {{ $this->fr_id }})">
+                <form id="{{ $formId }}" wire:submit.prevent="updateInventory('fr', {{ $this->fr_id }})">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
@@ -280,7 +273,7 @@
 
             @elseif($this->updateAccessory)
 
-                <form id="updateAccessory" wire:submit.prevent="updateInventory('ac', {{ $this->ac_id }})">
+                <form id="{{ $formId }}" wire:submit.prevent="updateInventory('ac', {{ $this->ac_id }})">
                     <fieldset>
                         <legend>Add Photo</legend><br>
                         <input type="file" name="" id="">
@@ -315,7 +308,7 @@
 
             @elseif($this->updateSupplier)   
                 
-                    <form id="updateSupplier" action="" wire:submit.prevent="updateInventory('su', {{ $this->su_id }})">
+                    <form id="{{ $formId }}" action="" wire:submit.prevent="updateInventory('su', {{ $this->su_id }})">
 
                         <input type="hidden" wire:model.defer="su_id">
 

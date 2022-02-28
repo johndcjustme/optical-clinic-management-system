@@ -46,7 +46,7 @@
             </span>
         </div>
         <div class="ml_7">
-            <div onclick="window.location.assign('/users')">
+            <div onclick="window.location.assign('/account')">
                 <x-atom.profile-photo size="30px" path="images/john-profile2.png"/>
             </div>
         </div>

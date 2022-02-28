@@ -2,18 +2,18 @@
 
     
     <ul class="selectable p_7 empty">
-        <div>
-            <div class="flex flex_center text_left mt_7">
+        <div class="mt_10 mb_10 overflow_hidden" style="">
+            <img src="{{ asset('images/dango-logo-nolabel.png') }}" alt="" width="40px" height="auto">
+            {{-- <div class="flex flex_center text_left mt_7">
                 <div class="flex flex_center">
-                    <img src="{{ asset('images/dango-logo-nolabel.png') }}" alt="" style="width:60%">
                 </div>
                 <span class="mt_6 flex flex_y_center text_left" style="line-height: 1rem; width:auto;">
                     <b style="font-size: 1.3rem;">DANGO</b>                        
                     <span style="font-size: 0.6rem;">OPTICAL CLINIC</span>
                 </span>
-            </div>
+            </div> --}}
         </div>
-        <br><br>
+        <hr class="my_10">
         <div>
             {{-- <p class="light_500 font_bold font_s">NAVIGATION</p>
             <hr class="mb_10"> --}}
@@ -47,12 +47,12 @@
                     <span>Appointments</span>
                 </li>
             </a>
-            {{-- <a href="/users" title="User">
+            <a href="/users" title="User">
                 <li class="@yield('users')">
                     <i class="fas fa-smile"></i>
-                    <span>My Account</span>
+                    <span>Users</span>
                 </li>
-            </a> --}}
+            </a>
         </div>
         
         {{-- footer  --}}

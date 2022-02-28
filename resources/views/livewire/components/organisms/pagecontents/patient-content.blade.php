@@ -12,7 +12,55 @@
     @endsection
 
     @section('section-heading-right')
-        heading right content
+        <div>
+            <x-input.search wire-model="searchLense"/>
+        </div>
+        <div class="flex gap_1">
+            <x-atom.sort>
+                <x-atom.sort.sort-content 
+                    for=""
+                    span="Entries"
+                    wire-model="le_paginateVal"
+                    name=""
+                    val="" 
+                />                                
+                <x-atom.sort.sort-content 
+                    for="az"
+                    span="A-Z"
+                    wire-model="le_sortDirection"
+                    name="sort"
+                    val="asc" 
+                />
+
+                <x-atom.sort.sort-content 
+                    for="za"
+                    span="Z-A"
+                    wire-model="le_sortDirection"
+                    name="sort"
+                    val="desc" 
+                />
+
+                <x-atom.sort.sort-content 
+                    for="l_modified"
+                    span="Last Modified"
+                    wire-model="sortBy('le', 'created_at')"
+                    name="sort"
+                    val="" 
+                />
+
+                <x-atom.sort.sort-content 
+                    for="f_modified"
+                    span="First Modified"
+                    wire-model="le_sortDirection"
+                    name="sort"
+                    val="first_modified" 
+                />
+            </x-atom.sort>
+            
+        </div>
+        <div>
+            <x-atom.btn-circle wire-click="patientShowModal('isAddPatient', null)"/>
+        </div>
     @endsection
 
     @section('section-main')
@@ -32,12 +80,16 @@
                             </x-layout.lists-section.list-item>
 
                             <x-layout.lists-section.list-item item-name="" item-desc="">
-                                <div class="full_w flex flex_center">
-                                    <x-atom.profile-photo size="2.5em" path="images/john-profile2.png" />
+                                <div class="flex gap_1">
+                                    <div>
+                                        <x-atom.profile-photo size="2.5em" path="images/john-profile2.png" />
+                                    </div>
+                                    <div>
+                                        <p><b>John Doe</b></p>
+                                        <p class="dark_200 mt_2" style="font-size: 0.75rem">Tandag City</p>
+                                    </div>
                                 </div>
                             </x-layout.lists-section.list-item>
-
-                            <x-layout.lists-section.list-item item-name="John Doe John Doe fontBold" item-desc="Tandag City" />
 
                             <x-layout.lists-section.list-item item-name="" item-desc="">
                                 <p style="font-size: 0.85rem"><i class="fa-solid fa-phone mr_3"></i> 09484710737</p>
