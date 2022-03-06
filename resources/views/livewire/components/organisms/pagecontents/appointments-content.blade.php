@@ -1,3 +1,7 @@
+@php
+    $forApprovalCount = $appts->where('appt_confirmed', null)->where('appt_confirmed', 0)->count()
+@endphp 
+
 <x-layout.page-content>
 
     @section('section-page-title', 'Appointments')
@@ -5,7 +9,7 @@
     @section('section-links')
             <x-atom.tab-links.link tab-title="Ongoing" wire-click="myTab(1)" sub-page="{{ $this->myTab == 1 }}"/>
             <x-atom.tab-links.link tab-title="For Approval" wire-click="myTab(2)" sub-page="{{ $this->myTab == 2 }}">
-                <span class="absolute right bg_red flex flex_center" style="top: -1.2em; background:red; color:white; font-size: 0.55rem; height: 1.9em; width: 1.9em; border-radius: 50%;">{{ $appts->where('appt_confirmed', null)->where('appt_confirmed', 0)->count() }}</span>
+                <span class="absolute right flex flex_center {{  $forApprovalCount == 0 ? '' : 'bg_red' }}" style="top: -1.2em; color:white; font-size: 0.55rem; height: 1.9em; width: 1.9em; border-radius: 50%;">{{  $forApprovalCount }}</span>
             </x-atom.tab-links.link>
     @endsection
 
@@ -297,7 +301,7 @@
         @endif
 
         <button wire:click="$toggle('shedsettings_isOpen')" class="circle panel_settings_button">
-            <i class="fa-solid fa-gear"></i>
+            <i id="settings_con" class="fa-solid fa-gear"></i>
         </button>
 
     @endsection

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\View\Components\Atom;
+namespace App\View\Components\Atom\Alert;
 
 use Illuminate\View\Component;
 
-class More extends Component
+class Alert extends Component
 {
     /**
      * Create a new component instance.
@@ -12,8 +12,15 @@ class More extends Component
      * @return void
      */
 
-    public function __construct()
+    public $type;
+    public $has;
+    public $color;
+    public $bg_color;
+    
+    public function __construct($type, $has)
     {
+        $this->type = $type; 
+        $this->has = $has;
     }
 
     /**
@@ -23,6 +30,6 @@ class More extends Component
      */
     public function render()
     {
-        return view('components.atom.more');
+        return view('components.atom.alert.alert');
     }
 }

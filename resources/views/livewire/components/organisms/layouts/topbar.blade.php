@@ -5,24 +5,11 @@
         </span>
         <h5 class="uppercase" style="letter-spacing: 0.1rem">
         </h5> --}}
-        <div class="bg_dark_100" style="height: 40px; width: 40px;"></div>
-        <div class="bg_dark_200" style="height: 40px; width: 40px;"></div>
-        <div class="bg_dark_300" style="height: 40px; width: 40px;"></div>
-        <div class="bg_dark_400" style="height: 40px; width: 40px;"></div>
-        <div class="bg_dark_500" style="height: 40px; width: 40px;"></div>
-        <div class="bg_dark_200 py_3 px_7 flex">
-            <div class="bg_light_100" style="height: 30px; width: 30px;"></div>
-            <div class="bg_light_200" style="height: 30px; width: 30px;"></div>
-            <div class="bg_light_300" style="height: 30px; width: 30px;"></div>
-            <div class="bg_light_400" style="height: 30px; width: 30px;"></div>
-            <div class="bg_light_500" style="height: 30px; width: 30px;"></div>
-        </div>
-        <div class="bg_accent_1" style="height: 40px; width: 40px;"></div>
-        <div class="bg_accent_2" style="height: 40px; width: 40px;"></div>
+     
     </div>
     <div class="flex gap_1 flex_y_center">
         <div wire:click="showPanelSettings('forum_isOpen')" class="relative">
-            <i class="fa-regular fa-comments dark_300"></i>
+            <i class="fa-regular fa-comments"></i>
             <span class="absolute top bg_red" 
                 style="
                     right: -0.2em; 
@@ -34,7 +21,7 @@
             </span>
         </div>
         <div wire:click="showPanelSettings('notif_isOpen')" class="relative">
-            <i class="fa-regular fa-bell dark_300"></i>
+            <i class="fa-regular fa-bell"></i>
             <span class="absolute top bg_red" 
                 style="
                     right: -0.2em; 
@@ -46,8 +33,10 @@
             </span>
         </div>
         <div class="ml_7">
-            <div onclick="window.location.assign('/account')">
-                <x-atom.profile-photo size="30px" path="images/john-profile2.png"/>
+            <div class="flex flex_y_center">
+                <div onclick="window.location.assign('/account')">
+                    <x-atom.profile-photo size="30px" path="storage/photos/avatars/{{ session()->get('curr_user_avatar')}}"/>
+                </div>
             </div>
         </div>
     </div>

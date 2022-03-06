@@ -12,7 +12,7 @@
             @include('livewire.components.organisms.pagecontents.user-content')      
         </div>
 
-        @if ($this->userShowModal)
+        @if ($modal['show'])
             @includeIf('livewire.components.organisms.modal.modal-user');
         @endif
 

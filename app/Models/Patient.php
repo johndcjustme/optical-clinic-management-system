@@ -20,6 +20,7 @@ class Patient extends Model
         'patient_address',
         'patient_email',
         'patient_mobile',
+        'patient_password',
     ];
 
     public function exam()

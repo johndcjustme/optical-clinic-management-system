@@ -58,7 +58,7 @@
         {{-- footer  --}}
         <div>
             <hr class="my_10">
-            <a href="/login" title="Logout">
+            <a href="/logout" title="Logout">
                 <li>
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>

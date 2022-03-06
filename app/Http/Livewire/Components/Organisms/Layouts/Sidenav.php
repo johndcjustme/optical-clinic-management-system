@@ -7,6 +7,11 @@ use Livewire\Component;
 class Sidenav extends Component
 {
 
+    public function logout()
+    {
+        
+    }
+
     public function render()
     {
         return view('livewire.components.organisms.layouts.sidenav');

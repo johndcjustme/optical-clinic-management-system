@@ -13,6 +13,8 @@
         <div class="inner_content">
             @include('livewire.components.organisms.pagecontents.account-settings-content')      
         </div>
+
+        <x-alert type="error" message="{{ session('message') }}" />
     
     </div>
 

@@ -1,7 +1,7 @@
-<div class="mt_5 w_lg" style="margin:auto; min-width: 624px;">
+<div class="mt_5 w_lg" style="margin:auto; width:100%; max-width:1100px;">
     <div class="px_7 overflow_hidden" style="padding-bottom: 100px">
         <div class="animate_top">
-            <h4>@yield('section-page-title')</h4>
+            <h2 style="font-weight: normal">@yield('section-page-title')</h2>
         </div>
         <div class="flex gap_1 mt_15 animate_top">
             @yield('section-links')

@@ -3,11 +3,18 @@
     @section('section-page-title', 'Dashboard')
 
     @section('section-links')
-        Have a great day, John
+    <p style="font-size: 1.3rem;">Hi <b>{{ session()->get('curr_user_name') }}</b>, have a nice day.</p>
+        
+
+        {{-- name:       {{ $currentUser->curr_user() }} --}}
+        {{-- id:         {{ $mysession_id }}
+        avatar:     {{ $mysession_avatar }}
+        role:       {{ $mysession_role }}
+        email:      {{ $mysession_email }}
+        passcode:   {{ $mysession_passcode }} --}}
     @endsection
 
     @section('section-heading')
-        {{-- heading --}}
     @endsection
 
     @section('section-main')

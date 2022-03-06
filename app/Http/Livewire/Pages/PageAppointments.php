@@ -53,9 +53,9 @@ class PageAppointments extends Component
         $this->pmEnd = $schedsetting->schedset_pm;
     }
 
-    public function resetFields($caseToReset)
+    public function resetFields($reset)
     {
-        switch ($caseToReset) {
+        switch ($reset) {
             case 'updateSchedSettingsAll':
                 $this->reset([
                     'setAll_am',
