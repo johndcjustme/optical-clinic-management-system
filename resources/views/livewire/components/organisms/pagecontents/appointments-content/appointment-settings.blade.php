@@ -1,14 +1,73 @@
 <div class="settings_schedule">
     <div class="week mt_15">
+
+
+        @foreach ($schedsettings as $schedsetting)
+            <fieldset class="mb_7">
+                <form wire:submit.prevent="updateSchedSettings('{{ $schedsetting->id }}')">
+                    <div class="flex flex_x_between">
+                        <div>
+                            <h5>{{ Str::title($schedsetting->schedset_name) }}</h5><br>
+                        </div>
+                        <div>
+                            <div class="bg_light_200 relative" style="
+                                height: 1em;
+                                width: 2em;
+                                border-radius: 3em;
+                            ">
+                                <div class="absolute normal" style="
+                                    height: 0.6em;
+                                    width: 0.6em;
+                                    background: green;
+                                    border-radius: 1em;
+                                    top: 0.2em;
+                                    left: 0.2em;
+                                    bottom: 0.2em;
+                                "></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="font_s">Morning</p>
+                        <div class="flex flex_y_center" style="gap:0.8em">
+                            <input value="24:16" type="time" class="input_small">
+                            <span>-</span>
+                            <input wire:model.defer="time.am_to" type="time" class="input_small" name="" id="">
+                        </div>
+                    </div>
+                    <div>
+                        <p class="font_s">Afternoon</p>
+                        <div class="flex flex_y_center" style="gap:0.8em">
+                            <input wire:model.defer="time.pm_from" type="time" class="input_small" name="" id="">
+                            <span>-</span>
+                            <input wire:model.defer="time.pm_to" type="time" class="input_small" name="" id="">
+                        </div>
+                    </div>
+                    <div class="text_right mt_4">
+                        <button style="submit" class="btn_small">Save</button>
+                    </div>
+                </form>
+            </fieldset>
+
+        @endforeach
+
+ 
+{{-- 
+
         <fieldset>
             <legend class="px_3">Weekly Schedule</legend>
             <div class="flex flex_column gap_1 my_10">
                 <p>Choose your working days. Manual time settings is also available for you.</p>
-                @foreach ($schedsettings as $schedsetting)
+                  --}}
+                
+
+
+                
+                {{-- @foreach ($schedsettings as $schedsetting)
                     <form wire:submit="updateSchedSettings({{ $schedsetting->id }})">
                         <div class="day">
                             <div class="flex flex_y_center">
-                                <input id="{{ $schedsetting->id }}" wire:click="updateSchedSettings({{ $schedsetting->id }})" type="checkbox" class="mr_4"
+                                <input id="{{ $schedsetting->id }}" wire:model="" type="checkbox" class="mr_4"
                                 @if ($schedsetting->schedset_checked != null || $schedsetting->schedset_checked != 0)
                                     checked
                                 @endif
@@ -26,9 +85,11 @@
                             </div>
                         </div>
                     </form>
-                @endforeach
+                @endforeach --}}
+
+{{-- 
             </div>
-        </fieldset>
+        </fieldset> --}}
         <br>
         <fieldset>
             <form wire:submit.prevent="updateSchedSettingsAll">

@@ -32,13 +32,13 @@
                 ">
             </span>
         </div>
-        <div class="ml_7">
+        {{-- <div class="ml_7">
             <div class="flex flex_y_center">
                 <div onclick="window.location.assign('/account')">
                     <x-atom.profile-photo size="30px" path="storage/photos/avatars/{{ session()->get('curr_user_avatar')}}"/>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
     
     

@@ -8,7 +8,6 @@
 
     @section('section-heading-left')
         <button wire:click.prevent="deleteUsers" class="bg_red {{ !empty($selectedUsers) ? '' : 'nodisplay' }}">Delete ({{ count($selectedUsers) }})</button>
-
     @endsection
 
     @section('section-heading-right')

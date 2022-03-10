@@ -38,8 +38,8 @@ Route::get('/account', App\Http\Livewire\Pages\AccountSettings::class);
 Route::get('/logout', function(){
     if(session()->has('curr_user_id')) {
         session()->flush();
-        return redirect('page/login');
     }
+    return redirect('page/login');
 });
 
 

@@ -12,8 +12,10 @@ class Schedsetting extends Model
 
     public $fillable = [
         'schedset_name',
-        'schedset_am',
-        'schedset_pm',
+        'schedset_am_from',
+        'schedset_am_to',
+        'schedset_pm_from',
+        'schedset_pm_to',
         'schedset_checked',
     ];
 }

@@ -7,24 +7,23 @@
     @section('section-page-title', 'Appointments')
 
     @section('section-links')
-            <x-atom.tab-links.link tab-title="Ongoing" wire-click="myTab(1)" sub-page="{{ $this->myTab == 1 }}"/>
-            <x-atom.tab-links.link tab-title="For Approval" wire-click="myTab(2)" sub-page="{{ $this->myTab == 2 }}">
-                <span class="absolute right flex flex_center {{  $forApprovalCount == 0 ? '' : 'bg_red' }}" style="top: -1.2em; color:white; font-size: 0.55rem; height: 1.9em; width: 1.9em; border-radius: 50%;">{{  $forApprovalCount }}</span>
-            </x-atom.tab-links.link>
+        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla, similique.</p>
     @endsection
 
     @section('section-heading-left')
-
         <h5>
             @switch($this->myTab)
                 @case(1)
-                    ONGOING
-                    @break
-                @case(2)
-                    FOR APPROVAL
-                    @break
-                @default
-                    
+                    @if (count($selectedAppts) > 0)
+                        <div class="flex gap_1 flex_y_center animate_opacity">
+                            <button wire:click.prevent="deleteAppts" class="btn_small bg_red">Delete</button>        
+                            <button wire:click.prevent="approveAppts" class="btn_small bg_red">Approve</button>        
+                            <p style="font-weight: normal">
+                                {{ count($selectedAppts) }} item{{ count($selectedAppts) > 1 ? 's' : '' }} selected
+                            </p>
+                        </div>
+                    @endif
+                    @break                   
             @endswitch
         </h5>
     @endsection
@@ -79,216 +78,183 @@
                     
                 </div>
                 <div>
-                    <x-atom.btn-circle wire-click="inventoryShowModal('isAdd', 'le', null)"/>
+                    <x-atom.btn-circle wire-click="apptShowModal('isAdd', null)"/>
                 </div>
                 @break
-
-            @case(2)
-                <div>
-                    <x-input.search wire-model="searchAppt"/>
-                </div>
-                <div class="flex gap_1">
-                    <x-atom.sort>
-                        <x-atom.sort.sort-content 
-                            for=""
-                            span="Entries"
-                            wire-model="le_paginateVal"
-                            name=""
-                            val="" 
-                        />                                
-                        <x-atom.sort.sort-content 
-                            for="az"
-                            span="A-Z"
-                            wire-model="le_sortDirection"
-                            name="sort"
-                            val="asc" 
-                        />
-
-                        <x-atom.sort.sort-content 
-                            for="za"
-                            span="Z-A"
-                            wire-model="le_sortDirection"
-                            name="sort"
-                            val="desc" 
-                        />
-
-                        <x-atom.sort.sort-content 
-                            for="l_modified"
-                            span="Last Modified"
-                            wire-model="sortBy('le', 'created_at')"
-                            name="sort"
-                            val="" 
-                        />
-
-                        <x-atom.sort.sort-content 
-                            for="f_modified"
-                            span="First Modified"
-                            wire-model="le_sortDirection"
-                            name="sort"
-                            val="first_modified" 
-                        />
-                    </x-atom.sort>
-                    
-                </div>
-                <div>
-                    <x-atom.btn-circle wire-click="inventoryShowModal('isAdd', 'le', null)"/>
-                </div>
-                @break
-            @default
         @endswitch
     @endsection
 
     @section('section-main')
-
         <div class="items">
-
             @if($this->myTab == 1)
                 <x-layout.lists-section>               
-        
-                    <x-layout.lists-section.lists-list list-for="grid_appointment title">
-                        <x-atom.column-title  
-                            wire-click="sortBy('le', 'lense_name')"
-                            col-title="Patient Name"
-                            arrow-direction=""
-                        />
-                        <x-atom.column-title  
-                            wire-click="sortBy('le', 'lense_desc')"
-                            col-title="Appointment Date"
-                            arrow-direction=""
-                        />
-                        <x-atom.column-title  
-                            wire-click="sortBy('le', 'lense_qty')"
-                            col-title="Reschedule"
-                            arrow-direction=""
-                        />
-                        <x-atom.column-title  
-                            wire-click="sortBy('le', 'lense_price')"
-                            col-title="Status"
-                            arrow-direction=""
-                        />
-                        <x-atom.column-title  
-                            wire-click="sortBy('le', 'lense_price')"
-                            col-title="Phone No."
-                            arrow-direction=""
-                        />
-                    </x-layout.lists-section.lists-list>
+                    @if (count($appts->where('appt_confirmed', 0)) > 0)
+                        <x-layout.details>
+                            <x-slot name="details_summary">
+                                New Appointments ({{ $this->countForApprovalAppts() }})
+                            </x-slot>
+                            <x-slot name="details_content">
 
-                    @forelse ($appts->where('appt_confirmed', 1) as $appt)
-                        <x-layout.lists-section.lists-container>
-                            <x-layout.lists-section.lists-list list-for="grid_appointment list">
+                                @forelse ($appts->where('appt_confirmed', null) as $appt)
+                                    <div>
+                                        <x-layout.lists-section.lists-container>
+                                            <x-layout.lists-section.lists-list list-for="grid_appointment list">
+                                                <x-layout.lists-section.list-item item-name="" item-desc="">
+                                                    <div class="flex flex_center">
+                                                        <input wire:model="selectedAppts" type="checkbox" class="pointer" value="{{ $appt->id }}">
+                                                    </div>
+                                                </x-layout.lists-section.list-item>
+                                                <x-layout.lists-section.list-item item-name="" item-desc="">
+                                                    <div class="flex gap_1 flex_y_center">
+                                                        <div>
+                                                            <x-atom.profile-photo size="2.5em" path="storage/photos/avatars/" />
+                                                        </div>
+                                                        <div>
+                                                            <p class="font_400">
+                                                                {{ $appt->patient->patient_lname . ', ' . $appt->patient->patient_fname . ' ' . $appt->patient->patient_mname }}
+                                                            </p>
+                                                            @if (isset($appt->patient->patient_address))
+                                                                <p class="dark_200 mt_2"><small>{{ $appt->patient->patient_address }}</small></p>
+                                                            @endif
+                                                        </div>
 
-                                <div>{{ $appt->patient->patient_fname . ' ' . $appt->patient->patient_mname . ' ' . $appt->patient->patient_lname  }}</div>
-                                <div style="padding: 0 1em 0 0">
-                                    <input type="date" name="" id="" value="{{ $appt->appt_date }}" class="noformat"> 
-                                </div>
-                                <div style="padding: 0 1em 0 0">
-                                    <input type="date" value="{{ $appt->appt_resched }}" class="noformat">
-                                </div>
-                                <div style="padding: 0">
-                                    <select name="" id="" class="noformat" style="color:{{ Str::title($appt->appt_status) === 'Missed' ? 'red' : '' }}">
-                                        <option value=""selected>{{ Str::title($appt->appt_status) }}</option>
-                                        <option value="">Reschedule</option>
-                                        <option value="">Missed</option>
-                                        <option value="">Ongoing</option>
-                                    </select>
-                                </div>
-                                <div>{{ $appt->patient->patient_mobile }}</div>
-
-                            </x-layout.lists-section.lists-list>
-                            <div class="actions" style="pointer-events:none">
-                                <x-layout.lists-section.action 
-                                    item-id="{{ $appt->id }}" 
-                                    wire-click-delete="deleteInventory('le', {{ $appt->id }})"
-                                    wire-click-edit="inventoryShowModal('isUpdate', 'le', '{{ $appt->id }}')"
-                                    photo=""
-                                >
-                                    {{-- <label for="">Tint</label>
-                                    <p>{{ $lense->lense_tint }}</p>
-                                    <label for="">Date Added</label>
-                                    <p>{{ $lense->created_at }}</p> --}}
-                                </x-layout.lists-section.action>
-                            </div>
-                        </x-layout.lists-section.lists-container>
-                    @empty
-                        <x-layout.lists-section.list-empty empty-message="No Results."/>
-                    @endforelse
-                    
-                </x-layout.lists-section>
-                
-
-            @elseif($this->myTab == 2)
-
-                <x-layout.lists-section>               
-    
-                    <x-layout.lists-section.lists-list list-for="grid_appointment title">
-                        <x-atom.column-title  
-                            wire-click="sortBy('le', 'lense_name')"
-                            col-title="Patient Name"
-                            arrow-direction=""
-                        />
-                        <x-atom.column-title  
-                            wire-click="sortBy('le', 'lense_desc')"
-                            col-title="Appointment Date"
-                            arrow-direction=""
-                        />
-                        <x-atom.column-title  
-                            wire-click="sortBy('le', 'lense_qty')"
-                            col-title="Status"
-                            arrow-direction=""
-                        />
-                        <x-atom.column-title  
-                            wire-click="sortBy('le', 'lense_price')"
-                            col-title="Phone No."
-                            arrow-direction=""
-                        />
-                        <x-atom.column-title  
-                            wire-click="sortBy('le', 'lense_price')"
-                            col-title="Action"
-                            arrow-direction=""
-                        />
-                    </x-layout.lists-section.lists-list>
-                    
-                    @forelse ($appts->where('appt_confirmed', 0) as $appt)
-                        <x-layout.lists-section.lists-container>
-                            <x-layout.lists-section.lists-list list-for="grid_appointment list">
-                              
-                                <x-layout.lists-section.list-item 
-                                    item-name="{{ $appt->patient->patient_fname . ' ' . $appt->patient->patient_mname . ' ' . $appt->patient->patient_lname  }}" 
-                                    item-desc=""
-                                />
-
-                                {{-- <div></div> --}}
-                                <div style="padding: 0">
-                                    <input type="date" name="" id="" value="{{ $appt->appt_date }}" class="noformat"> 
-                                </div>
-                                <div style="padding: 0">
-                                    <select name="" id="" class="noformat" style="color:{{ Str::title($appt->appt_status) === 'Missed' ? 'red' : '' }}">
-                                        <option value=""selected>{{ Str::title($appt->appt_status) }}</option>
-                                    </select>
-                                </div>
-                                <div>{{ $appt->patient->patient_mobile }}</div>
-                                <div style="padding: 0">
-                                    <div class="flex flex_center gap_1 full_w">
-                                        <div><button class="circle small"><i class="fa-solid fa-check"></i></button></div>
-                                        <div><button class="circle small bg_red"><i class="fa-solid fa-xmark"></i></button></div>
+                                                    </div>
+                                                </x-layout.lists-section.list-item>
+                                                <x-layout.lists-section.list-item item-name="" item-desc="">
+                                                    <div class="flex">
+                                                        <div class="mr_3">
+                                                            <i class="fa-solid fa-calendar-check accent_1"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div>
+                                                                <p class="accent_1">
+                                                                    <strong>
+                                                                        {{ $this->date($appt->appt_date) }}
+                                                                    </strong>
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <p class="dark_200 mt_2">
+                                                                    <small>
+                                                                        {{ $this->day($appt->appt_date) }}
+                                                                        {{ $this->time($appt->appt_time) }}
+                                                                    </small>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </x-layout.lists-section.list-item>
+                                                <x-layout.lists-section.list-item item-name="" item-desc="">
+                                                    <div class="flex flex_center text_center full_w">
+                                                        <p class="py_2 px_6 bg_red" style="border-radius: 3em; font-size:0.75rem">For Approval</p>
+                                                    </div>
+                                                </x-layout.lists-section.list-item>
+                                                <x-layout.lists-section.list-item item-name="" item-desc="">
+                                                    <p>
+                                                        <i class="fa-solid fa-phone mr_2"></i>
+                                                        {{ $appt->patient->patient_mobile }}
+                                                    </p>
+                                                </x-layout.lists-section.list-item>
+                                                <x-layout.lists-section.list-item item-name="" item-desc="">
+                                                    <div class="flex flex_center">
+                                                        <x-atom.more>
+                                                            <x-atom.more.option wire-click="apptShowModal('isUpdate', {{ $appt->id }})" option-name="Edit" />
+                                                        </x-atom.more>
+                                                    </div>
+                                                </x-layout.lists-section.list-item>
+                                            </x-layout.lists-section.lists-list>
+                                        </x-layout.lists-section.lists-container>
                                     </div>
-                                </div>
-                            </x-layout.lists-section.lists-list>
-                            <div class="actions" style="pointer-events:none">
-                                <x-layout.lists-section.action 
-                                    item-id="{{ $appt->id }}" 
-                                    wire-click-delete="deleteInventory('le', {{ $appt->id }})"
-                                    wire-click-edit="inventoryShowModal('isUpdate', 'le', '{{ $appt->id }}')"
-                                    photo=""
-                                >
-                                </x-layout.lists-section.action>
-                            </div>
-                        </x-layout.lists-section.lists-container>
-                    @empty
-                        <x-layout.lists-section.list-empty empty-message="No Results."/>
-                    @endforelse
+                                @empty
+                                    <x-layout.lists-section.list-empty empty-message="No Results."/>
+                                @endforelse
+                            </x-slot>
+                        </x-layout.details>
+                    @endif
+
+                    @if (count($appts->where('appt_confirmed', 1)) > 0)
+                        <x-layout.details>
+                            <x-slot name="details_summary">
+                                Approved Appointments ({{ $this->countApprovedAppts() }})
+                            </x-slot>
+                            <x-slot name="details_content">
+                                @forelse ($appts->where('appt_confirmed', 1) as $appt)
+                                    <x-layout.lists-section.lists-container>
+                                        <x-layout.lists-section.lists-list list-for="grid_appointment list">
+                                            <x-layout.lists-section.list-item item-name="" item-desc="">
+                                                <div class="flex flex_center">
+                                                    <input wire:model="selectedAppts" type="checkbox" class="pointer" value="{{ $appt->id }}">
+                                                </div>
+                                            </x-layout.lists-section.list-item>
+                                            <x-layout.lists-section.list-item item-name="" item-desc="">
+                                                <div class="flex gap_1 flex_y_center">
+                                                    <div>
+                                                        <x-atom.profile-photo size="2.5em" path="storage/photos/avatars/" />
+                                                    </div>
+                                                    <div>
+                                                        <p class="font_400">
+                                                            {{ $appt->patient->patient_lname . ', ' . $appt->patient->patient_fname . ' ' . $appt->patient->patient_mname }}
+                                                        </p>
+                                                        @if (! empty($appt->patient->patient_address))
+                                                            <p class="dark_200 mt_2" style="font-size: 0.75rem">{{ $appt->patient->patient_address }}</p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </x-layout.lists-section.list-item>
+                                            <x-layout.lists-section.list-item item-name="" item-desc="">
+                                                <div class="flex">
+                                                    <div class="mr_3">
+                                                        <i class="fa-solid fa-calendar-check accent_1"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div>
+                                                            <p class="accent_1">
+                                                                <strong>
+                                                                    {{ $this->date($appt->appt_date) }}
+                                                                </strong>
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="dark_200 mt_2">
+                                                                <small>
+                                                                    {{ $this->day($appt->appt_date) }}
+                                                                    {{ $this->time($appt->appt_time) }}
+                                                                </small>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </x-layout.lists-section.list-item>
+                                            <x-layout.lists-section.list-item item-name="" item-desc="">
+                                                <div class="flex flex_center text_center full_w">
+                                                    <p class="py_2 px_6 bg_red" style="border-radius: 3em; font-size:0.75rem">Scheduled</p>
+                                                </div>
+                                            </x-layout.lists-section.list-item>
+                                            <x-layout.lists-section.list-item item-name="" item-desc="">
+                                                <p>
+                                                    <i class="fa-solid fa-phone mr_2"></i>
+                                                    {{ $appt->patient->patient_mobile }}
+                                                </p>
+                                            </x-layout.lists-section.list-item>
+                                            <x-layout.lists-section.list-item item-name="" item-desc="">
+                                                <div class="flex flex_center">
+                                                    <x-atom.more>
+                                                        <x-atom.more.option wire-click="apptShowModal('isUpdate', {{ $appt->id }})" option-name="Edit" />
+                                                    </x-atom.more>
+                                                </div>
+                                            </x-layout.lists-section.list-item>
+                                        </x-layout.lists-section.lists-list>
+                                    </x-layout.lists-section.lists-container>
+                                @empty
+                                    <x-layout.lists-section.list-empty empty-message="No Results."/>
+                                @endforelse
+                            </x-slot>
+                        </x-layout.details>
+                    @endif
+
                 </x-layout.lists-section>
             @endif
+            
 
         </div>
 

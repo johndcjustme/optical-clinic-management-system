@@ -12,8 +12,6 @@ class PageUsers extends Component
 {
     use WithFileUploads;
 
-
-
     public $user_added = 'User successfully added.';
     public $user_updated = 'User successfully updated.';
 

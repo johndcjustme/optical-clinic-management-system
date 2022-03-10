@@ -6,6 +6,6 @@
         padding: 0;
     "
 >
-    <i class="fa-solid fa-xmark"></i>
+    <i class="fa-solid fa-chevron-left"></i>
     {{ $slot }}
 </button>

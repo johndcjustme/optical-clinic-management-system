@@ -17,6 +17,7 @@ class CreateAppointmentsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('patient_id');
             $table->string('appt_date')->nullable();
+            $table->string('appt_time')->nullable();
             $table->string('appt_resched')->nullable();
             $table->string('appt_status')->nullable();
             $table->boolean('appt_confirmed')->nullable();

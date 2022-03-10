@@ -17,8 +17,10 @@ class CreateSchedsettingsTable extends Migration
             $table->id();
             $table->string('schedset_type')->nullable();
             $table->string('schedset_name')->nullable();
-            $table->string('schedset_am')->nullable();
-            $table->string('schedset_pm')->nullable();
+            $table->string('schedset_am_from')->nullable();
+            $table->string('schedset_am_to')->nullable();
+            $table->string('schedset_pm_from')->nullable();
+            $table->string('schedset_pm_to')->nullable();
             $table->integer('schedset_checked')->nullable();
         });
     }

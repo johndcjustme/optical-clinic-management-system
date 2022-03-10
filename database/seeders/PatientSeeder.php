@@ -23,6 +23,8 @@ class PatientSeeder extends Seeder
         $patient1 = Patient::create([
             'patient_fname' => $faker->name, 
             'patient_lname' => $faker->name,
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
         ]);
         
         //

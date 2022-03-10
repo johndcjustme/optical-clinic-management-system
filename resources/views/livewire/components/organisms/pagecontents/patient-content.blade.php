@@ -116,10 +116,10 @@
                             <x-layout.lists-section.list-item item-name="" item-desc="">
                                 <div class="flex flex_center full_w gap_1">
                                     <div>
-                                        <x-atom.btn-bordered color="green" label="exam" height="2.5em"/>
+                                        <x-atom.btn-bordered color="green" label="exam" height="2.5em" wire-click=""/>
                                     </div>
                                     <div>
-                                        <x-atom.btn-bordered color="#ff0000" label="purchase" height="2.5em"/>
+                                        <x-atom.btn-bordered color="#ff0000" label="purchase" height="2.5em" wire-click=""/>
                                     </div>
                                 </div>
                             </x-layout.lists-section.list-item>
