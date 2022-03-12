@@ -14,7 +14,7 @@
             @include('livewire.components.organisms.pagecontents.patient-content')      
         </div>
 
-        @if ($this->patientShowModal)
+        @if ($modal['patientShowModal'])
             @includeIf('livewire.components.organisms.modal.modal-patient');
         @endif
 
@@ -48,3 +48,8 @@
 
 
 
+
+
+
+
+    

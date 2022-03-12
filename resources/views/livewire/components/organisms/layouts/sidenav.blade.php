@@ -6,7 +6,7 @@
     <div class="flex flex_column flex_x_between full_h">
         <ul class="selectable p_7 empty overflow_y noscroll">
             <div class="mt_10 mb_10 overflow_hidden" style="">
-                <img class="animate_left" src="{{ asset('images/dango-logo-nolabel.png') }}" alt="" width="40px" height="auto">
+                <img class="" src="{{ asset('images/dango-logo-nolabel.png') }}" alt="" width="40px" height="auto">
                 {{-- <div class="flex flex_center text_left mt_7">
                     <div class="flex flex_center">
                     </div>
@@ -78,8 +78,8 @@
 
         
         <div class="p_7 relative bt_1">
-            <div class="animate_opacity sidenav_user_avatar overflow_hidden">
-                <div onclick="window.location.assign('/account')" class="animate_bottom pointer">
+            <div class="sidenav_user_avatar overflow_hidden">
+                <div onclick="window.location.assign('/account')" class="pointer">
                     <x-atom.profile-photo size="35px" path="storage/photos/avatars/{{ session()->get('curr_user_avatar')}}"/>
                 </div>
                 <span class="ml_7">

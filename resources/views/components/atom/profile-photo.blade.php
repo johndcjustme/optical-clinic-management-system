@@ -6,7 +6,7 @@
         background: url('{{ $path }}') no-repeat center;
         background-size: cover;
         background-position: center top;
-        border: 3px solid #2B4FFF;
+        border: 1px solid #2B4FFF;
         overflow: hidden;
     ">
 

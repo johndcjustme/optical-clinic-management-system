@@ -10,7 +10,7 @@ class Patient extends Model
     use HasFactory;
 
     protected $fillable = [
-        'patient_photo_path',
+        'patient_avatar',
         'patient_fname',
         'patient_lname',
         'patient_mname',
@@ -46,5 +46,10 @@ class Patient extends Model
     public function like()
     {
         return $this->hasMany(Like::class);
+    }
+
+    public function item()
+    {
+        return $this->hasMany(Item::class);
     }
 }

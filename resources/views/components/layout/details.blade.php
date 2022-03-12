@@ -1,12 +1,11 @@
 <div x-data="{open: true}" class="mb_20">
 
     <div @click="open = ! open">
-        <p class="my_7 dark_100 font_normal pointer">
-            <strong>
-                <i :class="open ? 'fa-chevron-down' : 'fa-chevron-right'" class="fa-solid"></i>
-                {{-- @yield('details-summary') --}}
+        <p class="my_7 dark_300 font_s pointer">
+            <i :class="open ? 'fa-chevron-down' : 'fa-chevron-right'" class="fa-solid" style="width: 1.5em"></i>
+            <span>
                 {{ $details_summary }}
-            </strong>
+            </span>
         </p>
     </div>
 

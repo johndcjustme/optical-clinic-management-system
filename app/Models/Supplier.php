@@ -34,4 +34,9 @@ class Supplier extends Model
     {
         return $this->hasMany(Accessory::class);
     }
+
+    public function item()
+    {
+        return $this->hasMany(Item::class);
+    }
 }

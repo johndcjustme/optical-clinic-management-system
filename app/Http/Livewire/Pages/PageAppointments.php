@@ -57,10 +57,11 @@ class PageAppointments extends Component
     ];
 
     public $apptStatus = [
-        1 => "For Approval",
-        2 => "Ongoing",
-        3 => "Rescheduled",
-        4 => "Missed",
+        'fa' => "For Approval",
+        'on' => "Ongoing",
+        're' => "Rescheduled",
+        'mi' => "Missed",
+        'fu' => "Fulfilled",
     ];
 
     public function myTab($value)
@@ -112,12 +113,34 @@ class PageAppointments extends Component
 
     public function countForApprovalAppts() { return Appointment::where('appt_confirmed', null)->count(); }
 
+    public function countFulfilledAppts() { return Appointment::where('appt_status', 'fu')->count(); }
+
     public function date($date) { return \Carbon\Carbon::parse($date)->isoFormat('MMM D, YYYY'); }
 
     public function day($day) { return \Carbon\Carbon::parse($day)->format('l'); }
 
     public function time($time) { return isset($time) ? \Carbon\Carbon::parse($time)->format('g:i A') : ''; }
 
+    public function statusColor($status)
+    {
+        switch ($status) {
+            case 'fa':
+                return '#0275d8';
+                break;
+            case 'on':
+                return '#5cb85c';
+                break;
+            case 're':
+                return '#5bc0de';
+                break;
+            case 'fu':
+                return '#292b2c';
+                break;
+            case 'mi':
+                return '#d9534f';
+                break;
+        }
+    }
 
     public function clearSearch()
     {
@@ -144,9 +167,10 @@ class PageAppointments extends Component
         $this->appt['pt_phone'] = $findPt->patient_mobile;
         $this->appt['pt_addr'] = $findPt->patient_address;
         $this->appt['pt_occ'] = $findPt->patient_occupation;
+        $this->appt['pt_avatar'] = $findPt->patient_avatar;
         $this->appt['id'] = $findPt->id;
 
-        $this->appt['pt_status'] = $this->apptStatus['2'];
+        $this->appt['pt_status'] = $this->apptStatus['on'];
         $this->apptCreatedBy = 'dc';
 
         $this->isAdd = false;
@@ -237,6 +261,7 @@ class PageAppointments extends Component
                 $this->appt['pt_phone'] = $findPt->patient_mobile;
                 $this->appt['pt_addr'] = $findPt->patient_address;
                 $this->appt['pt_occ'] = $findPt->patient_occupation;
+                $this->appt['pt_avatar'] = $findPt->patient_avatar;
 
                 $this->appt['id'] = $apptId->id;
                 $this->appt['pt_date'] = $apptId->appt_date;

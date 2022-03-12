@@ -45,39 +45,34 @@
                     </fieldset>
 
                     <br>
-
-                    <fieldset>
-                        <legend>Lens Details</legend><br>
-
-                        <div class="grid grid_col_2 gap_1">
-                            <div>
-                                <label for="">Lens Name</label>
-                                <input wire:model.defer="le_name" type="text" required>
-                                <label for="">Lens Type</label>
-                                <input wire:model.defer="item_type" type="text">
-                                <label for="">Lens Tint</label>
-                                <input wire:model.defer="le_tint" type="text">
-                            </div>
-                            <div>
-                     
-                                <label for="">Supplier</label>
-                                <select wire:model.defer="le_supplier" name="" id="">
-                                    <option value="" selected hidden> --select-- </option>
-                                    @forelse ($suppliers as $supplier)
-                                        <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }}</option>
-                                    @empty
-                                        
-                                    @endforelse
-                                </select>
-                                <label for="">Lens Description</label>
-                                <input wire:model.defer="le_desc" type="text">
-                                <label for="">Lens Qty</label>
-                                <input wire:model.defer="le_qty" type="number">
-                                <label for="">Lens Price</label>
-                                <input wire:model.defer="le_price" type="number">
-                            </div>
+                    <div class="grid grid_col_2 gap_1">
+                        <div>
+                            <label for="">Lens Name</label>
+                            <input wire:model.defer="le_name" type="text" required>
+                            <label for="">Lens Type</label>
+                            <input wire:model.defer="item_type" type="text">
+                            <label for="">Lens Tint</label>
+                            <input wire:model.defer="le_tint" type="text">
                         </div>
-                    </fieldset>
+                        <div>
+                    
+                            <label for="">Supplier</label>
+                            <select wire:model.defer="le_supplier" name="" id="">
+                                <option value="" selected hidden> --select-- </option>
+                                @forelse ($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }}</option>
+                                @empty
+                                    
+                                @endforelse
+                            </select>
+                            <label for="">Lens Description</label>
+                            <input wire:model.defer="le_desc" type="text">
+                            <label for="">Lens Qty</label>
+                            <input wire:model.defer="le_qty" type="number">
+                            <label for="">Lens Price</label>
+                            <input wire:model.defer="le_price" type="number">
+                        </div>
+                    </div>
                 </form>
 
             @elseif ($this->addFrame)
@@ -240,35 +235,31 @@
                         <input type="file" name="" id="">
                     </fieldset>
                     <br>
-                    <fieldset>
-                        <legend>Lens Details</legend><br>
-
-                        <div class="grid grid_col_2 gap_1">
-                            <div>
-                                <label for="">Frame Name</label>
-                                <input wire:model.defer="fr_name" type="text">
-                                <label for="">Frame Type</label>
-                                <input wire:model.defer="item_type" type="text">
-                                <label for="">Fram Size</label>
-                                <input wire:model.defer="fr_size" type="text">
-                            </div>
-                            <div>
-                                <label for="">Supplier</label>
-                                <select wire:model.defer="fr_supplier">
-                                    <option value="" selected hidden>--select--</option>
-                                    @foreach ($suppliers as $supplier)
-                                        <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }}</option>
-                                    @endforeach
-                                </select>
-                                <label for="">Frame Description</label>
-                                <input wire:model.defer="fr_desc" type="text">
-                                <label for="">Frame Qty</label>
-                                <input wire:model.defer="fr_qty" type="number">
-                                <label for="">Frame Price</label>
-                                <input wire:model.defer="fr_price" type="number">
-                            </div>
+                    <div class="grid grid_col_2 gap_1">
+                        <div>
+                            <label for="">Frame Name</label>
+                            <input wire:model.defer="fr_name" type="text">
+                            <label for="">Frame Type</label>
+                            <input wire:model.defer="item_type" type="text">
+                            <label for="">Fram Size</label>
+                            <input wire:model.defer="fr_size" type="text">
                         </div>
-                    </fieldset>
+                        <div>
+                            <label for="">Supplier</label>
+                            <select wire:model.defer="fr_supplier">
+                                <option value="" selected hidden>--select--</option>
+                                @foreach ($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }}</option>
+                                @endforeach
+                            </select>
+                            <label for="">Frame Description</label>
+                            <input wire:model.defer="fr_desc" type="text">
+                            <label for="">Frame Qty</label>
+                            <input wire:model.defer="fr_qty" type="number">
+                            <label for="">Frame Price</label>
+                            <input wire:model.defer="fr_price" type="number">
+                        </div>
+                    </div>
                 </form>
 
             @elseif($this->updateAccessory)

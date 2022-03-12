@@ -2,59 +2,247 @@
 
 namespace App\Http\Livewire\Pages;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 
 use Livewire\Component;
 use App\Models\Patient;
 use App\Models\Exam;
+use App\Models\Lense;
+use App\Models\Item;
+use App\Models\Purchase;
+use App\Models\Purchased_item;
 
 
 class PagePatient extends Component
 {
 
+    public $tab = 1;
+
+    public $purchase_select_item = 1;
+
+    public $itemType, $searchLense, $searchItem;
+
+    public $purchaseId, $purchasePatientId;
+
+    // public 
+    //     $patientShowModal = false;
+    //         $isAddPatient = false,
+    //         $isUpdatePatient = false;
+    public $modal = [
+        'patientShowModal' => false,
+            'isAddPatient' => false,
+            'isUpdatePatient' => false,
+            'isExamPurchase' => false,
+                'exam_purchase_tab' => 1,
+    ];
+
     public 
-        $patientShowModal = false,
-            $isAddPatient = false,
-            $isUpdatePatient = false;
+        $selectOption = false, 
+        $addToQueue = false,
+        $purchaseDirectly = false;
+
+    public $pt = [
+        'id' => '',
+        'avatar' => '',
+        'fname' => '',
+        'lname' => '',
+        'mname' => '',
+        'addr' => '',
+        'no' => '',
+        'gender' => '',
+        'occ' => '',
+        'email' => '',
+    ];
+
+    public $exam = [
+        'previous' => '',
+    ];
+
+    protected $rules = [
+        'pt.fname' => 'required',
+        'pt.lname' => 'required',
+        'pt.email' => 'email',
+    ];
+
+    protected $messages = [
+        'pt.fname.required' => 'Required',
+        'pt.lname.required' => 'Required',
+        'pt.email.email' => 'Enter valid email',
+    ];
 
     public function render() 
     {
-        return view('livewire.pages.page-patient')
+        if ($this->purchase_select_item == 1) {
+            $this->itemType = 'le';
+        } elseif ($this->purchase_select_item == 2) {
+            $this->itemType = 'fr';
+        } elseif ($this->purchase_select_item == 3) {
+            $this->itemType = 'ac';
+        } 
+
+        $searchItem = '%' . $this->searchItem . '%';
+        $items = Item::where('item_name', 'like', $searchItem)
+            // ->orWhere('item_desc', 'like', $searchItem)
+            ->where('item_type', $this->itemType)
+            ->get();
+
+        // $searchLense = '%' . $this->searchLense . '%';
+        // $lense = Lense::where('lense_name', 'like', $searchLense)
+        //     ->orWhere('lense_desc', 'like', $searchLense)
+        //     ->get();
+
+        return view('livewire.pages.page-patient',[
+                'pts' => Patient::all(),
+                'selectedItems' => Purchased_item::with('item')->where('purchase_id', $this->purchaseId)->get(),
+                // 'selectedItems' => Purchase::with('purchased_item')->where('id', $this->purchaseId)->get(),
+                'items' => $items,
+            ])
             ->extends('layouts.app')
             ->section('content');
     }
 
-    public function resetInputFields($data)
+    public function purchaseNewItem($ptId)
     {
+        $purchasedId = Purchase::create([
+            'patient_id' => $ptId,
+        ]);
+
+        // dd(
+        //     $purchasedId->id . ' ' .
+        //     $purchasedId->patient_id
+        // );
+        $this->purchaseId = $purchasedId->id;
+        $this->purchasePatientId = $purchasedId->patient_id;
+    }
+
+    public function addItem($itemType, $price, $id)
+    {
+
+        // dd (
+        //     $item . ', ' . 
+        //     $this->pt['id'] . ', ' . 
+        //     $id . ', ' . 
+        //     $price . ', '
+
+        // );
+        Purchase::create([
+            'patient_id' => $this->pt['id'], 
+            'item_id' => $id,
+            'item_type' => $itemType,
+            'qty' => 1, 
+            'total' => $price, 
+        ]);
+        $this->searchItem = '';
+        // switch ($item) {
+        //     case 'le':
+        //         dd('lense added');
+        //         break;
+        //     case 'fr':
+        //         dd('frame added');
+        //         break;
+        //     case 'ac':
+        //         dd('ac added');
+        //         break;
+        // }
+    }
+
+    public function exam_purchase_tab($data, $id)
+    {
+        $findPt = Patient::findOrFail($id);
+        $this->pt['id'] = $findPt->id;
+        $this->pt['fname'] = $findPt->patient_lname . ', ' . $findPt->patient_fname . ' ' . $findPt->patient_mname;
+        $this->pt['addr'] = $findPt->patient_address;
+
         switch ($data) {
-            case 'onCloseModal':
-                $this->reset([
-                    'patientShowModal',
-                        'isAddPatient',
-                        'isUpdatePatient',
-                ]);
+            case 'exam':
+                $this->exam['previous'] = Exam::where('patient_id', $id)->count();
+                $this->modal['exam_purchase_tab'] = 1;
+                break;
+            case 'purchase':
+                $this->purchaseId = Purchase::where('patient_id', $this->pt['id'])->first();
+                $this->modal['exam_purchase_tab'] = 2;
                 break;
         }
+    }
+
+    public function addPt()
+    {
+        $this->validate();
+
+        dd(
+            $this->pt['fname'] . ', ' .
+            $this->pt['lname']
+        );
+    }
+
+    public function updatePt()
+    {
+        // dd($this->pt['id']);
+        $this->validate();
+        $updatePt = Patient::findOrFail($this->pt['id']);
+        $updatePt->update([
+           'patient_fname' => $this->pt['fname'],
+           'patient_mname' => $this->pt['mname'],
+           'patient_lname' => $this->pt['lname'],
+           'patient_mobile' => $this->pt['no'],
+           'patient_gender' => $this->pt['gender'], 
+           'patient_address' => $this->pt['addr'], 
+           'patient_occupation' => $this->pt['occ'], 
+           'patient_email' => $this->pt['email'], 
+        ]);
+        if ($updatePt) {
+            session()->flash('message', 'Updated successfully.');
+        } else {
+            // an error has occured
+            dd('error');
+        }
+        $this->closeModal();
     }
 
 
     public function patientShowModal($data, $id)
     {
         switch ($data) {
-            case 'isAddPatient':
-                $this->isAddPatient = true;
+            case 'isAdd':
+                $this->modal['isAddPatient'] = true;
                 break;
 
-            case 'isUpdatePatient':
-                $this->isUpdatePatient = true;
+            case 'isUpdate':
+                   $findPt = Patient::findOrFail($id);
+                    $this->pt['id'] = $findPt->id;
+                    $this->pt['avatar'] = $findPt->patient_avatar;
+                    $this->pt['fname'] = $findPt->patient_fname;
+                    $this->pt['lname'] = $findPt->patient_lname;
+                    $this->pt['mname'] = $findPt->patient_mname;
+                    $this->pt['addr'] = $findPt->patient_address;
+                    $this->pt['no'] = $findPt->patient_mobile;
+                    $this->pt['gender'] = $findPt->patient_gender;
+                    $this->pt['occ'] = $findPt->patient_occupation;
+                    $this->pt['email'] = $findPt->patient_email;
+                $this->modal['isUpdatePatient'] = true;
+                break;
+            case 'isExam':
+                $this->exam_purchase_tab('exam', $id);
+                $this->modal['isExamPurchase'] = true;
+                break;
+            case 'isPurchase':
+                $this->exam_purchase_tab('purchase', $id);
+
+                $this->modal['isExamPurchase'] = true;
+                $this->modal['exam_purchase_tab'] = 2;
                 break;
         }
-        $this->patientShowModal = true;
+        $this->modal['patientShowModal'] = true;
     }
 
     public function closeModal()
     {
-        $this->resetInputFields('onCloseModal');
+        // $this->resetInputFields('onCloseModal');
+        $this->reset(['pt','modal', 'searchItem']);
+        $this->resetErrorBag();
+
     }
+
 
 
 
