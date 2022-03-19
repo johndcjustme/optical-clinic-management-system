@@ -23,15 +23,15 @@ class CreateExamsTable extends Migration
             $table->double('exam_OD_AXIS')->nullable();
             $table->double('exam_OD_NVA')->nullable();
             $table->double('exam_OD_PH')->nullable();
-            $table->double('exam_OD_SVA')->nullable();
+            $table->double('exam_OD_CVA')->nullable();
             $table->double('exam_OS_SPH')->nullable();
             $table->double('exam_OS_CYL')->nullable();
             $table->double('exam_OS_AXIS')->nullable();
             $table->double('exam_OS_NVA')->nullable();
             $table->double('exam_OS_PH')->nullable();
-            $table->double('exam_OS_SVA')->nullable();
+            $table->double('exam_OS_CVA')->nullable();
             $table->double('exam_ADD')->nullable();
-            $table->double('exam_FRAME')->nullable();
+            $table->double('exam_PD')->nullable();
             $table->timestamps();
             $table->foreign('patient_id')
                 ->references('id')

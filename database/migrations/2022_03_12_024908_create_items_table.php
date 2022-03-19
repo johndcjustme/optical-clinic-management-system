@@ -25,6 +25,11 @@ class CreateItemsTable extends Migration
             $table->integer('item_price')->nullable();
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
+
+            $table->foreign('supplier_id')
+                ->references('id')
+                ->on('suppliers')
+                ->nullOnDelete();
         });
     }
 

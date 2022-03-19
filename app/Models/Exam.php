@@ -16,14 +16,15 @@ class Exam extends Model
         'exam_OD_AXIS',
         'exam_OD_NVA',
         'exam_OD_PH',
-        'exam_OD_SVA',
+        'exam_OD_CVA',
         'exam_OS_SPH',
         'exam_OS_CYL',
         'exam_OS_AXIS',
         'exam_OS_NVA',
         'exam_OS_PH',
-        'exam_OS_SVA',
+        'exam_OS_CVA',
         'exam_ADD',
+        'exam_PD',
     ];
 
     public function patients()

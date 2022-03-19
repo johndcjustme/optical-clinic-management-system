@@ -15,7 +15,7 @@ class ColumnTitle extends Component
     public $colTitle;
     public $arrowDirection;
 
-    public function __construct($wireClick, $colTitle, $arrowDirection)
+    public function __construct($wireClick = null, $colTitle = null, $arrowDirection = null)
     {
         //
         $this->wireClick = $wireClick;

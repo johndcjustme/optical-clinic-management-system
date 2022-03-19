@@ -1,4 +1,6 @@
-@php
+@php    
+    $totalAmount = 0;
+
     $formId;
     if ($modal['isAddPatient']) {
         $wireSubmitTo = 'addPt';
@@ -15,8 +17,14 @@
         $label = 'Update Patient';
         $formId = 'updatePatient';
     }
-
-    $calc = 0;
+    if($modal['exam_purchase_tab'] == 1) {
+        $examPurchase_newBtnWireclick = 'newExam(' . $pt['id'] . ')';
+        $examPurchase_newBtnLabel = '+ new';
+    }
+    if ($modal['exam_purchase_tab'] == 2) {
+        $examPurchase_newBtnWireclick = 'purchaseNewItem(' . $pt['id'] . ')';
+        $examPurchase_newBtnLabel = '+ New';
+    }
 @endphp
 
 
@@ -89,7 +97,7 @@
                                 <x-atom.error>{{ $message }}</x-atom.error>
                             @enderror  
                         </label>
-                        <input wire:model.defer="pt.no" type="text">
+                        <input wire:model.defer="pt.no" type="text" max="12">
                     </div>
                     <div>
                         <label for="">Email Address
@@ -104,22 +112,13 @@
                 <p class="dark_100 mt_7">Select Option</p>
                 <div class="grid grid_col_2 gap_1 mt_10">
                     <div>
-                        <div class="flex flex_y_center">
-                            <input wire:model="selectOption" name="option" value="0" type="radio" id="check_none">
-                            <label class="ml_2" for="check_none">Defaut</label>
-                        </div>
-                        <br>
-                        <div class="flex flex_y_center">
-                            <input wire:model="selectOption" name="option" value="1" type="radio" id="check_examine">
-                            <label class="ml_2" for="check_examine">Examine today</label>
-                        </div>
-                        <br>
-                        <div class="flex flex_y_center">
-                            <input wire:model="selectOption" name="option" value="2" type="radio" id="check_purchase_only">
-                            <label class="ml_2" for="check_purchase_only">Puchase Only</label>
-                        </div>
+                        <select wire:model="selectOption" class="input_small">
+                            <option value="">--None--</option>
+                            <option value="1">Examine Now</option>
+                            <option value="2">Purchase Only</option>
+                        </select>
                     </div>
-                    <div>
+                    <div class="flex flex_y_center">
                         <div class="flex flex_y_center">
                             @if ($selectOption == 1)
                                 <input wire:model="addToQueue" type="checkbox" id="check_add_to_q">
@@ -134,187 +133,199 @@
         @if ($modal['isExamPurchase'])
             <div>
                 <p>
-                    <strong>{{ $pt['fname'] }}</strong><br>
+                    <strong>{{ $pt['fullname'] }}</strong><br>
                     <small>{{ $pt['addr'] }}</small>
                 </p>
             </div>
-            <div class="my_15 flex gap_1">
-                <x-atom.tab-links.link tab-title="Exam" wire-click="exam_purchase_tab('exam', {{ $pt['id'] }})" sub-page="{{ $modal['exam_purchase_tab'] === 1}}" />
-                <x-atom.tab-links.link tab-title="Purchase" wire-click="exam_purchase_tab('purchase', {{ $pt['id'] }})" sub-page="{{ $modal['exam_purchase_tab'] === 2}}" />
+            <div class="my_15 flex flex_x_between flex_y_center gap_1">
+                <div class="flex gap_1">
+                    <x-atom.tab-links.link tab-title="Exam" wire-click="exam_purchase_tab('exam', {{ $pt['id'] }})" sub-page="{{ $modal['exam_purchase_tab'] === 1}}" />
+                    <x-atom.tab-links.link tab-title="Purchase" wire-click="exam_purchase_tab('purchase', {{ $pt['id'] }})" sub-page="{{ $modal['exam_purchase_tab'] === 2}}" />
+                </div>
+                <div>
+                    {{-- <button class="btn_small">New Exam</button> --}}
+                    <button wire:click.prevent="{{ $examPurchase_newBtnWireclick }}" class="btn_small">{{ $examPurchase_newBtnLabel }}</button>
+                </div>
             </div>
             @switch($modal['exam_purchase_tab'])
                 @case(1)
-                    <div>
-                        <div style="overflow-y: auto">
-                            <table class="full_w noformat" style="min-width: 400px;">
-                                <thead>
-                                    <tr>
-                                        <td>RX</td>
-                                        <td>SPH</td>
-                                        <td>CYL</td>
-                                        <td>AXIS</td>
-                                        <td>NVA</td>
-                                        <td>PH</td>
-                                        <td>CVA</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>OD</td>
-                                        <td>
-                                            <input type="text">
-                                        </td>
-                                        <td>
-                                            <input type="text">
-                                        </td>
-                                        <td>
-                                            <input type="text">
-                                        </td>
-                                        <td>
-                                            <input type="text">
-                                        </td>
-                                        <td>
-                                            <input type="text">
-                                        </td>
-                                        <td>
-                                            <input type="text">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>OS</td>
-                                        <td>
-                                            <input type="text">
-                                        </td>
-                                        <td>
-                                            <input type="text">
-                                        </td>
-                                        <td>
-                                            <input type="text">
-                                        </td>
-                                        <td>
-                                            <input type="text">
-                                        </td>
-                                        <td>
-                                            <input type="text">
-                                        </td>
-                                        <td>
-                                            <input type="text">
-                                        </td>
-                                    </tr>
-                                    <tr class="mt_7">
-                                        <td></td>
-                                        <td colspan="3">
-                                            <label>ADD</label>
-                                            <input type="text">
-                                        </td>
-                                        <td colspan="3">
-                                            <label for="">P.D.</label>
-                                            <input type="text">
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="mt_6">
-                        <div class="flex flex_x_between flex_y_center">
-                            <div>
-                                <p>
-                                    <small>
-                                        Previous Exams: {{ $exam['previous'] }}
-                                    </small>
-                                </p>
+                    @if ($exam['last'])
+                        <form wire:submit.prevent="updateExam({{ $exam['id'] }})" id="saveExam">
+                            <div style="overflow-y: auto">
+                                <table class="full_w noformat" style="min-width: 400px;">
+                                    <thead>
+                                        <tr>
+                                            <td>RX</td>
+                                            <td>SPH</td>
+                                            <td>CYL</td>
+                                            <td>AXIS</td>
+                                            <td>NVA</td>
+                                            <td>PH</td>
+                                            <td>CVA</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>OD</td>
+                                            <td>
+                                                <input wire:model.defer="exam.exam_OD_SPH" type="text">
+                                            </td>
+                                            <td>
+                                                <input wire:model.defer="exam.exam_OD_CYL" type="text">
+                                            </td>
+                                            <td>
+                                                <input wire:model.defer="exam.exam_OD_AXIS" type="text">
+                                            </td>
+                                            <td>
+                                                <input wire:model.defer="exam.exam_OD_NVA" type="text">
+                                            </td>
+                                            <td>
+                                                <input wire:model.defer="exam.exam_OD_PH" type="text">
+                                            </td>
+                                            <td>
+                                                <input wire:model.defer="exam.exam_OD_CVA" type="text">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>OS</td>
+                                            <td>
+                                                <input wire:model.defer="exam.exam_OS_SPH" type="text">
+                                            </td>
+                                            <td>
+                                                <input wire:model.defer="exam.exam_OS_CYL" type="text">
+                                            </td>
+                                            <td>
+                                                <input wire:model.defer="exam.exam_OS_AXIS" type="text">
+                                            </td>
+                                            <td>
+                                                <input wire:model.defer="exam.exam_OS_NVA" type="text">
+                                            </td>
+                                            <td>
+                                                <input wire:model.defer="exam.exam_OS_PH" type="text">
+                                            </td>
+                                            <td>
+                                                <input wire:model.defer="exam.exam_OS_CVA" type="text">
+                                            </td>
+                                        </tr>
+                                        <tr class="mt_7">
+                                            <td></td>
+                                            <td colspan="3">
+                                                <label>ADD</label>
+                                                <input wire:model.defer="exam.exam_ADD" type="text">
+                                            </td>
+                                            <td colspan="3">
+                                                <label for="">P.D.</label>
+                                                <input wire:model.defer="exam.exam_PD" type="text">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
-                            <div>
-                                <button class="btn_small">New Exam</button>
+                        </form>
+                        <div class="mt_6">
+                            <div class="flex flex_x_between flex_y_center">
+                                <div>
+                                    <p>
+                                        <small>
+                                            Exams : {{ $exam['history'] }}
+                                        </small>
+                                    </p>
+                                </div>
+                                <div>
+                                    <span wire:click.prevent="deleteExam({{ $exam['id'] }})" class="mr_5 red pointer"> 
+                                        <small>
+                                            Delete this Exam
+                                        </small>
+                                    </span>
+                                    <button type="submit`" form="saveExam" class="btn_small">
+                                        @if (session()->has('savedExam'))
+                                            {{ session('savedExam') }}<i class="fa-solid fa-circle-check ml_3"></i>
+                                        @else
+                                            Save Exam
+                                        @endif
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
                     @break
 
                 @case (2)
-                    <div>
-                        <div class="flex flex_x_between flex_y_center bb_1 pb_3 mb_7">
-                            <div>
-                                {{-- <p>Select Items</p> --}}
-                                <button wire:click.prevent="purchaseNewItem({{ $pt['id'] }})" class="btn_small">+ New</button>
-                            </div>
-                            <div>
-                                <select wire:model="purchase_select_item" class="input_small" name="" id="" >
-                                    <option value="1">Lense</option>
-                                    <option value="2">Frame</option>
-                                    <option value="3">Accessory</option>
-                                </select>
-                            </div>
-                        </div>
+                    @if (! empty($latestPurchase))
                         <div>
-                            @switch ($purchase_select_item)
-                                @case (1)
-                                    <div class="grid grid_col_2 gap_1" style="grid-template-columns: auto 40%;">
-                                        <div class="relative">    
-                                            <label for="">Choose Lense</label>
-                                            <input wire:model="searchItem" type="text" placeholder="Enter Lense">
-                                            @if (! empty($searchItem))
-                                                <div class="absolute left right radius_1 overflow_y" style="max-height: 300px; width:100%; background:rgb(232, 232, 255); box-shadow: 0px 10px 25px -4PX rgb(76 90 121 / 40%);">
-                                                    <ul class="hoverable">
-                                                        @if (isset($items))
-                                                            @forelse ($items as $item)
-                                                                    <li class="flex flex_x_between my_3" style="line-height:1rem">
-                                                                        <div>
-                                                                            <p>
-                                                                                {{ $item->item_name }}
-                                                                            </p>
-                                                                            <small class="dark_200">
-                                                                                <i class="fa-solid fa-peso-sign"></i> {{ $item->item_price }} • {{ $item->item_desc }}
-                                                                            </small>
-                                                                        </div>
-                                                                        <div wire:click.prevent="addItem('{{ $itemType }}', '{{ $item->item_price }}', {{ $item->id }})" class="pointer">
-                                                                            <p>Add</p>
-                                                                        </div>
-                                                                    </li>
-                                                            @empty
-                                                                <li>No results.</li>
-                                                            @endforelse
-                                                        @endif
-                                                    </ul>
+                            <div class="mb_14">
+                                <p>
+                                    <small class="dark_200">Created at: {{ $this->purchaseDate($latest_purchase['date']) }}</small>
+                                </p>
+                            </div>
+                            <div>
+                                {{-- @switch ($purchase_select_item)
+                                    @case (1) --}}
+                                        <div class="">
+                                            <div class="relative">    
+                                                <label for="">Choose Item</label>
+                                                <div class="relative">
+                                                    <input wire:model="searchItem" class="type="text" placeholder="Enter Item">
+                                                    <button wire:click.prevent="$set('searchItem', '')" class="btn_small cancel absolute" style="top: 0.7em; right: 0.5em; color:blue;">Clear</button>
                                                 </div>
-                                            @endif
-                                           
+                                                @if (! empty($searchItem))
+                                                    <div class="absolute left right radius_1 overflow_y" style="max-height: 300px; width:100%; background:rgb(232, 232, 255); box-shadow: 0px 10px 25px -4PX rgb(76 90 121 / 40%); z-index:20;">
+                                                        <ul class="hoverable">
+                                                            @if (isset($items))
+                                                                @forelse ($items as $item)
+                                                                        <li class="flex flex_x_between flex_y_center my_7" style="line-height:1rem">
+                                                                            <div>
+                                                                                <p>
+                                                                                    {{ $item->item_name }}
+                                                                                </p>
+                                                                                <small class="dark_200">
+                                                                                    <i class="fa-solid fa-peso-sign"></i> {{ $item->item_price }} • {{ $item->item_desc }}
+                                                                                </small>
+                                                                            </div>
+                                                                            <button wire:click.prevent="addItem('{{ $latest_purchase['id'] }}', {{ $item->id }}, {{ $item->item_price }})" class="pointer btn_small cancel">
+                                                                                Add
+                                                                            </button>
+                                                                        </li>
+                                                                @empty
+                                                                    <li>No results.</li>
+                                                                @endforelse
+                                                            @endif
+                                                        </ul>
+                                                    </div>
+                                                @endif
+                                            
+                                            </div>
+                                            {{-- <div>    
+                                                <label for="">Tint</label>
+                                                <input type="text">
+                                            </div> --}}
                                         </div>
-                                        <div>    
-                                            <label for="">Tint</label>
+                                        {{-- @break
+                                    @case (2) 
+                                        <div>
+                                            <label for="">Choose Frame</label>
                                             <input type="text">
                                         </div>
-                                    </div>
-                                    @break
-                                @case (2) 
-                                    <div>
-                                        <label for="">Choose Frame</label>
-                                        <input type="text">
-                                    </div>
-                                    @break
-                                @case (3)
-                                    <div>
-                                        <label for="">Choose Accessory</label>
-                                        <input type="text">
-                                    </div>
-                                    @break
-                            @endswitch
+                                        @break
+                                    @case (3)
+                                        <div>
+                                            <label for="">Choose Accessory</label>
+                                            <input type="text">
+                                        </div>
+                                        @break
+                                @endswitch --}}
+                            </div>
                         </div>
-                    </div>
-                    <ul class="hoverable my_10" style="line-height: 1rem">
-                        <p class="dark_200 text_center"><i class="fa-solid fa-ellipsis"></i></p>
-                            @foreach ($selectedItems as $selectedItem)     
-
-                                {{-- {{ $selectedItem->item_id }} --}}
+                        <ul class="hoverable my_10" style="line-height: 1rem">
+                            @forelse ($selectedItems as $selectedItem)     
                                 <li class="flex flex_x_between flex_y_center b_1 my_4">
                                     <div class="flex gap_1 my_3">
                                         <div class="flex flex_y_center" style="gap:0.4em">
-                                            <button class="noformat p_5">
+                                            <button wire:click.prevent="inc_dec_item('dec', {{ $selectedItem->id }})" class="btn_small cancel" style="padding:0 2px" {{ $selectedItem->qty == 1 ? 'disabled' : ''  }}>
                                                 <i class="fa-solid fa-minus"></i>
                                             </button>
-                                            <p>{{ $selectedItem->qty }}</p>
-                                            <button class="noformat p_5">
+                                            <p class="text_center" style="width: 1.5em">{{ $selectedItem->qty  }}</p>
+                                            <button wire:click.prevent="inc_dec_item('inc', {{ $selectedItem->id }})" class="btn_small cancel" style="padding:0 2px" {{ $selectedItem->qty == 20 ? 'disabled' : ''  }}>
                                                 <i class="fa-solid fa-plus"></i>
                                             </button>
                                         </div>
@@ -331,31 +342,79 @@
                                     </div>
                                     <div>
                                         <p class="pointer">
-                                            <small>REMOVE</small>
+                                            <button wire:click.prevent="removeItem({{ $selectedItem->id }})" class="noformat" style="color: red;">REMOVE</button>
                                         </p>
                                     </div>
                                 </li>
 
                                 @php
-                                    $calc += $selectedItem->total * $selectedItem->qty;
+                                    $latest_purchase['total'] += $selectedItem->qty * $selectedItem->item->item_price;
                                 @endphp
-                            @endforeach
-                        <p class="dark_200 text_center"><i class="fa-solid fa-ellipsis"></i></p>
-                    </ul>
-                    <div class="grid grid_col_2 gap_1">
-                        <div>
-                            <label for="">Deposit</label>
-                            <input type="number" name="" id="" min="0">
-                            <label for="">Discount</label>
-                            <input type="number" name="" id="" min="0">
-                        </div>
-                        <div>
-                            <label for="">Balance</label>
-                            <input type="number" name="" id="" disabled>
-                            <label for="">Total</label>
-                            <input type="number" name="" id="" value="{{ $calc }}" disabled>
-                        </div>
-                    </div>
+                            @empty
+                                <p class="text_center py_7"><i class="fa-solid fa-circle-exclamation mr_3"></i> Empty.
+                                    <span wire:click.prevent="deletePurchase({{ $latest_purchase['id'] }})" class="mr_5 red pointer"> 
+                                        {{-- <small> --}}
+                                            Click remove empty payment.
+                                        {{-- </small> --}}
+                                    </span>
+                                </p> 
+                                
+                            @endforelse
+                        </ul>
+
+
+                        @php 
+                            $latest_purchase_balance = 0;
+                            if (!empty($latest_purchase['discount']) && ($latest_purchase['discount'] > 0)) {
+                                $latest_purchase['total'] = $latest_purchase['total'] - $latest_purchase['discount'];
+                            } 
+                            if ($latest_purchase['deposit'] > 0) {
+                                $latest_purchase['balance'] = $latest_purchase['total'] - $latest_purchase['deposit'];
+                            } else {
+                                $latest_purchase['balance'] = 0;
+                            }
+                        @endphp
+
+
+                        @if (count($selectedItems) > 0)
+                            <form wire:submit.prevent="savePayment({{ $latestPurchase }})" id="submit_payment">
+                                <div class="grid grid_col_2 gap_1">
+                                    <div>
+                                        <label for="">Deposit</label>
+                                        <input wire:model.lazy="latest_purchase.deposit" type="number" step="0.01" name="" id="" min="0">
+                                        <label for="">Discount</label>
+                                        <input wire:model.lazy="latest_purchase.discount" type="number" step="0.01" name="" id="" min="0">
+                                    </div>
+                                    <div>
+                                        <label for="">Balance</label>
+                                        <div class="input">
+                                            {{ number_format($latest_purchase['balance'], 2) }}
+                                        </div>
+                                        <label for="">Total Amount</label>
+                                        <div class="input">
+                                            {{ number_format($latest_purchase['total'], 2) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="text_right mt_8">
+                                {{-- <span class="button cancel mr_7">Delete</span> --}}
+                                <span wire:click.prevent="deletePurchase({{ $latest_purchase['id'] }})" class="mr_5 red pointer"> 
+                                    <small>
+                                        Delete this payment
+                                    </small>
+                                </span>
+                                <button type="submit`" form="submit_payment" class="btn_small">
+                                    @if (session()->has('savedPayment'))
+                                        {{ session('savedPayment') }}<i class="fa-solid fa-circle-check ml_3"></i>
+                                    @else
+                                        Save Payment
+                                    @endif
+                                </button>
+                            </div>
+                        @endif
+                    @endif
+
                     @break
                 @default
                     

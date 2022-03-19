@@ -48,8 +48,13 @@ class Patient extends Model
         return $this->hasMany(Like::class);
     }
 
-    public function item()
+    public function purchase()
     {
-        return $this->hasMany(Item::class);
+        return $this->hasMany(Purchase::class);
     }
+
+    // public function latestPurchase()
+    // {
+    //     return $this->hasOne(Purchase::class)->latestOfMany();
+    // }
 }

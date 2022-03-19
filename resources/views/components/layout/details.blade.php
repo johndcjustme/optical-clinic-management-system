@@ -1,4 +1,4 @@
-<div x-data="{open: true}" class="mb_20">
+<div x-data="{open: true}" class="mb_15">
 
     <div @click="open = ! open">
         <p class="my_7 dark_300 font_s pointer">

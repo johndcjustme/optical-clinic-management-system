@@ -1,7 +1,7 @@
 
 
 
-<section class="section_sidenav full_vh overflow_hidden">
+<section class="section_sidenav full_vh overflow_hidden" style="background-color: rgb(248, 248, 248)">
 
     <div class="flex flex_column flex_x_between full_h">
         <ul class="selectable p_7 empty overflow_y noscroll">
@@ -34,7 +34,7 @@
                         <span>Patients</span>
                     </li>
                 </a>
-                <a href="/inventory" title="Inventory">
+                <a href="/inventory/1" title="Inventory">
                     <li class="@yield('inventory') ">
                         <ion-icon name="albums-outline"></ion-icon>
                         {{-- <i class="fas fa-boxes"></i> --}}
@@ -62,17 +62,33 @@
                         <span>Users</span>
                     </li>
                 </a>
+                <a href="/patient-appt" title="Book">
+                    <li class="@yield('patientAppt') ">
+                        <ion-icon name="calendar-outline"></ion-icon>
+                        {{-- <i class="fas fa-smile"></i> --}}
+                        <span>Book</span>
+                    </li>
+                </a>
+                <a href="/forum" title="Forum">
+                    <li class="@yield('furom') ">
+                        <ion-icon name="chatbubbles-outline"></ion-icon>
+                        {{-- <i class="fas fa-smile"></i> --}}
+                        <span>Furom</span>
+                    </li>
+                </a>
             </div>
             <div>
                 {{-- <hr class="my_10"> --}}
                 <hr class="my_10" style="border-top: 1px solid rgba(0, 0, 0, 0.090);">
-                <a href="/logout" title="Logout">
-                    <li class="">
-                        <ion-icon name="log-out-outline" class="red"></ion-icon>
-                        {{-- <i class="fas fa-sign-out-alt"></i> --}}
-                        <span>Logout</span>
-                    </li>
-                </a>
+                    <a href="#" title="Logout">
+                        <li class="">
+                            <ion-icon name="log-out-outline" class="red"></ion-icon>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <span onclick="event.preventDefault(); this.closest('form').submit();">Logout</span>
+                            </form>
+                        </li>
+                    </a>
             </div>
         </ul>
 
@@ -80,11 +96,11 @@
         <div class="p_7 relative bt_1">
             <div class="sidenav_user_avatar overflow_hidden">
                 <div onclick="window.location.assign('/account')" class="pointer">
-                    <x-atom.profile-photo size="35px" path="storage/photos/avatars/{{ session()->get('curr_user_avatar')}}"/>
+                    <x-atom.profile-photo size="35px" path="storage/photos/avatars/{{ Auth::user()->avatar }}"/>
                 </div>
                 <span class="ml_7">
-                    <div class="mb_2" style="font-size: 0.7rem; font-weight: bold">{{ session()->get('curr_user_name') }}</div>
-                    <div class="" style="font-size: 0.55rem">{{ session()->get('curr_user_email') }}</div>
+                    <div class="mb_2" style="font-size: 0.7rem; font-weight: bold">{{ Auth::user()->name }}</div>
+                    <div class="" style="font-size: 0.55rem">{{ Auth::user()->email }}</div>
                 </span>
             </div>
         </div>

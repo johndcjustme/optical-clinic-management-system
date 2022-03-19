@@ -25,7 +25,7 @@ class CreatePatientsTable extends Migration
             $table->string('patient_mobile')->nullable();
             $table->string('patient_email')->nullable();
             $table->string('patient_gender')->nullable();
-            $table->string('patient_password')->nullable();
+            $table->string('patient_status')->nullable();
             $table->timestamps();
         });
     }

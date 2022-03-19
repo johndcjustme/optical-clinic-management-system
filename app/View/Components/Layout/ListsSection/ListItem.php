@@ -13,11 +13,17 @@ class ListItem extends Component
      */
     public $itemName;
     public $itemDesc;
+    public $avatar;
+    public $itemDescIcon;
+    public $itemNameIcon;
 
-    public function __construct($itemName, $itemDesc)
+    public function __construct($itemName = null, $itemDesc = null, $itemDescIcon = null, $avatar = null, $itemNameIcon = null)
     {
         $this->itemName = $itemName;
         $this->itemDesc = $itemDesc;
+        $this->avatar = $avatar;
+        $this->itemDescIcon = $itemDescIcon;
+        $this->itemNameIcon = $itemNameIcon;
     }
 
     /**

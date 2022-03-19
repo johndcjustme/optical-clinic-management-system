@@ -9,10 +9,11 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Tab;
 use App\Models\Patient;
-use App\Models\Lense;
-use App\Models\Frame;
-use App\Models\Accessory;
+// use App\Models\Lense;
+// use App\Models\Frame;
+// use App\Models\Accessory;
 use App\Models\Supplier;
+use App\Models\Item;
 use Livewire\WithPagination;
 
 use DateTime;
@@ -35,494 +36,423 @@ class PageInventory extends Component
     public $su_session_added = 'Supplier added successfully.';
     public $su_session_updated = 'Supplier updated successfully.';
     
+    public $subPage = 1;
 
-    public
-        $inventoryShowModal = false,
-            $isAddItem = false,
-                $addLense = false,
-                $addFrame = false,
-                $addAccessory = false,
-                $addSupplier = false,
-            
-            $isUpdateItem = false,
-                $updateLense = false,
-                $updateFrame = false,
-                $updateAccessory = false,
-                $updateSupplier = false;
+    public $modal = [
+        'show' => false,
+        'add' => false,
+        'item' => false,
+        'supplier' => false,
+        'update' => false,
+    ];
 
+    public $item = [
+        'id' => '',
+        'name' => '',
+        'desc' => '',
+        'type' => 'item',
+        'size' => '',
+        'qty' => '',
+        'price' => '',
+        'supplier' => '',
+    ];
 
-    public 
-        $item_type,
-        $le_name,
-        $le_tint,
-        $le_supplier,
-        $le_desc,
-        $le_qty,
-        $le_price,
+    public $su = [
+        'id'        => '',
+        'name'      => '',
+        'address'   => '',
+        'no'        => '',
+        'email'     => '',
+        'bank'      => '',
+        'acc'       => '',
+        'branck'       => '',
+    ];
 
-        $fr_name,
-        $fr_size,
-        $fr_qty,
-        $fr_desc,
-        $fr_price,
-        $fr_supplier,
+    public $delete = [
+        'item' => false,
+        'items' => false,
+        'supplier' => false,
+    ];
 
-        $ac_name,
-        $ac_desc,
-        $ac_qty,
-        $ac_price,
-        $ac_supplier,
-
-        $su_name,
-        $su_contact,
-        $su_address,
-        $su_bank,
-        $su_acc,
-        $su_branch,
-        $su_email;
 
     public 
         $le_sortDirection = 'asc',
         $fr_sortDirection = 'asc',
         $ac_sortDirection = 'asc',
         $su_sortDirection = 'asc',
+        $item_sortDirection = 'asc',
         
+        $item_sortColumn = 'item_name',
         $le_sortColumn = 'lense_name',
         $fr_sortColumn = 'frame_name',
         $ac_sortColumn = 'accessory_name',
         $su_sortColumn = 'supplier_name';
 
     public 
-        $searchLense,
-        $searchFrame,
-        $searchAccessory,
         $searchSupplier,
+        $searchItem = '',
 
-        $le_paginateVal = 5,
-        $fr_paginateVal = 5,
-        $ac_paginateVal = 5,
         $su_paginateVal = 5;
         // change table 
-    public $inventoryChangeTable;
+    public $inventoryChangeTable, $onDisplayItemType = 'all';
 
+
+    public $colName='item_name', $direction = 'asc';
+
+
+    public $selectedItems = [];
+
+    public $deletingItem = null;
+
+
+    public $showDropdown = false;
+
+    public $pageNumber = 10;
+
+
+    protected $queryString = ['searchItem' => ['except' => '']];
  
     public function render()
-    {   //lens
-
-        $searchLense = '%' . $this->searchLense . '%';
-        $lenses = Lense::with('supplier')
-            ->where('lense_name', 'like', $searchLense)
-            ->orWhere('item_type', 'like', $searchLense)
-            ->orWhere('lense_qty', 'like', $searchLense)
-            ->orWhere('lense_price', 'like', $searchLense)
-            ->orderBy($this->le_sortColumn, $this->le_sortDirection)
-            ->paginate($this->le_paginateVal);
-            // ->get();    
-
-        
-        //frame
-        $searchFrame = '%' . $this->searchFrame . '%';
-        $frames = Frame::with('supplier')
-            ->where('frame_name', 'like', $searchFrame)
-            ->orderBy($this->fr_sortColumn, $this->fr_sortDirection)
-            ->paginate($this->fr_paginateVal);
-            // ->get(); 
-
-        //accessory
-        $searchAccessory = '%' . $this->searchAccessory . '%';
-        $accessories = Accessory::with('supplier')
-            ->where('accessory_name' , 'like', $searchAccessory)
-            ->orderBy($this->ac_sortColumn, $this->ac_sortDirection)
-            ->paginate($this->ac_paginateVal);
-            // ->get();
-
+    {  
 
         //supplier    
-        $searchSupplier = '%' . $this->searchSupplier . '%';
+        $searchSupplier = $this->searchSupplier . '%';
         $suppliers = Supplier::where('supplier_name', 'like', $searchSupplier)
             ->orWhere('supplier_address', 'like', $searchSupplier)
             ->orWhere('supplier_contact_no', 'like', $searchSupplier)
             ->orWhere('supplier_email', 'like', $searchSupplier)
             ->orderBy($this->su_sortColumn, $this->su_sortDirection)
             ->get();
-            // ->get();  
 
-        return view('livewire.pages.page-inventory', ['lenses' => $lenses, 'frames' => $frames, 'accessories' => $accessories, 'suppliers' => $suppliers])
+
+
+        $searchItem = $this->searchItem . '%';
+        if ($this->onDisplayItemType == 'all') {
+            $items = Item::with('supplier')
+                ->where('item_name', 'like', $searchItem)
+                ->orderBy($this->colName, $this->direction)
+                ->paginate($this->pageNumber);
+        } else {
+            $items = Item::with('supplier')
+                ->where('item_name', 'like', $searchItem)
+                ->where('item_type', $this->onDisplayItemType)
+                ->orderBy($this->colName, $this->direction)
+                ->paginate($this->pageNumber);        
+        }
+        
+
+
+        return view('livewire.pages.page-inventory', 
+            [   
+                'suppliers' => $suppliers,
+                'items' => $items,
+            ])
             ->extends('layouts.app')
             ->section('content');
     }
 
-    public function updatingSearch()
+
+   
+
+    public function mount(Request $req)
+    {
+        if ($req->subPage == 1) {
+            $this->subPage=1;
+        }
+        elseif ($req->subPage == 2) {
+            $this->subPage=2;
+        }
+    }
+
+    public function updatedSearchItem()
     {
         $this->resetPage();
     }
 
-    public function sortBy($itemType, $columnName)
-    {
-        if ($itemType === $itemType) {
-            $sortColumn = $itemType . '_sortColumn';
-            $sortDirection = $itemType . '_sortDirection';
-            $this->$sortColumn == $columnName ? $this->$sortDirection = $this->$sortDirection === 'asc' ? 'desc' : 'asc' : '';
-            $this->$sortColumn = $columnName;
-        }
-    }
 
+    // public function updatingSearch()
+    // {
+    //     if (!empty($this->searchItem)) {
+    //         $this->resetPage();
+    //     }
+    // }
 
-    public function resetField($caseToReset)
+    // public function sortBy($itemType, $columnName)
+    // {
+    //     $this->resetPage();
+
+    //     if ($itemType === $itemType) {
+    //         $sortColumn = $itemType . '_sortColumn';
+    //         $sortDirection = $itemType . '_sortDirection';
+    //         $this->$sortColumn == $columnName ? $this->$sortDirection = $this->$sortDirection === 'asc' ? 'desc' : 'asc' : '';
+    //         $this->$sortColumn = $columnName;
+    //     }
+    // }
+
+    public function itemType($itemType)
     {
-        switch ($caseToReset) {
+        switch ($itemType) {
             case 'le':
-                $this->reset([
-                    'le_name',
-                    'item_type',
-                    'le_tint',
-                    'le_desc',
-                    'le_supplier',
-                    'le_qty',
-                    'le_price',
-                ]);
+                return 'Lense';
                 break;
-
             case 'fr':
-                $this->reset([
-                    'fr_name',
-                    'item_type',
-                    'fr_desc',
-                    'fr_size',
-                    'fr_supplier',
-                    'fr_qty',
-                    'fr_price',
-                ]);
+                return 'Frame';
                 break;
-
             case 'ac':
-                $this->reset([
-                    'ac_name',
-                    'ac_desc',
-                    'ac_qty',
-                    'ac_price',
-                    'ac_supplier',
-                ]);
-                break;
-
-            case 'su':
-                $this->reset([
-                    'su_name',
-                    'su_contact',
-                    'su_address',
-                    'su_bank',
-                    'su_acc',
-                    'su_branch',
-                    'su_email',
-                ]);
+                return 'Accessory';
                 break;
         }
     }
 
-
-    public function addInventory($itemType) 
+    public function itemColor($itemType) 
     {
-        switch($itemType) {
-            case 'le': 
-                $validateData = $this->validate([
-                    'le_name' => 'required',
-                ]); 
-                $le = Lense::create([
-                    'supplier_id' => $this->le_supplier,
-                    'lense_name' => $this->le_name,
-                    'item_type' => $this->item_type,
-                    'lense_tint' => $this->le_tint,
-                    'lense_desc' => $this->le_desc,
-                    'lense_qty' => $this->le_qty,
-                    'lense_price' => $this->le_price,
-                    'created_at' => new DateTime(),
-                    'updated_at' => new DateTime(),
-                ]);
-                $this->inventoryCloseModal();
-                session()->flash('message', $this->le_session_added);
-                $this->resetField('le');
-                break;
-
-            case 'fr': 
-                $fr = Frame::create([
-                    'supplier_id' => $this->fr_supplier,
-                    'frame_name' => $this->fr_name,
-                    'item_type' => $this->item_type,
-                    'frame_desc' => $this->fr_desc,
-                    'frame_size' => $this->fr_size,
-                    'frame_qty' => $this->fr_qty,
-                    'frame_price' => $this->fr_price,
-                    'created_at' => new DateTime(),
-                    'updated_at' => new DateTime(),
-                ]);
-                $this->inventoryCloseModal();
-                session()->flash('message', $this->fr_session_added);
-                $this->resetField('fr');
-                break;
-
-            case 'ac': 
-                $ac = Accessory::create([
-                    'accessory_name' => $this->ac_name,
-                    'accessory_desc' => $this->ac_desc,
-                    'accessory_qty' => $this->ac_qty,
-                    'accessory_price' => $this->ac_price,
-                    'supplier_id' => $this->ac_supplier,
-                    'item_type' => 'accessory',
-                    'created_at' => new DateTime(),
-                    'updated_at' => new DateTime(),
-                ]);
-                $this->inventoryCloseModal();
-                session()->flash('message', $this->ac_session_added);
-                $this->resetField('ac');
-                break;
-
-            case 'su': 
-                $su = Supplier::create([
-                    'supplier_name' => $this->su_name,
-                    'supplier_contact_no' => $this->su_contact,
-                    'supplier_address' => $this->su_address,
-                    'supplier_bank' => $this->su_bank,
-                    'supplier_acc_no' => $this->su_acc,
-                    'supplier_branch' => $this->su_branch,
-                    'supplier_email' => $this->su_email,
-                ]);
-                $this->inventoryCloseModal();
-                session()->flash('message', $this->su_session_added);
-                $this->resetField('su');
-                break;
-        }
-    }
-
-    public function updateInventory($data, $id) 
-    {
-
-        switch ($data) {
-            case 'le': // lense
-                $le = Lense::findOrFail($id);
-                $le->update([
-                    'supplier_id' => $this->le_supplier,
-                    'lense_name' => $this->le_name,
-                    'item_type' => $this->item_type,
-                    'lense_tint' => $this->le_tint,
-                    'lense_desc' => $this->le_desc,
-                    'lense_qty' => $this->le_qty,
-                    'lense_price' => $this->le_price,
-                    'updated_at' => new DateTime(),
-                ]);
-                session()->flash('message', $this->le_session_updated);
-                $this->resetField('le');
-                break;
-                
-            case 'fr': // frame
-                $fr = Frame::find($id);
-                $fr->update([
-                    'supplier_id' => $this->fr_supplier,
-                    'frame_name' => $this->fr_name,
-                    'item_type' => $this->item_type,
-                    'frame_desc' => $this->fr_desc,
-                    'frame_size' => $this->fr_size,
-                    'frame_qty' => $this->fr_qty,
-                    'frame_price' => $this->fr_price,
-                    'updated_at' => new DateTime(),
-                ]);
-                session()->flash('message', $this->fr_session_updated);
-                $this->resetField('fr');
-                break;
-
-            case 'ac': // accessory
-                $ac = Accessory::find($id);
-                $ac->update([
-                    'supplier_id' => $this->ac_supplier,
-                   'accessory_name' => $this->ac_name,
-                   'accessory_desc' => $this->ac_desc,
-                   'accessory_qty' => $this->ac_qty,
-                   'accessory_price' => $this->ac_price,
-                   'updated_at' => new DateTime(),
-                ]);
-                session()->flash('message', $this->ac_session_updated);
-                $this->resetField('ac');
-                break;
-
-            case 'su': // suppliers
-                $su = Supplier::find($id);
-                $su->update([
-                    'supplier_name' => $this->su_name,
-                    'supplier_contact_no' => $this->su_contact,
-                    'supplier_address' => $this->su_address,
-                    'supplier_bank' => $this->su_bank,
-                    'supplier_acc_no' => $this->su_acc,
-                    'supplier_branch' => $this->su_branch,
-                    'supplier_email' => $this->su_email,
-                    'updated_at' => date('Y-m-d H:i:s'),
-                ]);     
-                session()->flash('message', $this->su_session_updated);
-                $this->resetField('su');
-                break;
-        }
-        $this->inventoryCloseModal();
-    }
-
-
-    public function deleteInventory($data, $deleteId)
-    {
-        switch($data) {
+        switch ($itemType) {
             case 'le':
-                Lense::find($deleteId)->delete();
+                return 'blue';
                 break;
-
             case 'fr':
-                Frame::find($deleteId)->delete();
+                return 'green';
                 break;
-
             case 'ac':
-                Accessory::find($deleteId)->delete();
-                break;
-
-            case 'su':
-                Supplier::find($deleteId)->delete();
+                return 'red';
                 break;
         }
     }
-   
-    
-    public function inventoryShowModal($action, $data, $updateId) 
+
+    public function orderBy($colName, $direction)
     {
-        if ($action === 'isAdd') {
-            switch ($data) {
-                case 'le':
-                    $this->resetField('le');
-                    $this->inventoryShowModal = true;
-                    $this->isAddItem = true;
-                    $this->addLense = true;
-                    break;
-    
-                case 'fr':
-                    $this->resetField('fr');
-                    $this->inventoryShowModal = true;
-                    $this->isAddItem = true;
-                    $this->addFrame = true;
-                    break;
-    
-                case 'ac':
-                    $this->resetField('ac');
-                    $this->inventoryShowModal = true;
-                    $this->isAddItem = true;
-                    $this->addAccessory = true;
-                    break;
-    
-                case 'su':
-                    $this->resetField('su');
-                    $this->inventoryShowModal = true;
-                    $this->isAddItem = true;
-                    $this->addSupplier = true;
-                    break;
-            }
-        }
+        $this->resetPage();
 
-        if ($action === 'isUpdate') {
-            switch ($data) {
-                case 'le':
-                    $this->inventoryShowModal = true;
-                    $this->isUpdateItem = true;
-                    $this->updateLense = true;
-
-                    $le = Lense::findOrFail($updateId);
-                    $this->le_id = $updateId;
-                    $this->le_name = Str::title($le->lense_name);
-                    $this->item_type = Str::title($le->item_type);
-                    $this->le_tint = Str::title($le->lense_tint);
-                    $this->le_desc = Str::title($le->lense_desc);
-                    $this->le_qty = Str::title($le->lense_qty);
-                    $this->le_price = Str::title($le->lense_price);
-                    $le->supplier_id == null ?
-                        $this->le_supplier = '' :
-                        $this->le_supplier = Str::title($le->supplier_id);
-                    break;
-    
-                case 'fr':
-                    $this->inventoryShowModal = true;
-                    $this->isUpdateItem = true;
-                    $this->updateFrame = true;
-
-                    $fr = Frame::findOrFail($updateId);
-                    $this->fr_id = $updateId;
-                    $this->fr_name = Str::title($fr->frame_name);
-                    $this->item_type = Str::title($fr->item_type);
-                    $this->fr_size = Str::title($fr->frame_size);
-                    $this->fr_desc = Str::title($fr->frame_desc);
-                    $this->fr_qty = Str::title($fr->frame_qty);
-                    $this->fr_price = Str::title($fr->frame_price);
-                    $fr->supplier_id == null ?
-                        $this->fr_supplier = '' :
-                        $this->fr_supplier = Str::title($fr->supplier_id);
-                    break;
-    
-                case 'ac':
-                    $this->inventoryShowModal = true;
-                    $this->isUpdateItem = true;
-                    $this->updateAccessory = true;
-
-                    $ac = Accessory::findOrFail($updateId);
-                    $this->ac_id = $updateId;
-                    $this->ac_name = Str::title($ac->accessory_name);
-                    $this->ac_desc = Str::title($ac->accessory_desc);
-                    $this->ac_qty = Str::title($ac->accessory_qty);
-                    $this->ac_price = Str::title($ac->accessory_price);
-                    $ac->supplier_id == null ? 
-                        $this->ac_supplier = '' : 
-                        $this->ac_supplier = Str::title($ac->supplier_id);
-                    break;
-    
-                case 'su':
-                    $this->inventoryShowModal = true;
-                    $this->isUpdateItem = true;
-                    $this->updateSupplier = true;
-
-                    $su = Supplier::findOrFail($updateId);
-                    $this->su_id = $updateId;
-                    $this->su_name = Str::title($su->supplier_name);
-                    $this->su_contact = Str::title($su->supplier_contact_no);
-                    $this->su_address = Str::title($su->supplier_address);
-                    $this->su_bank = Str::title($su->supplier_bank);
-                    $this->su_acc = Str::title($su->supplier_acc_no);
-                    $this->su_branch = Str::title($su->supplier_branch);
-                    $this->su_email = Str::title($su->supplier_email);
-                    break;
-            }
-        }
+        $this->colName = $colName;
+        $this->direction = $direction;
     }
 
-    public function inventoryCloseModal() {
-        $this->resetField('le');
-        $this->resetField('fr');
-        $this->resetField('ac');
-        $this->resetField('su');
-        $this->reset([
-            'inventoryShowModal',
-                'isAddItem',
-                    'addLense',
-                    'addFrame',
-                    'addAccessory',
-                    'addSupplier',
 
-                'isUpdateItem',
-                    'updateLense',
-                    'updateFrame',
-                    'updateAccessory',
-                    'updateSupplier',
+    public function addItem() 
+    {
+        Item::create([
+            'item_name'     => $this->item['name'],
+            'item_desc'     => $this->item['desc'],
+            'item_type'     => $this->item['type'],
+            'item_price'    => $this->item['price'],
+            'supplier_id'   => $this->item['supplier'],
+            'item_qty'      => $this->item['qty'],
+            'item_size'     => $this->item['size'],
         ]);
+        $this->closeModal();
+        $this->resetPage();
+        // session()->flash('message', 'added successfully.');
+        $this->dispatchBrowserEvent('toast',
+            [
+                'title' => null,
+                'class' => 'success',
+                'message' => 'Item added successfully.',
+            ]
+        );
     }
 
-    public function inventoryChangeTable($value) 
+    public function updateItem($itemId)
     {
-        $activeTab = Tab::find(1);
-        $activeTab->inventory_active_tab = $value;
-        $activeTab->save();
+        Item::findOrFail($itemId)
+            ->update([
+                'item_name'     => $this->item['name'],
+                'item_desc'     => $this->item['desc'],
+                'item_type'     => $this->item['type'],
+                'item_price'    => $this->item['price'],
+                'supplier_id'   => $this->item['supplier'],
+                'item_qty'      => $this->item['qty'],
+                'item_size'     => $this->item['size'],
+            ]);
+        $this->closeModal();
+        $this->dispatchBrowserEvent('toast',
+            [
+                'title' => null,
+                'class' => 'success',
+                'message' => 'Item updated successfully.',
+            ]
+        );
+        // session()->flash('message', 'updated successfully.');
     }
 
-    public function myTab()
+    public function deletingItem($itemId)
     {
-        $userid = 1;
-        return Tab::find($userid)->inventory_active_tab;
+        $this->deletingItem = $itemId;
+        $this->delete['item'] = true;
+        $this->dispatchBrowserEvent('confirm-dialog'); 
+    }
+
+    public function deletingItems()
+    {
+        $this->delete['items'] = true;
+        $this->dispatchBrowserEvent('confirm-dialog'); 
+    }
+
+    public function deleteItem()
+    {
+        Item::destroy($this->deletingItem);
+        $this->confirm_dialog_modal_close();
+        // session()->flash('message', 'Deleted successfully.');
+        $this->dispatchBrowserEvent('toast',
+            [
+                'title' => null,
+                'class' => 'success',
+                'message' => 'Item Deleted successfully.',
+            ]
+        );
+    }
+
+    public function deleteItems()
+    {
+        Item::destroy($this->selectedItems);
+        $this->selectedItems = [];
+        $this->confirm_dialog_modal_close();
+        // session()->flash('message', 'Deleted successfully.');
+        $this->dispatchBrowserEvent('toast',
+            [
+                'title' => null,
+                'class' => 'success',
+                'message' => 'Item Deleted successfully.',
+            ]
+        );
+    }
+
+    public function deletingSupplier($supplierId)
+    {
+        $this->delete['supplier'] = true;
+        $this->dispatchBrowserEvent('confirm-dialog'); 
+    }
+
+    public function delete()
+    {
+        $this->delete['item']       ? $this->deleteItem()   : '';
+        $this->delete['items']      ? $this->deleteItems()  : '';
+        $this->delete['supplier']   ? dd('delete supplier') : '';
+
+        $this->reset(['delete']);
+    }
+
+    public function addSupplier()
+    {
+
+        Supplier::create([
+            'supplier_name'         => $this->su['name'],
+            'supplier_address'      => $this->su['address'],
+            'supplier_contact_no'   => $this->su['no'],
+            'supplier_email'        => $this->su['email'],
+            'supplier_bank'         => $this->su['bank'],
+            'supplier_acc_no'       => $this->su['acc'],
+            'supplier_branch'       => $this->su['branch'],
+        ]);
+        $this->closeModal();
+        // session()->flash('message', 'added successfully.');
+        $this->dispatchBrowserEvent('toast',
+            [
+                'title' => null,
+                'class' => 'success',
+                'message' => 'Supplier added successfully.',
+            ]
+        );
+    }
+
+    public function updateSupplier($supplierId)
+    {
+        Supplier::findOrFail($supplierId)
+            ->update([
+                'supplier_name'         => $this->su['name'],
+                'supplier_address'      => $this->su['address'],
+                'supplier_contact_no'   => $this->su['no'],
+                'supplier_email'        => $this->su['email'],
+                'supplier_bank'         => $this->su['bank'],
+                'supplier_acc_no'       => $this->su['acc'],
+                'supplier_branch'       => $this->su['branch'],
+            ]);
+            $this->closeModal();
+            // session()->flash('message', 'updated successfully.');
+            $this->dispatchBrowserEvent('toast',
+                [
+                    'title' => null,
+                    'class' => 'success',
+                    'message' => 'Supplier updated successfully.',
+                ]
+            );
+    }
+
+
+    public function showModal($action, $data, $id)
+    {
+        $this->reset(['modal', 'su', 'item']);
+
+        if ($action == 'add') {
+            $this->reset(['modal', 'su', 'item']);
+            if ($data == 'supplier')        { $this->modal['supplier'] = true; }
+            elseif ($data == 'item')        { $this->modal['item'] = true; }
+            $this->modal['add'] = true;
+        }
+        elseif ($action == 'update') {
+            if ($data == 'item') { 
+                $item = Item::findOrFail($id);
+                $this->item['id']           = $item->id;
+                $this->item['name']         = $item->item_name;
+                $this->item['desc']         = $item->item_desc;
+                $this->item['type']         = $item->item_type; 
+                $this->item['price']        = $item->item_price;
+                $this->item['supplier']     = $item->supplier_id;
+                $this->item['qty']          = $item->item_qty;
+                $this->item['size']         = $item->item_size;
+            
+                $this->modal['item'] = true; 
+            }
+            elseif ($data == 'supplier') { 
+                $supplier = Supplier::findOrFail($id);
+                $this->su['id']         = $supplier->id;
+                $this->su['name']       = $supplier->supplier_name;
+                $this->su['address']    = $supplier->supplier_address;
+                $this->su['no']         = $supplier->supplier_contact_no;
+                $this->su['email']      = $supplier->supplier_email;
+                $this->su['bank']       = $supplier->supplier_bank;
+                $this->su['acc']        = $supplier->supplier_acc_no;
+                $this->su['branch']     = $supplier->supplier_branch;
+
+                $this->modal['supplier'] = true; 
+            }
+            $this->modal['update'] = true;
+        }
+        $this->dispatchBrowserEvent('form-modal'); 
+    }
+
+    public function closeModal()
+    {
+        // $this->dispatchBrowserEvent('confirm-dialog-close'); 
+        // $this->reset(['modal', 'su', 'item']);
+
+        $this->confirm_dialog_modal_close();
+    }
+
+
+    // public function inventoryChangeTable($value) 
+    // {
+    //     $activeTab = Tab::find(1);
+    //     $activeTab->inventory_active_tab = $value;
+    //     $activeTab->save();
+    // }
+
+    // public function myTab()
+    // {
+    //     $userid = 1;
+    //     return Tab::find($userid)->inventory_active_tab;
+    // }
+    
+    public function confirm_dialog_modal_close() 
+    {
+        $this->dispatchBrowserEvent('confirm-dialog-close'); 
+    }
+
+    public function setPageNumber($pageNumber)
+    {
+        $this->resetPage();
+        return $pageNumber;
     }
 }
+
+
+

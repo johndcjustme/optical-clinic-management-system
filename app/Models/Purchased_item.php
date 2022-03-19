@@ -14,6 +14,7 @@ class Purchased_item extends Model
     protected $fillable = [
         'purchase_id',
         'item_id',
+        'qty',
     ];
 
     public function item()

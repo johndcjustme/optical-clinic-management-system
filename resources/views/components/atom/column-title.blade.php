@@ -3,4 +3,5 @@
     @if (!empty($wireClick))
         <i class="ml_4 fa-solid fa-caret-{{ $arrowDirection ? 'down' : 'up' }}"></i>
     @endif
+    {{ $slot }}
 </div>

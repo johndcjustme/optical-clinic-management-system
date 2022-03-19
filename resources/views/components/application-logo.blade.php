@@ -1,0 +1,1 @@
+<img src="{{ asset('images/dango-logo-nolabel.png')}}" alt="" width="60px">
