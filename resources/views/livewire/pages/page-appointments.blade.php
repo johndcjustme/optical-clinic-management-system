@@ -8,18 +8,25 @@
 {{-- @section('pageTitle', 'Appointment') --}}
 <x-layout.main-page>
 `
-    <div class="full_w main_content_inner overflow_scroll">
+    <div class="full_w main_content_inner overflow_y_scroll">
     
         <div class="inner_content">
             @include('livewire.components.organisms.pagecontents.appointments-content')      
         </div>
 
-        @if ($apptShowModal)
-            @include('livewire.components.organisms.modal.modal-appointment');
-        @endif
+        {{-- @if ($apptShowModal) --}}
+        @include('livewire.components.organisms.modal.modal-appointment')
+        {{-- @endif --}}
 
         <x-alert type="error" message="{{ session('message') }}" />
+
+        <x-organisms.ui.confirm-dialog 
+            wire-confirm="delete"
+            content="Confirm Delete?"
+        />
     
     </div>
+
+    
 
 </x-layout.main-page>

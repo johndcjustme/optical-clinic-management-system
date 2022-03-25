@@ -15,6 +15,7 @@ class CreateSuppliersTable extends Migration
     {
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
+            $table->string('supplier_avatar')->nullable();
             $table->string('supplier_name')->nullable();
             $table->string('supplier_contact_no')->nullable();
             $table->string('supplier_address')->nullable();
@@ -26,7 +27,7 @@ class CreateSuppliersTable extends Migration
         });
     }
 
-    /**
+    /**ms
      * Reverse the migrations.
      *
      * @return void

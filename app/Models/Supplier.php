@@ -18,6 +18,7 @@ class Supplier extends Model
         'supplier_acc_no',
         'supplier_branch',
         'supplier_email',
+        'supplier_avatar',
     ];
 
     public function lense()

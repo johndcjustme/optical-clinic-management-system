@@ -1,4 +1,9 @@
 
+
+
+
+
+
 {{-- 
 
 
@@ -70,7 +75,7 @@ style="
 
 <script src="{{ asset('js/modal.js') }}"></script>
 
-<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
+{{-- <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script> --}}
 
 
 @livewireScripts
@@ -88,6 +93,17 @@ style="
 
 
 <script>
+
+
+    $('.table-inventory-dropdown-image').dropdown();
+
+
+    $('.select_dropdown_modal').dropdown();
+
+
+    
+
+
     window.addEventListener('confirm-dialog', event => {
         $("#fade").modal({
             fadeDuration: 75,
@@ -119,6 +135,8 @@ style="
             position: 'bottom right',
         });
     })
+
+
 </script>
 
 

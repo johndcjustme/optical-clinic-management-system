@@ -3,9 +3,10 @@
 namespace App\Http\Livewire\Pages;
 use Illuminate\Support\Str;
 
-
+use Livewire\WithFileUploads;
 use Livewire\Component;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Tab;
 use App\Models\Patient;
@@ -21,186 +22,201 @@ use DateTime;
 class PageInventory extends Component
 {
     
+    use WithFileUploads;
     use WithPagination;
 
-    // declarations for modal 
-    public $le_session_added = 'Lense added successfully.';
-    public $le_session_updated = 'Lense updated successfully.';
-
-    public $fr_session_added = 'Frame added successfully.';
-    public $fr_session_updated = 'Frame updated successfully.';    
-
-    public $ac_session_added = 'Accessory added successfully.';
-    public $ac_session_updated = 'Accessory updated successfully.';  
     
-    public $su_session_added = 'Supplier added successfully.';
-    public $su_session_updated = 'Supplier updated successfully.';
-    
+
     public $subPage = 1;
 
     public $modal = [
-        'show' => false,
-        'add' => false,
-        'item' => false,
-        'supplier' => false,
-        'update' => false,
+        'show'      => false,
+        'add'       => false,
+        'item'      => false,
+        'supplier'  => false,
+        'update'    => false,
     ];
 
     public $item = [
-        'id' => '',
-        'name' => '',
-        'desc' => '',
-        'type' => 'item',
-        'size' => '',
-        'qty' => '',
-        'price' => '',
-        'supplier' => '',
+        'id'            => '',
+        'image'         => null,
+        'name'          => '',
+        'desc'          => '',
+        'type'          => 'item',
+        'size'          => '',
+        'qty'           => '',
+        'price'         => '',
+        'supplier'      => '',
+        'has_image'     => '',
     ];
 
     public $su = [
-        'id'        => '',
-        'name'      => '',
-        'address'   => '',
-        'no'        => '',
-        'email'     => '',
-        'bank'      => '',
-        'acc'       => '',
-        'branck'       => '',
+        'id'            => '',
+        'name'          => '',
+        'address'       => '',
+        'no'            => '',
+        'email'         => '',
+        'bank'          => '',
+        'acc'           => '',
+        'branch'        => '',
+        'avatar'        => '',
+        'has_avatar'    => false,
     ];
 
     public $delete = [
-        'item' => false,
-        'items' => false,
-        'supplier' => false,
+        'item'      => false,
+        'items'     => false,
+        'supplier'  => false,
+        'suppliers' => false,
     ];
 
 
     public 
-        $le_sortDirection = 'asc',
-        $fr_sortDirection = 'asc',
-        $ac_sortDirection = 'asc',
         $su_sortDirection = 'asc',
         $item_sortDirection = 'asc',
         
         $item_sortColumn = 'item_name',
-        $le_sortColumn = 'lense_name',
-        $fr_sortColumn = 'frame_name',
-        $ac_sortColumn = 'accessory_name',
         $su_sortColumn = 'supplier_name';
 
-    public 
-        $searchSupplier,
-        $searchItem = '',
+    public $searchSupplier, $searchItem = '';
 
-        $su_paginateVal = 5;
-        // change table 
     public $inventoryChangeTable, $onDisplayItemType = 'all';
 
+    public 
+        $direction = 'asc',
+        $colName = ''; 
 
-    public $colName='item_name', $direction = 'asc';
-
-
-    public $selectedItems = [];
+    public 
+        $selectedItems = [],
+        $selectedSuppliers = [];
 
     public $deletingItem = null;
-
 
     public $showDropdown = false;
 
     public $pageNumber = 10;
 
 
-    protected $queryString = ['searchItem' => ['except' => '']];
+
+
+    protected $queryString = [
+        'searchItem' => ['except' => ''], 
+        'onDisplayItemType',
+        'subPage' => '1',
+    ];
+
+    protected $listeners = ['updatedPhoto'];
+     
+
+    protected $rules = [
+        'item.name' => 'required',
+        'item.image' => 'image|max:1024|nullable',
+        'item.type' => 'required',
+        'item.price' => 'required|integer',
+        'item.qty' => 'required|integer',
+    ];
  
+    protected $messages = [
+        'item.name.required' => 'Required',
+        'item.type.required' => 'Required',
+        'item.price.required' => 'Required',
+        'item.qty.required' => 'Required',
+    ];
+
+
+
+
+
+
+    
     public function render()
-    {  
+    { 
+        switch ($this->subPage) {
+            case 1:
+                $this->colName = 'item_name';
+                $searchItem = $this->searchItem . '%';
+                if ($this->onDisplayItemType == 'all') {
+                    $items = Item::with('supplier')
+                        ->where('item_name', 'like', $searchItem)
+                        ->orderBy($this->colName, $this->direction)
+                        ->paginate($this->pageNumber);
+                } else {
+                    $items = Item::with('supplier')
+                        ->where('item_name', 'like', $searchItem)
+                        ->where('item_type', $this->onDisplayItemType)
+                        ->orderBy($this->colName, $this->direction)
+                        ->paginate($this->pageNumber);        
+                }
 
-        //supplier    
-        $searchSupplier = $this->searchSupplier . '%';
-        $suppliers = Supplier::where('supplier_name', 'like', $searchSupplier)
-            ->orWhere('supplier_address', 'like', $searchSupplier)
-            ->orWhere('supplier_contact_no', 'like', $searchSupplier)
-            ->orWhere('supplier_email', 'like', $searchSupplier)
-            ->orderBy($this->su_sortColumn, $this->su_sortDirection)
-            ->get();
+                return view('livewire.pages.page-inventory', 
+                    [   
+                        'suppliers' => Supplier::all(),
+                        'items' => $items,
+                    ])
+                    ->extends('layouts.app')
+                    ->section('content');
+                break;
 
+            case 2:
+                $this->colName = 'supplier_name';
 
+                $searchSupplier = $this->searchSupplier . '%';
+                $suppliers = Supplier::where('supplier_name', 'like', $searchSupplier)
+                    ->orWhere('supplier_address', 'like', $searchSupplier)
+                    ->orWhere('supplier_contact_no', 'like', $searchSupplier)
+                    ->orWhere('supplier_email', 'like', $searchSupplier)
+                    ->orderBy('supplier_name', $this->direction)
+                    ->get();
 
-        $searchItem = $this->searchItem . '%';
-        if ($this->onDisplayItemType == 'all') {
-            $items = Item::with('supplier')
-                ->where('item_name', 'like', $searchItem)
-                ->orderBy($this->colName, $this->direction)
-                ->paginate($this->pageNumber);
-        } else {
-            $items = Item::with('supplier')
-                ->where('item_name', 'like', $searchItem)
-                ->where('item_type', $this->onDisplayItemType)
-                ->orderBy($this->colName, $this->direction)
-                ->paginate($this->pageNumber);        
+                    return view('livewire.pages.page-inventory', 
+                    [   
+                        'suppliers' => $suppliers,
+                    ])
+                    ->extends('layouts.app')
+                    ->section('content');
+                break;
+
+            case 3:
+                return view('livewire.pages.page-inventory', ['suppliers' => Supplier::all()])
+                    ->extends('layouts.app')
+                    ->section('content');
+                break;
+            default:
         }
-        
-
-
-        return view('livewire.pages.page-inventory', 
-            [   
-                'suppliers' => $suppliers,
-                'items' => $items,
-            ])
-            ->extends('layouts.app')
-            ->section('content');
     }
+
+
 
 
    
 
-    public function mount(Request $req)
+    public function mount()
     {
-        if ($req->subPage == 1) {
-            $this->subPage=1;
-        }
-        elseif ($req->subPage == 2) {
-            $this->subPage=2;
-        }
+        // 
     }
 
-    public function updatedSearchItem()
+    public function updatedSubPage($pageId)
     {
         $this->resetPage();
+        $this->subPage = $pageId;
     }
 
+    public function updatedPageNumber() { $this->resetPage(); }
 
-    // public function updatingSearch()
-    // {
-    //     if (!empty($this->searchItem)) {
-    //         $this->resetPage();
-    //     }
-    // }
+    public function updatedSearchItem() { $this->resetPage(); }
 
-    // public function sortBy($itemType, $columnName)
-    // {
-    //     $this->resetPage();
-
-    //     if ($itemType === $itemType) {
-    //         $sortColumn = $itemType . '_sortColumn';
-    //         $sortDirection = $itemType . '_sortDirection';
-    //         $this->$sortColumn == $columnName ? $this->$sortDirection = $this->$sortDirection === 'asc' ? 'desc' : 'asc' : '';
-    //         $this->$sortColumn = $columnName;
-    //     }
-    // }
+    public function resetFields() { $this->reset(['modal', 'su', 'item']); }
 
     public function itemType($itemType)
     {
         switch ($itemType) {
             case 'le':
-                return 'Lense';
-                break;
+                return 'Lense'; break;
             case 'fr':
-                return 'Frame';
-                break;
+                return 'Frame'; break;
             case 'ac':
-                return 'Accessory';
-                break;
+                return 'Accessory'; break;
+            default:
         }
     }
 
@@ -208,14 +224,12 @@ class PageInventory extends Component
     {
         switch ($itemType) {
             case 'le':
-                return 'blue';
-                break;
+                return 'blue'; break;
             case 'fr':
-                return 'green';
-                break;
+                return 'green'; break;
             case 'ac':
-                return 'red';
-                break;
+                return 'red'; break;
+            default:
         }
     }
 
@@ -228,9 +242,15 @@ class PageInventory extends Component
     }
 
 
+
+
+
+
     public function addItem() 
-    {
-        Item::create([
+    {    
+        $this->validate();
+
+        $createItem = [
             'item_name'     => $this->item['name'],
             'item_desc'     => $this->item['desc'],
             'item_type'     => $this->item['type'],
@@ -238,45 +258,63 @@ class PageInventory extends Component
             'supplier_id'   => $this->item['supplier'],
             'item_qty'      => $this->item['qty'],
             'item_size'     => $this->item['size'],
-        ]);
+            'created_at'    => now(),
+            'updated_at'    => now(),
+        ];
+
+        if ($this->item['image']) {
+            $createItem += ['item_image' => $this->item['image']->hashName()]; 
+            $this->item['image']->store('/', 'items');
+        }
+
+        Item::create($createItem);
+
         $this->closeModal();
-        $this->resetPage();
-        // session()->flash('message', 'added successfully.');
-        $this->dispatchBrowserEvent('toast',
-            [
-                'title' => null,
-                'class' => 'success',
-                'message' => 'Item added successfully.',
-            ]
-        );
+
+        $this->dispatchBrowserEvent('toast',[
+            'title' => null,
+            'class' => 'success',
+            'message' => 'Uploaded.',
+        ]);
     }
 
-    public function updateItem($itemId)
+    public function updateItem()
     {
-        Item::findOrFail($itemId)
-            ->update([
-                'item_name'     => $this->item['name'],
-                'item_desc'     => $this->item['desc'],
-                'item_type'     => $this->item['type'],
-                'item_price'    => $this->item['price'],
-                'supplier_id'   => $this->item['supplier'],
-                'item_qty'      => $this->item['qty'],
-                'item_size'     => $this->item['size'],
-            ]);
+        $foundItemId = Item::findOrFail($this->item['id']);
+
+        $updateItem = [
+            'item_name'     => $this->item['name'],
+            'item_desc'     => $this->item['desc'],
+            'item_type'     => $this->item['type'],
+            'item_price'    => $this->item['price'],
+            'supplier_id'   => $this->item['supplier'], 
+            'item_qty'      => $this->item['qty'],
+            'item_size'     => $this->item['size'],
+            'updated_at'    => now(),
+        ];
+
+        if (!empty($this->item['image']) || ($this->item['image'] != null)) {
+            Storage::disk('items')->exists($foundItemId->item_image) ? 
+                Storage::disk('items')->delete($foundItemId->item_image) : '';
+            
+            $updateItem += ['item_image' => $this->item['image']->hashName()];
+            $this->item['image']->store('/', 'items');
+        }
+
+        $foundItemId->update($updateItem);
+
         $this->closeModal();
-        $this->dispatchBrowserEvent('toast',
-            [
-                'title' => null,
-                'class' => 'success',
-                'message' => 'Item updated successfully.',
-            ]
-        );
-        // session()->flash('message', 'updated successfully.');
+        
+        $this->dispatchBrowserEvent('toast', [
+            'title' => null,
+            'class' => 'success',
+            'message' => 'Item updated successfully.',
+        ]);
     }
 
     public function deletingItem($itemId)
     {
-        $this->deletingItem = $itemId;
+        $this->item['id'] = $itemId;
         $this->delete['item'] = true;
         $this->dispatchBrowserEvent('confirm-dialog'); 
     }
@@ -289,52 +327,73 @@ class PageInventory extends Component
 
     public function deleteItem()
     {
-        Item::destroy($this->deletingItem);
+
+        $deleteItem = Item::find($this->item['id']);
+
+        if (isset($deleteItem->item_image)) {
+            Storage::disk('items')->exists($deleteItem->item_image) ?
+                Storage::disk('items')->delete($deleteItem->item_image) : '' ;
+        }
+
+        $deleteItem->delete();
+
         $this->confirm_dialog_modal_close();
-        // session()->flash('message', 'Deleted successfully.');
-        $this->dispatchBrowserEvent('toast',
-            [
+
+        $this->dispatchBrowserEvent('toast',[
                 'title' => null,
                 'class' => 'success',
                 'message' => 'Item Deleted successfully.',
-            ]
-        );
+        ]);
     }
 
     public function deleteItems()
     {
+        $items = Item::find($this->selectedItems);
+
+        foreach ($items as $item) {
+            Storage::disk('items')->exists($item->item_image) ?
+                Storage::disk('items')->delete($item->item_image) : '';
+        }
+
         Item::destroy($this->selectedItems);
+
         $this->selectedItems = [];
+
         $this->confirm_dialog_modal_close();
-        // session()->flash('message', 'Deleted successfully.');
-        $this->dispatchBrowserEvent('toast',
-            [
-                'title' => null,
-                'class' => 'success',
-                'message' => 'Item Deleted successfully.',
-            ]
-        );
+
+        $this->dispatchBrowserEvent('toast', [
+            'title' => null,
+            'class' => 'success',
+            'message' => 'Item Deleted successfully.',
+        ]);
     }
 
-    public function deletingSupplier($supplierId)
-    {
-        $this->delete['supplier'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog'); 
-    }
 
-    public function delete()
-    {
-        $this->delete['item']       ? $this->deleteItem()   : '';
-        $this->delete['items']      ? $this->deleteItems()  : '';
-        $this->delete['supplier']   ? dd('delete supplier') : '';
 
-        $this->reset(['delete']);
-    }
+
+
+
+
+
 
     public function addSupplier()
     {
 
-        Supplier::create([
+        $this->validate( 
+            [
+                'su.name' => 'required',
+                'su.no' => 'required',
+                'su.email' => 'email|nullable',
+                'su.avatar' => 'image|max:1024|nullable',
+            ],
+            [
+                'su.name.required' => 'Required',
+                'su.no.required' => 'Required',
+                'su.email.email' => 'valid Email only',
+            ],
+        );
+
+        $createSupplier = [
             'supplier_name'         => $this->su['name'],
             'supplier_address'      => $this->su['address'],
             'supplier_contact_no'   => $this->su['no'],
@@ -342,64 +401,161 @@ class PageInventory extends Component
             'supplier_bank'         => $this->su['bank'],
             'supplier_acc_no'       => $this->su['acc'],
             'supplier_branch'       => $this->su['branch'],
-        ]);
+        ];
+
+        if (!empty($this->su['avatar']) || ($this->su['avatar'] != null)) {
+
+            $createSupplier += ['supplier_avatar' => $this->su['avatar']->hashName()];
+
+            $this->su['avatar']->store('/', 'avatars');            
+        }
+     
+        Supplier::create($createSupplier);
+
         $this->closeModal();
-        // session()->flash('message', 'added successfully.');
-        $this->dispatchBrowserEvent('toast',
-            [
-                'title' => null,
-                'class' => 'success',
-                'message' => 'Supplier added successfully.',
-            ]
-        );
+        
+        $this->dispatchBrowserEvent('toast', [
+            'title' => null,
+            'class' => 'success',
+            'message' => 'Supplier added successfully.',
+        ]);
     }
 
     public function updateSupplier($supplierId)
     {
-        Supplier::findOrFail($supplierId)
-            ->update([
-                'supplier_name'         => $this->su['name'],
-                'supplier_address'      => $this->su['address'],
-                'supplier_contact_no'   => $this->su['no'],
-                'supplier_email'        => $this->su['email'],
-                'supplier_bank'         => $this->su['bank'],
-                'supplier_acc_no'       => $this->su['acc'],
-                'supplier_branch'       => $this->su['branch'],
-            ]);
-            $this->closeModal();
-            // session()->flash('message', 'updated successfully.');
-            $this->dispatchBrowserEvent('toast',
-                [
-                    'title' => null,
-                    'class' => 'success',
-                    'message' => 'Supplier updated successfully.',
-                ]
-            );
+        $foundSupplier = Supplier::findOrFail($this->su['id']);
+
+        $updateSupplier = [
+            'supplier_name'         => $this->su['name'],
+            'supplier_address'      => $this->su['address'],
+            'supplier_contact_no'   => $this->su['no'],
+            'supplier_email'        => $this->su['email'],
+            'supplier_bank'         => $this->su['bank'],
+            'supplier_acc_no'       => $this->su['acc'],
+            'supplier_branch'       => $this->su['branch'],
+        ];
+
+        if (!empty($this->su['avatar']) || ($this->su['avatar'] != null)) {
+            Storage::disk('avatars')->exists($foundSupplier->supplier_avatar) ? 
+                Storage::disk('avatars')->delete($foundSupplier->supplier_avatar) : '';
+            
+            $updateSupplier += ['supplier_avatar' => $this->su['avatar']->hashName()];
+            $this->su['avatar']->store('/', 'avatars');
+        }
+
+        $foundSupplier->update($updateSupplier);
+
+        $this->closeModal();
+
+        $this->dispatchBrowserEvent('toast', [
+            'title' => null,
+            'class' => 'success',
+            'message' => 'Supplier updated successfully.',
+        ]);
+    }
+
+    public function deletingSupplier($supplierId)
+    {
+        $this->su['id'] = $supplierId;
+        $this->delete['supplier'] = true;
+        $this->dispatchBrowserEvent('confirm-dialog'); 
+    }
+
+    public function deletingSuppliers()
+    {
+        $this->delete['suppliers'] = true;
+
+        $this->dispatchBrowserEvent('confirm-dialog'); 
+    }
+
+    public function deleteSupplier()
+    {
+
+        $supplier = Supplier::find($this->su['id']);
+
+        if (isset($supplier->supplier_avatar)) {
+            Storage::disk('avatars')->exists($supplier->supplier_avatar) ?
+                Storage::disk('avatars')->delete($supplier->supplier_avatar) : '' ;
+        }
+        
+        $supplier->delete();
+
+        $this->confirm_dialog_modal_close();
+
+        $this->dispatchBrowserEvent('toast', [
+            'title' => null,
+            'class' => 'success',
+            'message' => 'Supplier Deleted successfully.',
+        ]);
+    }
+
+    public function deleteSuppliers()
+    {
+        $suppliers = Supplier::find($this->selectedSuppliers);
+
+        foreach ($suppliers as $supplier) {
+            Storage::disk('avatars')->exists($supplier->supplier_avatar) ?
+                Storage::disk('avatars')->delete($supplier->supplier_avatar) : '';
+        }
+
+        Supplier::destroy($this->selectedSuppliers);
+
+        $this->selectedSuppliers = [];
+
+        $this->confirm_dialog_modal_close();
+
+        $this->dispatchBrowserEvent('toast', [
+            'title' => null,
+            'class' => 'success',
+            'message' => 'Suppliers Deleted successfully.',
+        ]);
     }
 
 
+
+
+
+
+
+
+    public function delete()
+    {
+        $this->delete['item']       ? $this->deleteItem()   : '';
+        $this->delete['items']      ? $this->deleteItems()  : '';
+        $this->delete['supplier']   ? $this->deleteSupplier() : '';
+        $this->delete['suppliers']   ? $this->deleteSuppliers() : '';
+
+        $this->reset(['delete']);
+    }
+
     public function showModal($action, $data, $id)
     {
-        $this->reset(['modal', 'su', 'item']);
+        $this->resetFields();
 
         if ($action == 'add') {
-            $this->reset(['modal', 'su', 'item']);
-            if ($data == 'supplier')        { $this->modal['supplier'] = true; }
-            elseif ($data == 'item')        { $this->modal['item'] = true; }
+            if ($data == 'supplier') { 
+                $this->modal['supplier'] = true; }
+            elseif ($data == 'item') { 
+                $this->modal['item'] = true; }
+
             $this->modal['add'] = true;
         }
-        elseif ($action == 'update') {
+
+        if ($action == 'update') {
             if ($data == 'item') { 
                 $item = Item::findOrFail($id);
-                $this->item['id']           = $item->id;
-                $this->item['name']         = $item->item_name;
-                $this->item['desc']         = $item->item_desc;
-                $this->item['type']         = $item->item_type; 
-                $this->item['price']        = $item->item_price;
-                $this->item['supplier']     = $item->supplier_id;
-                $this->item['qty']          = $item->item_qty;
-                $this->item['size']         = $item->item_size;
-            
+                $this->item['id']         = $item->id;
+                $this->item['name']       = $item->item_name;
+                $this->item['desc']       = $item->item_desc;
+                $this->item['type']       = $item->item_type; 
+                $this->item['price']      = $item->item_price;
+                $this->item['supplier']   = $item->supplier_id;
+                $this->item['qty']        = $item->item_qty;
+                $this->item['size']       = $item->item_size;
+
+                !empty($item->item_image) || ($item->item_image != null) ? 
+                    $this->item['has_image'] = true : '';
+
                 $this->modal['item'] = true; 
             }
             elseif ($data == 'supplier') { 
@@ -413,6 +569,10 @@ class PageInventory extends Component
                 $this->su['acc']        = $supplier->supplier_acc_no;
                 $this->su['branch']     = $supplier->supplier_branch;
 
+                !empty($supplier->supplier_avatar) || ($supplier->supplier_avatar != null) ?
+                    $this->su['has_avatar'] = true : '';
+            
+            
                 $this->modal['supplier'] = true; 
             }
             $this->modal['update'] = true;
@@ -422,35 +582,24 @@ class PageInventory extends Component
 
     public function closeModal()
     {
-        // $this->dispatchBrowserEvent('confirm-dialog-close'); 
-        // $this->reset(['modal', 'su', 'item']);
-
+        $this->resetFields();
         $this->confirm_dialog_modal_close();
     }
-
-
-    // public function inventoryChangeTable($value) 
-    // {
-    //     $activeTab = Tab::find(1);
-    //     $activeTab->inventory_active_tab = $value;
-    //     $activeTab->save();
-    // }
-
-    // public function myTab()
-    // {
-    //     $userid = 1;
-    //     return Tab::find($userid)->inventory_active_tab;
-    // }
     
-    public function confirm_dialog_modal_close() 
-    {
-        $this->dispatchBrowserEvent('confirm-dialog-close'); 
-    }
+    public function confirm_dialog_modal_close() { $this->dispatchBrowserEvent('confirm-dialog-close'); }
 
-    public function setPageNumber($pageNumber)
+    public function storage($disk, $url) 
     {
-        $this->resetPage();
-        return $pageNumber;
+
+
+        if (!empty($url) || ($url != null)) {
+            return Storage::disk($disk)->url($url); } 
+        else {
+            if ($disk == 'avatars') {
+                return Storage::disk($disk)->url('default-user-avatar.png'); } 
+            elseif ($disk == 'items') { 
+                return Storage::disk($disk)->url('default-item-image.jpg'); }
+        }
     }
 }
 

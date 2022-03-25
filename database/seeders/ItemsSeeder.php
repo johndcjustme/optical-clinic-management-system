@@ -23,7 +23,6 @@ class ItemsSeeder extends Seeder
 
 
         $item = Item::create([
-            'item_image' => 'default-image-item.png',
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
             'item_qty' => '15',
@@ -34,7 +33,6 @@ class ItemsSeeder extends Seeder
         ]);
 
         $item = Item::create([
-            'item_image' => 'default-image-item.png',
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
             'item_qty' => '15',
@@ -45,7 +43,6 @@ class ItemsSeeder extends Seeder
         ]);
 
         $item = Item::create([
-            'item_image' => 'default-image-item.png',
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
             'item_qty' => '15',
@@ -56,7 +53,6 @@ class ItemsSeeder extends Seeder
         ]);
 
         $item = Item::create([
-            'item_image' => 'default-image-item.png',
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
             'item_qty' => '15',
@@ -67,7 +63,6 @@ class ItemsSeeder extends Seeder
         ]);
 
         $item = Item::create([
-            'item_image' => 'default-image-item.png',
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
             'item_qty' => '15',
@@ -78,7 +73,6 @@ class ItemsSeeder extends Seeder
         ]);
 
         $item = Item::create([
-            'item_image' => 'default-image-item.png',
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
             'item_qty' => '15',
@@ -89,7 +83,6 @@ class ItemsSeeder extends Seeder
         ]);
 
         $item = Item::create([
-            'item_image' => 'default-image-item.png',
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
             'item_qty' => '15',
@@ -100,7 +93,6 @@ class ItemsSeeder extends Seeder
         ]);
 
         $item = Item::create([
-            'item_image' => 'default-image-item.png',
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
             'item_qty' => '15',
@@ -111,7 +103,6 @@ class ItemsSeeder extends Seeder
         ]);
 
         $item = Item::create([
-            'item_image' => 'default-image-item.png',
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
             'item_qty' => '15',

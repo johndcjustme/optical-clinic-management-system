@@ -10,14 +10,14 @@
 
 <x-layout.main-page>
 
-    <div class="full_w main_content_inner overflow_scroll">
+    <div class="full_w main_content_inner overflow_y_scroll">
 
         <div class="inner_content">
             @include('livewire.components.organisms.pagecontents.inventory-content')      
         </div>
 
         {{-- @if ($modal['show']) --}}
-            @includeIf('livewire.components.organisms.modal.modal-inventory')
+        @includeIf('livewire.components.organisms.modal.modal-inventory')
         {{-- @endif --}}
 
         <x-alert type="error" message="{{ session('message') }}" />
@@ -27,7 +27,8 @@
             content="Confirm Delete?"
         />
     </div>
-    
+
 </x-layout.main-page>
+
 
 

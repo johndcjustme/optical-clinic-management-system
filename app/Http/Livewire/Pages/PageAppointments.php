@@ -7,6 +7,9 @@ use App\Models\Schedsetting;
 use App\Models\Appointment;
 use App\Models\Patient;
 
+use Illuminate\Support\Facades\Storage;
+
+
 class PageAppointments extends Component
 {
 
@@ -22,23 +25,31 @@ class PageAppointments extends Component
 
     protected $listeners = ['mount'];
 
+    public $searchAppt;
+
     public $appt = [
-        'id' => '',
-        'pt_name' => '',
-        'pt_phone' => '',
-        'pt_addr' => '',
-        'pt_occ' => '',
-        'pt_date' => '',
-        'pt_time' => '',
-        'pt_status' => '',
+        'id'          => '',
+        'pt_name'     => '',
+        'pt_phone'    => '',
+        'pt_addr'     => '',
+        'pt_occ'      => '',
+        'pt_date'     => '',
+        'pt_time'     => '',
+        'pt_status'   => '',
+        'pt_avatar'   => '',
     ];
 
+    public $modal=[
+        'show'     => false,
+        'add'      => false,
+        'update'   => false,
+    ];
 
-    public $apptShowModal = false,
-            $isUpdate = false,
-            $isAdd = false,
-                $addAppt = false;
+    public $isUpdate = false, $isAdd = false, $addAppt = false;
 
+    public $editTime = false, $editTimeId = '';
+
+    public $colName = 'appt_date', $direction = 'asc';
 
     public 
         $setAll_am, 
@@ -48,21 +59,31 @@ class PageAppointments extends Component
         $pmEnd;
 
 
+    public $day = false;
+
+
     public $time = [
-        'active' => false,
-        'am_from' => '',
-        'am_to' => '',
-        'pm_from' => '',
-        'pm_to' => '',
+        'active'    => false,
+        'am_from'   => '',
+        'am_to'     => '',
+        'pm_from'   => '',
+        'pm_to'     => '',
     ];
 
     public $apptStatus = [
-        'fa' => "For Approval",
-        'on' => "Ongoing",
-        're' => "Rescheduled",
-        'mi' => "Missed",
-        'fu' => "Fulfilled",
+        1 => "For Approval",
+        2 => "Ongoing",
+        3 => "Rescheduled",
+        4 => "Missed",
+        5 => "Fulfilled",
     ];
+
+    public $delete = [
+        'appt'  => false,
+        'appts' => false,
+    ];
+
+
 
     public function myTab($value)
     {
@@ -71,13 +92,14 @@ class PageAppointments extends Component
 
     public function render()
     {
-        $searchPatient = '%' . $this->searchPatient . '%';
+        $searchPatient = $this->searchPatient . '%';
         $pt = Patient::where('patient_fname' , 'like', $searchPatient)
                         ->orWhere('patient_lname', 'like', $searchPatient)
                         ->orWhere('patient_mname', 'like', $searchPatient)
                         ->get();
 
-        $appts = Appointment::with('patient')->get();
+        $searchAppt = $this->searchAppt . '%';
+        $appts = Appointment::with('patient')->orderBy($this->colName, $this->direction)->get();
 
         return view('livewire.pages.page-appointments', 
             [
@@ -91,9 +113,9 @@ class PageAppointments extends Component
 
     public function mount()
     {
-        $schedsetting = Schedsetting::find(1);
-        $this->amStart = $schedsetting->schedset_am;
-        $this->pmEnd = $schedsetting->schedset_pm;
+        // $schedsetting = Schedsetting::find(2);
+        // $this->amStart = $schedsetting->schedset_am;
+        // $this->pmEnd = $schedsetting->schedset_pm;
     }
 
 
@@ -108,6 +130,7 @@ class PageAppointments extends Component
         }
     }
 
+  
 
     public function countApprovedAppts() { return Appointment::where('appt_confirmed', true)->count(); }
 
@@ -121,24 +144,56 @@ class PageAppointments extends Component
 
     public function time($time) { return isset($time) ? \Carbon\Carbon::parse($time)->format('g:i A') : ''; }
 
+    public function orderBy($colName, $direction)
+    {
+        // $this->resetPage();
+
+        $this->colName = $colName;
+        $this->direction = $direction;
+    }
+
+    // public function statusColor($status)
+    // {
+    //     switch ($status) {
+    //         case 'fa':
+    //             return '#0275d8';
+    //             break;
+    //         case 'on':
+    //             return '#5cb85c';
+    //             break;
+    //         case 're':
+    //             return '#5bc0de';
+    //             break;
+    //         case 'fu':
+    //             return '#292b2c';
+    //             break;
+    //         case 'mi':
+    //             return '#d9534f';
+    //             break;
+    //     }
+    // }
+
+
     public function statusColor($status)
     {
         switch ($status) {
-            case 'fa':
-                return '#0275d8';
-                break;
-            case 'on':
-                return '#5cb85c';
-                break;
-            case 're':
-                return '#5bc0de';
-                break;
-            case 'fu':
-                return '#292b2c';
-                break;
-            case 'mi':
-                return '#d9534f';
-                break;
+            case 1: return '#0275d8'; break;
+            case 2: return '#5cb85c'; break;
+            case 3: return '#5bc0de'; break;
+            case 4: return '#d9534f'; break;
+            default:
+        }
+    }
+
+    public function apptStatus($status)
+    {
+        switch ($status) {
+            case 1: return $this->apptStatus[1]; break;
+            case 2: return $this->apptStatus[2]; break;
+            case 3: return $this->apptStatus[3]; break;
+            case 4: return $this->apptStatus[4]; break;
+            case 5: return $this->apptStatus[5]; break;
+            default:
         }
     }
 
@@ -152,17 +207,20 @@ class PageAppointments extends Component
 
     public function autoCompleteSearch($id)
     {
-        // dd($id);
         $patientFound = Patient::findOrFail($id);
         $this->searchPatient = $patientFound->patient_lname . ', ' . $patientFound->patient_fname . ' ' . $patientFound->patient_mname;
         $this->searchPatientId = $patientFound->id;
         $this->isFillSearch = true;
     }
 
-    public function createAppt($id)
-    {
 
-        $findPt = Patient::findOrFail($id);
+
+
+
+
+    public function createAppt()
+    {
+        $findPt = Patient::findOrFail($this->searchPatient);
         $this->appt['pt_name'] = $findPt->patient_lname . ', ' . $findPt->patient_fname . ' ' . $findPt->patient_mname;
         $this->appt['pt_phone'] = $findPt->patient_mobile;
         $this->appt['pt_addr'] = $findPt->patient_address;
@@ -170,35 +228,24 @@ class PageAppointments extends Component
         $this->appt['pt_avatar'] = $findPt->patient_avatar;
         $this->appt['id'] = $findPt->id;
 
-        $this->appt['pt_status'] = $this->apptStatus['on'];
+        $this->appt['pt_status'] = $this->apptStatus[2];
         $this->apptCreatedBy = 'dc';
 
-        $this->isAdd = false;
-        $this->isUpdate = true;
-        $this->apptShowModal = true;
+        $this->modal['add'] = false;
+        $this->modal['update'] = true;
 
         $this->reset([
             'isFillSearch',
             'searchPatient',
         ]);
 
-        // $this->appt['pt_date'] = $apptId->appt_date;
-        // $this->appt['pt_time'] = $apptId->appt_time;
+        $this->dispatchBrowserEvent('form-modal');
     }
 
-
-    // public function confirm_appt($id) { return $this->confirm_appt = $id; }
-
-    public function appt_confirmed($id)
+    public function updateAppt()
     {
-        Appointment::where('id', $id)
-            ->update(['appt_confirmed' => true]);
-    }
-
-
-    public function updateAppt($createdBy, $id)
-    {
-        switch ($createdBy) {
+        // dd($this->appt['id'] . ' ' . $this->apptCreatedBy);
+        switch ($this->apptCreatedBy) {
             case 'dc':
                 Appointment::create([
                     'patient_id' => $this->appt['id'],
@@ -207,34 +254,54 @@ class PageAppointments extends Component
                     'appt_status' => $this->appt['pt_status'],
                     'appt_confirmed' => true,
                 ]);
-                session()->flash('message', 'Successfully udpated');
                 break;
 
             case 'pt':
-                Appointment::where('id', $id)
+                Appointment::where('id', $this->appt['id'])
                     ->update([
                         'appt_date' => $this->appt['pt_date'],
                         'appt_time' => $this->appt['pt_time'],
                         'appt_status' => $this->appt['pt_status'],
                     ]);
-                
-                session()->flash('message', 'Successfully udpated');
                 break;
         }
+
         $this->apptCloseModal();
+        $this->dispatchBrowserEvent('toast',[
+            'title' => null,
+            'class' => 'success',
+            'message' => 'Updated Succesfully',
+        ]);
     }
 
 
-    public function approveAppts()
+    public function deletingAppt($apptId)
     {
-        Appointment::query()
-            ->whereIn('id', $this->selectedAppts)
-            ->update([
-                'appt_confirmed' => true,
-            ]);
-        $this->selectedAppts = [];
+        $this->delete['appt'] = true;
+
+        $this->appt['id'] = $apptId;
+
+        $this->dispatchBrowserEvent('confirm-dialog'); 
     }
 
+    public function deletingAppts()
+    {
+        $this->delete['appts'] = true;
+        $this->dispatchBrowserEvent('confirm-dialog'); 
+    }
+
+    public function deleteAppt()
+    {
+        Appointment::destroy($this->appt['id']);
+
+        $this->confirm_dialog_modal_close();
+
+        $this->dispatchBrowserEvent('toast',[
+            'title' => null,
+            'class' => 'success',
+            'message' => 'Deleted Succesfully',
+        ]);
+    }
 
     public function deleteAppts()
     {
@@ -242,95 +309,166 @@ class PageAppointments extends Component
             ->whereIn('id', $this->selectedAppts)
             ->delete();
         $this->selectedAppts = [];
+
+        $this->confirm_dialog_modal_close();
+
+        $this->dispatchBrowserEvent('toast',[
+            'title' => null,
+            'class' => 'success',
+            'message' => 'Deleted Succesfully',
+        ]);
     }
 
 
 
 
+    public function delete()
+    {
+        if ($this->delete['appt']) { $this->deleteAppt(); }
+        if ($this->delete['appts']) { $this->deleteAppts(); }
+    }
+
+
+
+
+
+
+    public function appt_confirmed($id)
+    {
+        Appointment::where('id', $id)
+            ->update(['appt_status' => 2]);
+    }
+
+    public function approveAppts()
+    {
+        Appointment::query()
+            ->whereIn('id', $this->selectedAppts)
+            ->update([
+                'appt_status' => 2,
+            ]);
+        $this->selectedAppts = [];
+    }
+
+
+
+
+
+
+
+    
     public function apptShowModal($data, $id)
     {
-
+        $this->reset(['appt', 'modal']);
         switch ($data) {
             case 'isAdd':
-                $this->isAdd = true;
+                $this->modal['add'] = true;
                 break;
+
             case 'isUpdate':
                 $apptId = Appointment::findOrFail($id);
                 $findPt = Patient::findOrFail($apptId->patient_id);
-                $this->appt['pt_name'] = $findPt->patient_lname . ', ' . $findPt->patient_fname . ' ' . $findPt->patient_mname;
-                $this->appt['pt_phone'] = $findPt->patient_mobile;
-                $this->appt['pt_addr'] = $findPt->patient_address;
-                $this->appt['pt_occ'] = $findPt->patient_occupation;
-                $this->appt['pt_avatar'] = $findPt->patient_avatar;
+                
+                $this->appt['pt_name']      = $findPt->patient_lname . ', ' . $findPt->patient_fname . ' ' . $findPt->patient_mname;
+                $this->appt['pt_phone']     = $findPt->patient_mobile;
+                $this->appt['pt_addr']      = $findPt->patient_address;
+                $this->appt['pt_occ']       = $findPt->patient_occupation;
+                $this->appt['pt_avatar']    = $findPt->patient_avatar;
 
                 $this->appt['id'] = $apptId->id;
-                $this->appt['pt_date'] = $apptId->appt_date;
-                $this->appt['pt_time'] = $apptId->appt_time;
-                $this->appt['pt_status'] = $apptId->appt_status;
+                $this->appt['pt_date']      = $apptId->appt_date;
+                $this->appt['pt_time']      = $apptId->appt_time;
+                $this->appt['pt_status']    = $apptId->appt_status;
 
-                $this->isUpdate = true;
+                $this->modal['update'] = true;
                 $this->apptCreatedBy = 'pt';
                 break;
+
+            default:
         }
-        $this->apptShowModal = true;
+        $this->dispatchBrowserEvent('form-modal'); 
     }
 
     public function apptCloseModal()
     {
-        $this->reset([
-            'apptShowModal',
-            'isAdd',
-            'isUpdate',
-        ]);
+        $this->reset(['modal', 'appt']);
+
         $this->clearSearch(); 
-        $this->reset(['appt']);
+
+        $this->dispatchBrowserEvent('confirm-dialog-close');
     }
 
 
 
-    // public function apptStatus()
-    // {
-    //     switch ($data) {
-    //         case '1':
-    //             return "For Approval";
-    //             break;
-    //         case '2':
-    //             return "Ongoing";
-    //             break;
-    //         case '2':
-    //             return "Rescheduled";
-    //             break;
-    //         case '2':
-    //             return "Missed";
-    //             break;
-    //     }
-    // }
 
 
 
 
+    
+    public function editTime($id)
+    {
+        $this->editTimeId = $id;
+        $this->editTime = true;
 
+        $schedsetting = Schedsetting::find($id);
 
+        $this->time['am_from']  = $schedsetting->schedset_am_from;
+        $this->time['am_to']    = $schedsetting->schedset_am_to;
+        $this->time['pm_from']  = $schedsetting->schedset_pm_from;
+        $this->time['pm_to']    = $schedsetting->schedset_pm_to;
+    }
+
+    public function updateDay($status, $id)
+    {
+        $schedsetting = Schedsetting::find($id);
+
+        $status == 1 
+            ? $schedsetting->update(['schedset_checked' => true])
+            : $schedsetting->update(['schedset_checked' => false]);
+
+            $this->reset(['editTime', 'editTimeId']);
+    }
 
 
 
     public function updateSchedSettings($id)
     {
-        dd($id . ' ' . $this->time['am_from'] . ' ' . $this->time['am_to'] . ' ' . $this->time['pm_from'] . ' ' . $this->time['pm_to']);
+        // dd($id . ' ' .  . ' ' . . ' ' .  . ' ' . ;
+        Schedsetting::find($id)
+            ->update([
+                'schedset_am_from'  => $this->time['am_from'], 
+                'schedset_am_to'    => $this->time['am_to'] , 
+                'schedset_pm_from'  => $this->time['pm_from'],
+                'schedset_pm_to'    => $this->time['pm_to'],
+            ]);
+        $this->reset(['editTime', 'editTimeId', 'time']);
+    }
+
+    public function cancelUpdateSchedSettings()
+    {
+        $this->reset(['editTime', 'editTimeId', 'time']);
     }
 
     public function updateSchedSettingsAll()
     {
-        if(!empty($this->setAll_am) || !empty($this->setAll_am)) {
-            $updateSchedSettings = Schedsetting::where('schedset_type', 'schedsetting')->where('schedset_checked', 1);
-            $updateSchedSettings->update([
-                'schedset_am' => $this->setAll_am,
-                'schedset_pm' => $this->setAll_pm,
-            ]);
-            $this->resetFields('updateSchedSettingsAll');
-            $this->emit('mount');
-        } else {
-            dd('empty');
-        }
+        $updateSchedSettings = Schedsetting::where('schedset_type', 'schedsetting')->where('schedset_checked', true);
+        $updateSchedSettings->update([
+            'schedset_am_from'  => $this->time['am_from'], 
+            'schedset_am_to'    => $this->time['am_to'] , 
+            'schedset_pm_from'  => $this->time['pm_from'],
+            'schedset_pm_to'    => $this->time['pm_to'],
+        ]);
+        $this->resetFields('updateSchedSettingsAll');
+        $this->emit('mount');
     }
+
+    public function storage($url) 
+    {
+        if (!empty($url) || ($url != null)) {
+            return Storage::disk('avatars')->url($url); } 
+        else {
+            return Storage::disk('avatars')->url('default-user-avatar.png'); } 
+    }
+
+    public function confirm_dialog_modal_close() { $this->dispatchBrowserEvent('confirm-dialog-close'); }
+
 }

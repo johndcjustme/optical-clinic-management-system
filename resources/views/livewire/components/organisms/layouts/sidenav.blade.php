@@ -34,7 +34,7 @@
                         <span>Patients</span>
                     </li>
                 </a>
-                <a href="/inventory/1" title="Inventory">
+                <a href="/inventory" title="Inventory">
                     <li class="@yield('inventory') ">
                         <ion-icon name="albums-outline"></ion-icon>
                         {{-- <i class="fas fa-boxes"></i> --}}
@@ -99,8 +99,8 @@
                     <x-atom.profile-photo size="35px" path="storage/photos/avatars/{{ Auth::user()->avatar }}"/>
                 </div>
                 <span class="ml_7">
-                    <div class="mb_2" style="font-size: 0.7rem; font-weight: bold">{{ Auth::user()->name }}</div>
-                    <div class="" style="font-size: 0.55rem">{{ Auth::user()->email }}</div>
+                    <p class="mb_2" style="font-weight: bold">{{ Auth::user()->name }}</p>
+                    <small class="">{{ Auth::user()->email }}</small>
                 </span>
             </div>
         </div>

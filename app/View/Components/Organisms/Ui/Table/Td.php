@@ -15,12 +15,18 @@ class Td extends Component
     public $textIcon;
     public $desc;
     public $descIcon;
-    public function __construct($text = null, $textIcon = null, $desc = null, $descIcon = null)
+    public $avatar;
+    public $checkbox, $checkboxValue;
+
+    public function __construct($text = null, $textIcon = null, $desc = null, $descIcon = null, $avatar = null, $checkbox = null, $checkboxValue = null)
     {
         $this->text = $text;
         $this->textIcon = $textIcon;
         $this->desc = $desc;
         $this->descIcon = $descIcon;
+        $this->avatar = $avatar;
+        $this->checkbox = $checkbox; 
+        $this->checkboxValue = $checkboxValue; 
     }
 
     /**

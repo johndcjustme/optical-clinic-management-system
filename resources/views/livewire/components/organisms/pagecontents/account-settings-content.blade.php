@@ -40,7 +40,7 @@
                                     <div class="relative full_w radius_1" style="background:white; height: 100px;">
                                         <div class="flex gap_1 full_h">
                                             <div class="relative" style="flex-basis: 110px;">
-                                                
+
                                                 <div class="absolute" style="bottom:-1.5em; left: 1em">
                                                     <div class="" style="display: inline-block">
                                                         <div class="relative">
@@ -51,7 +51,7 @@
                                                                     </div>
                                                                 </x-atom.profile-photo>
                                                             @else
-                                                                <x-atom.profile-photo size="75px" path="storage/photos/avatars/{{ $user['avatar'] }}"/>
+                                                                <x-atom.profile-photo size="75px" path="storage/photos/avatars/{{ Auth::user()->avatar }}"/>
                                                             @endif
                                                             <input type="file" wire:model.lazy="profilephoto" name="" id="myaccount_upload_photo" hidden @if (!$editProfile) disabled @endif>
                                                             <label class="absolute bottom right" for="myaccount_upload_photo" style="border: 2px solid #fff; background: #fff; border-radius: 50%"><i class="fa-solid fa-circle-plus" style="font-size: 1.1rem;"></i></label>

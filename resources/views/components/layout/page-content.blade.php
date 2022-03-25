@@ -1,4 +1,4 @@
-<div class="mt_5 w_lg" style="margin:auto; width:100%; max-width:1500px;height:100%">
+<div class="mt_5 w_lg" style="margin:auto; width:100%; max-width:1500px;height:100%" x-init="$('.ui.dropdown').dropdown();">
     <div class="px_15" style="padding-bottom: 100px">
         <div class="animate_top">
             {{-- <h3> --}}

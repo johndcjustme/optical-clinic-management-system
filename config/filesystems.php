@@ -53,6 +53,20 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
         ],
 
+        // custom code
+        'items' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/items'),
+            'url' => env('APP_URL').'/storage/items',
+            'visibility' => 'public',
+        ],
+
+        'avatars' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/avatars'),
+            'url' => env('APP_URL').'/storage/avatars',
+            'visibility' => 'public',
+        ],
     ],
 
     /*
@@ -68,6 +82,9 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('items') => storage_path('app/items'),     //custome code
+        public_path('avatars') => storage_path('app/avatars'),     //custome code
+        // public_path('avatars') => storage_path('app/avatars'),     //custome code
     ],
 
 ];

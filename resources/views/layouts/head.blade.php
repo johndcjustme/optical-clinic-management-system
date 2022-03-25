@@ -43,8 +43,10 @@
 
 
     <link rel="stylesheet" href="{{ asset('mystyle/css.css') }}">
+    <script>
+    $('.ui.dropdown').dropdown();
 
-    
+    </script>
     @livewireStyles
 </head>
 <body>

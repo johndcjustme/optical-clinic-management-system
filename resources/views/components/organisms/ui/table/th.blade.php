@@ -1,7 +1,7 @@
-<th {{ $attributes->merge(['style'=>''])}}>
+<th {{ $attributes->merge(['style'=>''])->merge(['colspan'=>'']) }}>
     <span>{{ $label }}</span>
     @if (!empty($orderBy))
-        <div class="ui top left pointing tiny dropdown sort_table">
+        <div class="ui top left pointing tiny dropdown header_sort_table_tiny">
             <i class="fa-solid fa-caret-down pointer mx_3" style="padding: 0.1em 0.2em;"></i>
             <div class="menu">
                 <div wire:click.prevent="orderBy('{{ $orderBy }}', 'asc')" class="item">Asc</div>
@@ -11,7 +11,8 @@
     @endif
 </th>
 
-
+{{-- 
 <script>
-    $('.ui.sort_table').dropdown();
-</script>
+</script> --}}
+
+

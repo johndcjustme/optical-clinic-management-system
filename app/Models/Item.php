@@ -9,6 +9,8 @@ class Item extends Model
 {
     use HasFactory;
 
+    public $itemstamps = false;
+
     protected $fillable = [
         'item_image',
         'item_name',
@@ -18,6 +20,8 @@ class Item extends Model
         'item_type',
         'item_price',
         'supplier_id',
+        'created_at',
+        'updated_at',
     ];
 
     public function supplier()

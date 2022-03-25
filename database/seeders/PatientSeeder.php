@@ -21,7 +21,6 @@ class PatientSeeder extends Seeder
         $faker = Faker\Factory::create();
 
         $patient1 = Patient::create([
-            'patient_avatar' => 'default-avatar-pt.png',
             'patient_fname' => $faker->name, 
             'patient_lname' => $faker->name,
             'patient_mname' => 'S',

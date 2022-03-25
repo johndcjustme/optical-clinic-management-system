@@ -10,6 +10,7 @@ class Patient extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'patient_avatar',
         'patient_fname',
         'patient_lname',
@@ -51,6 +52,11 @@ class Patient extends Model
     public function purchase()
     {
         return $this->hasMany(Purchase::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     // public function latestPurchase()

@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AccountSettings extends Component
 {
@@ -35,7 +36,8 @@ class AccountSettings extends Component
 
     public function mount()
     {
-        $this->find_curr_user = User::where('id', session()->get('curr_user_id'))->first();
+        $userId = Auth::user()->id;
+        $this->find_curr_user = User::where('id', $userId)->first();
         $this->user['id'] = $this->find_curr_user->id;
         $this->user['name'] = $this->find_curr_user->name;
         $this->user['email'] = $this->find_curr_user->email;
