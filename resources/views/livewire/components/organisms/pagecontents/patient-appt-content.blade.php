@@ -14,7 +14,7 @@
         {{-- <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla, similique.</p> --}}
         {{-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, nisi.</p> --}}
         <div>
-            <div class="ui mini steps inline fluid">
+            <div class="ui mini steps inline fluid" style="z-index: -5">
                 <div class="pointer step @if ($step == 1) active @endif" wire:click.prevent="step(1)">
                   {{-- <i class="user check icon"></i> --}}
                   <div class="content">
@@ -58,9 +58,7 @@
                     @switch($step)
                         @case(1)
                             <form wire:submit.prevent="newPatient" class="ui form">
-                                <h3>
-                                    Some of your personal infomation
-                                </h3>
+                                <h3><span class="ui text blue">My personal infomation</span></h3>
                                 <br>
         
                                 <div>
@@ -91,7 +89,7 @@
                                 </div>
 
                                 <div>
-                                    <h3>Contact Details</h3>
+                                    <h3><span class="ui text blue">Contact details</span></h3>
                                     <br>
                                     <div class="two fields">
                                         <div class="field">
@@ -115,76 +113,36 @@
                                 <form wire:submit.prevent="newAppt">
                                     <div>
                                         <div>
-                                            <h1>Book</h1>
-                                        </div>
-                                        <br><br>
-                                        <div>
-                                            <h5>Pick a Date @error('appt.date') <span class="ui text red"> • {{ $message }}</span> @enderror</h5>
+                                            <h3><span class="ui text blue">Pick a Date</span> @error('appt.date') <span class="ui text red"> • {{ $message }}</span> @enderror</h3>
                                             <x-atoms.ui.input wire-model="appt.date" type="date" class="mb_7" />
                                         </div>
-                                        <br><br>
-                                        <h5>Time @error('appt.time') <span class="ui text red"> • {{ $message }}</span> @enderror</h5><br>
+                                        <br>
+                                        <h3><span class="ui text blue">Time @error('appt.time')</span> <span class="ui text red"> • {{ $message }}</span> @enderror</h3><br>
                                         <div>
-                                            <h5>Morning</h5><br>
+                                            <h5>Morning</h5>
                                             <div class="flex flex_wrap gap_1">
-                                                <label wire:click="selectedTime" for="7am" class="ui button basic pointer">
-                                                    07:00
-                                                    <i class="fa-solid fa-circle-check ml_4"></i>
-                                                </label>
-                                                <label for="8am" class="ui button basic pointer">
-                                                    08:00
-                                                    <i class="fa-solid fa-circle-check ml_4"></i>
-                                                </label>
-                                                <label for="9am" class="ui button basic pointer">
-                                                    09:00
-                                                    <i class="fa-solid fa-circle-check ml_4"></i>
-                                                </label>
-                                                <label for="10am" class="ui button basic pointer">
-                                                    10:00
-                                                    <i class="fa-solid fa-circle-check ml_4"></i>
-                                                </label>
-                                                <label for="11am" class="ui button basic pointer">
-                                                    11:00
-                                                    <i class="fa-solid fa-circle-check ml_4"></i>
-                                                </label>
+                                                @foreach (App\Models\Time::orderBy('time', 'asc')->get() as $time)
+                                                    @if (Str::of($this->time($time->time))->lower()->contains('am'))
+                                                        <label for="{{ $time->id }}" class="ui basic button">{{ $this->time($time->time) }}</label>
+                                                        <input wire:model.defer="appt.time" value="{{ $time->time }}" type="radio" name="time" id="{{ $time->id }}" style="display:none" hidden>
+                                                    @endif
+                                                @endforeach
                                             </div>
                                         </div>
-                                        <br><br>
+                                        <br>
                                         <div>
-                                            <h5>Afternoon</h5><br>
+                                            <h5>Afternoon</h5>
                                             <div class="flex flex_wrap gap_1">
-                                                <label for="1pm" class="ui button basic pointer">
-                                                    01:00
-                                                    <i class="fa-solid fa-circle-check ml_4 ui"></i>
-                                                </label>
-                                                <label for="2pm" class="ui button basic pointer">
-                                                    02:00
-                                                    <i class="fa-solid fa-circle-check ml_4"></i>
-                                                </label>
-                                                <label for="3pm" class="ui button basic pointer">
-                                                    03:00
-                                                    <i class="fa-solid fa-circle-check ml_4"></i>
-                                                </label>
-                                                <label for="4pm" class="ui button basic pointer">
-                                                    04:00
-                                                    <i class="fa-solid fa-circle-check ml_4"></i>
-                                                </label>
+                                                @foreach (App\Models\Time::orderBy('time', 'asc')->get() as $time)
+                                                    @if (Str::of($this->time($time->time))->lower()->contains('pm'))
+                                                        <label for="{{ $time->id }}" class="ui basic button">{{ $this->time($time->time) }}</label>
+                                                        <input wire:model.defer="appt.time" value="{{ $time->time }}" type="radio" name="time" id="{{ $time->id }}" style="display:none" hidden>
+                                                    @endif
+                                                @endforeach
                                             </div>
                                         </div>
                                     </div>
                                     <br><br>
-                    
-                                    <input wire:model.defer="appt.time" value="07:00" type="radio" name="time" id="7am" style="display:none" hidden>
-                                    <input wire:model.defer="appt.time" value="08:00" type="radio" name="time" id="8am" style="display:none" hidden>
-                                    <input wire:model.defer="appt.time" value="09:00" type="radio" name="time" id="9am" style="display:none" hidden>
-                                    <input wire:model.defer="appt.time" value="10:00" type="radio" name="time" id="10am" style="display:none" hidden>
-                                    <input wire:model.defer="appt.time" value="11:00" type="radio" name="time" id="11am" style="display:none" hidden>
-                    
-                                    <input wire:model.defer="appt.time" value="13:00" type="radio" name="time" id="1pm" style="display:none" hidden>
-                                    <input wire:model.defer="appt.time" value="14:00" type="radio" name="time" id="2pm" style="display:none" hidden>
-                                    <input wire:model.defer="appt.time" value="15:00" type="radio" name="time" id="3pm" style="display:none" hidden>
-                                    <input wire:model.defer="appt.time" value="16:00" type="radio" name="time" id="4pm" style="display:none" hidden>
-                    
                                     <button type="submit" class="ui button primary">Book now</button>
                                 </form>
                                 <div class="b_1 radius_1 p_10">
@@ -216,10 +174,6 @@
                                     <x-slot name="tbody">
                                         @forelse ($my_appts as $appt)
                                             <tr>
-                                                {{-- <x-organisms.ui.table.td
-                                                    checkbox="selectedAppts" 
-                                                    checkbox-value="{{ $appt->id }}"/> --}}
-        
                                                 <x-organisms.ui.table.td
                                                     text="{{ $this->date($appt->appt_date) }}"
                                                     desc="{{ $this->day($appt->appt_date) }} {{ !empty($appt->appt_time) ? ' • ' . $this->time($appt->appt_time) : '' }}"/>
@@ -236,7 +190,7 @@
                                                     desc="{{ $this->date($appt->created_at) . ' @ ' . $this->time($appt->created_at) }}"/>
                                                 <x-organisms.ui.table.td-more style="width: 1em">
                                                     <x-atom.more.option wire-click="apptShowModal('isUpdate', {{ $appt->id }})" option-name="Edit" />
-                                                    <x-atom.more.option wire-click="deletingAppt({{ $appt->id }})" option-name="Delete" />
+                                                    <x-atom.more.option wire-click="cancelingAppt({{ $appt->id }})" option-name="Cancel" />
                                                 </x-organisms.ui.table.td>
                                             </tr>
                                         @empty

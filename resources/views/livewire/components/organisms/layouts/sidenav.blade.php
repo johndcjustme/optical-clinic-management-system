@@ -69,8 +69,15 @@
                         <span>Book</span>
                     </li>
                 </a>
+                <a href="/reports" title="Report">
+                    <li class="@yield('reports') ">
+                        <ion-icon name="pulse-outline"></ion-icon>
+                        {{-- <i class="fas fa-smile"></i> --}}
+                        <span>Reports</span>
+                    </li>
+                </a>
                 <a href="/forum" title="Forum">
-                    <li class="@yield('furom') ">
+                    <li class="@yield('forum') ">
                         <ion-icon name="chatbubbles-outline"></ion-icon>
                         {{-- <i class="fas fa-smile"></i> --}}
                         <span>Furom</span>

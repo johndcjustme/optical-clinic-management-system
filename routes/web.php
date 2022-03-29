@@ -28,6 +28,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/appointments', App\Http\Livewire\Pages\PageAppointments::class);
     Route::get('/account', App\Http\Livewire\Pages\AccountSettings::class);
     Route::get('/patient-appt', App\Http\Livewire\Pages\PagePatientAppt::class);
+    Route::get('/reports', App\Http\Livewire\Pages\PageReports::class);
+    Route::get('/forum', App\Http\Livewire\Pages\PageForum::class);
 });
 
 

@@ -3,143 +3,103 @@
     @section('section-page-title', 'Orders')
 
     @section('section-links')
-            <x-atom.tab-links.link tab-title="All Orders" wire-click="myTab(1)" sub-page="{{ $this->myTab == 1 }}"/>
+            {{-- <x-atom.tab-links.link tab-title="All Orders" wire-click="myTab(1)" sub-page="{{ $this->myTab == 1 }}"/>
             <x-atom.tab-links.link tab-title="Pending" wire-click="myTab(2)" sub-page="{{ $this->myTab == 2 }}"/>
             <x-atom.tab-links.link tab-title="Received" wire-click="myTab(3)" sub-page="{{ $this->myTab == 3 }}"/>
-            <x-atom.tab-links.link tab-title="Claimed" wire-click="myTab(4)" sub-page="{{ $this->myTab == 4 }}"/>
+            <x-atom.tab-links.link tab-title="Claimed" wire-click="myTab(4)" sub-page="{{ $this->myTab == 4 }}"/> --}}
+                <div>
+                    <div class="ui tiny compact selection dropdown">
+                        <i class="dropdown icon"></i>
+                        <div class="text">Orders</div>
+                        <div class="menu">
+                            <div class="item">All Orders</div>
+                            <div class="item">Pending</div>
+                            <div class="item">Recieved</div>
+                            <div class="item">Claimed</div>
+                        </div>
+                      </div>
+
+                    {{-- <x-molecules.ui.group-buttons>
+                        <x-molecules.ui.group-buttons.button 
+                            wire-click="" 
+                            active=""
+                            label="Items" />
+
+                            <div class="ui buttons" style="z-index: 100" x-init="">
+                                <div class="ui combo top right pointing dropdown icon button">
+                                    <i class="dropdown icon"></i>
+                                    <div class="menu">
+                                        <div wire:click.prevent="$set('onDisplayItemType', 'all')" data-value="all" class="item">
+                                            All</div>
+                                        <div wire:click.prevent="$set('onDisplayItemType', 'le')" data-value="le" class="item">
+                                            Lense</div>
+                                        <div wire:click.prevent="$set('onDisplayItemType', 'fr')" data-value="fr" class="item">
+                                            Frame</div>
+                                        <div wire:click.prevent="$set('onDisplayItemType', 'ac')" data-value="ac" class="item">
+                                            Accessory</div>
+                                    </div>
+                                </div>
+                            </div>
+                    </x-molecules.ui.group-buttons>                 --}}
+                </div>
     @endsection
 
-    @section('section-heading')
+    @section('section-heading-left')
 
-        <div class="flex gap_1">
-            <h5>
-                @if ($this->myTab == 1)
-                    ALL ORDERS
-                @elseif ($this->myTab == 2)
-                    PENDING
-                @elseif ($this->myTab == 3)
-                    RECEIVED
-                @elseif ($this->myTab == 3)
-                    CLAIMED
-                @endif
-            </h5>
+        <x-atoms.ui.button wire:click.prevent="showModal('add', 'item', null)" class="primary basic tiny">
+            <i class="icon plus"></i> New
+        </x-atoms.ui.button>
+    @endsection
+
+    @section('section-heading-right')
+        <div> 
+            <x-atoms.ui.search wire-model="searchOrder" placeholder="Search..."/> 
         </div>
-
-        
-        <div class="flex gap_1">
-            
-            @if ($this->myTab == 1) 
-
-                <div class="flex gap_1">
-                    <select class="font_small noformat">
-                        <option value="" selected>Name</option>
-                        <option value="">Type</option>
-                        <option value="">Tint</option>
-                        <option value="">Qty</option>
-                        <option value="">Price</option>
-                    </select>
-                    <select class="font_small noformat">
-                        <option value="">ASC</option>
-                        <option value="">DESC</option>
-                    </select>
-                </div>
-                <div>
-                    <input type="search" name="" id="" placeholder="Search">
-                </div>
-                <div>
-                    <button wire:click="inventoryShowModal('addLe')"><i class="fas fa-plus"></i> add</button>
-                </div>
-
-            @elseif ($this->myTab == 2)
-
-                <div class="flex gap_1">
-                    <select class="font_small noformat">
-                        <option value="" selected>Name</option>
-                        <option value="">Type</option>
-                        <option value="">Tint</option>
-                        <option value="">Qty</option>
-                        <option value="">Price</option>
-                    </select>
-                    <select class="font_small noformat">
-                        <option value="">ASC</option>
-                        <option value="">DESC</option>
-                    </select>
-                </div>
-                <div>
-                    <input type="search" name="" id="" placeholder="Search">
-                </div>
-                <div>
-                    <button wire:click="inventoryShowModal('addLe')"><i class="fas fa-plus"></i> add</button>
-                </div>
-
-            @elseif ($this->myTab == 3)
-
-                <div class="flex gap_1">
-                    <select class="font_small noformat">
-                        <option value="" selected>Name</option>
-                        <option value="">Type</option>
-                        <option value="">Tint</option>
-                        <option value="">Qty</option>
-                        <option value="">Price</option>
-                    </select>
-                    <select class="font_small noformat">
-                        <option value="">ASC</option>
-                        <option value="">DESC</option>
-                    </select>
-                </div>
-                <div>
-                    <input type="search" name="" id="" placeholder="Search">
-                </div>
-                <div>
-                    <button wire:click="inventoryShowModal('addLe')"><i class="fas fa-plus"></i> add</button>
-                </div>
-
-            @endif
-
-        </div>
-
-     
 
     @endsection
 
     @section('section-main')
 
-        <div class="items">
-
-            @if($this->myTab == 1)
-
-                <div class="grid grid_order title">
-                    <div>{{ Str::title('Order #') }}</div>
-                    <div>{{ Str::title('patient name') }}</div>
-                    <div>{{ Str::title('Product') }}</div>
-                    <div>{{ Str::title('date') }}</div>
-                    <div>{{ Str::title('status') }}</div>
-                    <div class="flex flex_x_end">{{ Str::title('price') }}</div>
-                    <div class="flex flex_x_end">{{ Str::title('action') }}</div>
-                </div>
-
-                @for ($i=1; $i<12; $i++)
-                    <div class="grid grid_order list">
-                        <div>dsdfdf</div>
-                        <div>sdsdsd</div>
-                        <div>sdsdsd</div>
-                        <div>sdsdsd</div>
-                        <div>
-                            <select name="" id="" class="noformat">
-                                <option value="" selected>Pending</option>
-                                <option value="">Received</option>
-                                <option value="">Claimed</option>
-                            </select>
-                        </div>
-                        <div class="flex flex_x_end">6000</div>
-                        <div class="flex flex_x_end">
-                            <a class="action" href="#"><i class='fas fa-trash-alt'></i></a>
-                            <a wire:click="showModalOnLensUpdate({{ $i }})" class="action" href="#"><i class="fas fa-edit ml_10"></i></a>
-                        </div>
-                    </div>
-                @endfor
-            @endif
-        </div>
+        <x-organisms.ui.table class="selectable">
+            <x-slot name="thead">
+                <x-organisms.ui.table.th-checkbox/>
+                <x-organisms.ui.table.th label="Name" order-by="supplier_name" />
+                <x-organisms.ui.table.th label="Contact" order-by="item_type" />
+                <x-organisms.ui.table.th label="Account" />
+                <x-organisms.ui.table.th-more/>
+            </x-slot>
+            <x-slot name="tbody">
+                {{-- @forelse ($suppliers as $su) --}}
+                    <tr>
+                        <x-organisms.ui.table.td 
+                            checkbox="selectedSuppliers" 
+                            checkbox-value=""/>
+                        <x-organisms.ui.table.td 
+                            text="John Doe"
+                            desc="Tandag city"
+                            desc-icon="fa-location-dot"
+                            avatar="{{ $this->storage('avatars', '') }}"/>
+                        <x-organisms.ui.table.td 
+                            text="kdfkdjfkdjf"
+                            desc="dfdkf"
+                            desc-icon="fa-envelope"/>
+                        <x-organisms.ui.table.td 
+                            text="jdhfjdhf"
+                            desc="kdjfkdjfkd"/>
+                        <x-organisms.ui.table.td-more>
+                            <x-atom.more.option
+                                wire-click="showModal('update', 'supplier','id')"
+                                option-name="Edit" />
+                            <x-atom.more.option 
+                                wire-click="deletingSupplier('id')"
+                                option-name="Delete" />
+                        </x-organisms.ui.table.td>
+                    </tr>
+                {{-- @empty
+                    <x-organisms.ui.table.search-no-results colspan="7"/>
+                @endforelse --}}
+            </x-slot>
+        </x-organisms.ui.table>
     @endsection
 
 

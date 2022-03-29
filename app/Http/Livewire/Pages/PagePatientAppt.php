@@ -6,6 +6,8 @@ use Livewire\Component;
 use App\Models\Patient;
 use App\Models\Appointment;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Time;
+
 
 
 class PagePatientAppt extends Component
@@ -35,9 +37,12 @@ class PagePatientAppt extends Component
         3 => "Rescheduled",
         4 => "Missed",
         5 => "Fulfilled",
+        6 => "Cancelled",
     ];
 
     public $step = 3;
+
+    public $cancelAppt = false;
 
     protected $rules = [
         'pt.email'  => 'nullable|email',
@@ -145,6 +150,7 @@ class PagePatientAppt extends Component
             case 2: return '#5cb85c'; break;
             case 3: return '#5bc0de'; break;
             case 4: return '#d9534f'; break;
+            case 6: return '#f62681'; break;
             default:
         }
     }
@@ -157,6 +163,7 @@ class PagePatientAppt extends Component
             case 3: return $this->apptStatus[3]; break;
             case 4: return $this->apptStatus[4]; break;
             case 5: return $this->apptStatus[5]; break;
+            case 6: return $this->apptStatus[6]; break;
             default:
         }
     }
@@ -225,6 +232,7 @@ class PagePatientAppt extends Component
             ],
         );
 
+
         $patient = Patient::where('user_id', Auth::user()->id)->first();
 
         if ($patient) {
@@ -250,6 +258,36 @@ class PagePatientAppt extends Component
                 'class' => 'error',
                 'message' => 'You need to fill your information first.',
             ]);  
+        }
+    }
+
+    public function cancelingAppt($id)
+    {
+        $this->appt['id'] = $id;
+
+        $this->cancelAppt = true;
+
+        $this->dispatchBrowserEvent('confirm-dialog');
+    }
+
+    public function cancelAppt()
+    {
+        Appointment::find($this->appt['id'])->update([
+            'appt_status' => 6,
+        ]);
+        $this->dispatchBrowserEvent('confirm-dialog-close');
+
+        $this->dispatchBrowserEvent('toast',[
+            'title' => null,
+            'class' => 'success',
+            'message' => 'Cancelled',
+        ]);
+    }
+
+    public function confirm()
+    {
+        if ($this->cancelAppt) {
+            $this->cancelAppt();
         }
     }
 

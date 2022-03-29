@@ -47,6 +47,8 @@ class PageInventory extends Component
         'qty'           => '',
         'price'         => '',
         'supplier'      => '',
+        'buffer'        => '',
+        'cost'        => '',
         'has_image'     => '',
     ];
 
@@ -258,6 +260,8 @@ class PageInventory extends Component
             'supplier_id'   => $this->item['supplier'],
             'item_qty'      => $this->item['qty'],
             'item_size'     => $this->item['size'],
+            'item_buffer'     => $this->item['buffer'],
+            'item_cost'     => $this->item['cost'],
             'created_at'    => now(),
             'updated_at'    => now(),
         ];
@@ -290,6 +294,8 @@ class PageInventory extends Component
             'supplier_id'   => $this->item['supplier'], 
             'item_qty'      => $this->item['qty'],
             'item_size'     => $this->item['size'],
+            'item_buffer'   => $this->item['buffer'],
+            'item_cost'     => $this->item['cost'],
             'updated_at'    => now(),
         ];
 
@@ -552,6 +558,8 @@ class PageInventory extends Component
                 $this->item['supplier']   = $item->supplier_id;
                 $this->item['qty']        = $item->item_qty;
                 $this->item['size']       = $item->item_size;
+                $this->item['buffer']     = $item->item_buffer;
+                $this->item['cost']       = $item->item_cost;
 
                 !empty($item->item_image) || ($item->item_image != null) ? 
                     $this->item['has_image'] = true : '';

@@ -1,3 +1,5 @@
 @props(['disabled' => false])
 
-<input {{ $disabled ? 'disabled' : '' }} {!! $attributes->merge(['class' => '']) !!}>
+<div class="ui input fluid mb_5">
+    <input {{ $disabled ? 'disabled' : '' }} {!! $attributes->merge(['class' => '']) !!}>
+</div>

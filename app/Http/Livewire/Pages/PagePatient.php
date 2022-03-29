@@ -13,6 +13,9 @@ use App\Models\Purchase;
 use App\Models\Purchased_item;
 use Illuminate\Support\Facades\DB;
 
+use Illuminate\Support\Facades\Storage;
+
+
 
 
 class PagePatient extends Component
@@ -357,13 +360,22 @@ class PagePatient extends Component
                 $this->modal['exam_purchase_tab'] = 2;
                 break;
         }
-        $this->modal['patientShowModal'] = true;
+        // $this->modal['patientShowModal'] = true;
+        $this->dispatchBrowserEvent('form-modal'); 
     }
 
     public function closeModal()
     {
         $this->reset(['pt','modal', 'searchItem']);
         $this->resetErrorBag();
+    }
+
+    public function storage($url) 
+    {
+        if (!empty($url) || ($url != null)) {
+            return Storage::disk('avatars')->url($url); } 
+        else {
+            return Storage::disk('avatars')->url('default-user-avatar.png'); } 
     }
 
 

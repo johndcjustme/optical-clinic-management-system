@@ -14,11 +14,17 @@
             @include('livewire.components.organisms.pagecontents.patient-content')      
         </div>
 
-        @if ($modal['patientShowModal'])
-            @includeIf('livewire.components.organisms.modal.modal-patient');
-        @endif
+        {{-- @if ($modal['patientShowModal']) --}}
+            @include('livewire.components.organisms.modal.modal-patient');
+        {{-- @endif --}}
 
-        <x-alert type="error" message="{{ session('message') }}" />
+        {{-- <x-alert type="error" message="{{ session('message') }}" /> --}}
+
+
+        <x-organisms.ui.confirm-dialog 
+            wire-confirm="confirm"
+            content="Confirm Delete?"
+        />
 
     </div>
 

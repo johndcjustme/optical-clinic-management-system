@@ -75,6 +75,14 @@ style="
 
 <script src="{{ asset('js/modal.js') }}"></script>
 
+
+
+
+<script src="{{ $chart->cdn() }}"></script>
+{{ $chart->script() }}
+
+
+
 {{-- <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script> --}}
 
 
@@ -133,6 +141,7 @@ style="
             closeOnClick: true,
             compact: true,
             position: 'bottom right',
+            cloneModule: false,
         });
     })
 

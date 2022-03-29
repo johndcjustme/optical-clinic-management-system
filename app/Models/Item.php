@@ -19,6 +19,8 @@ class Item extends Model
         'item_size',
         'item_type',
         'item_price',
+        'item_buffer',
+        'item_cost',
         'supplier_id',
         'created_at',
         'updated_at',

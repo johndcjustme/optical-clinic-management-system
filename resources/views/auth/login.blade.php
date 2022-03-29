@@ -19,14 +19,14 @@
             <div>
                 <x-label for="email" :value="__('Email')" />
 
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
+                <x-input id="email" class="" type="email" name="email" :value="old('email')" required autofocus />
             </div>
 
             <!-- Password -->
             <div class="mt-4">
                 <x-label for="password" :value="__('Password')" />
 
-                <x-input id="password" class="block mt-1 w-full"
+                <x-input id="password" class=""
                                 type="password"
                                 name="password"
                                 required autocomplete="current-password" />
@@ -40,14 +40,14 @@
                 </label>
             </div>
 
-            <div class="flex flex_x_between flex_y_center mt_10">
+            <div class="flex flex_x_between flex_y_center mt_20">
                 @if (Route::has('password.request'))
                     <a class="font_m" href="{{ route('password.request') }}">
                         {{ __('Forgot your password?') }}
                     </a>
                 @endif
 
-                <x-button class="ml-3">
+                <x-button class="">
                     {{ __('Log in') }}
                 </x-button>
             </div>

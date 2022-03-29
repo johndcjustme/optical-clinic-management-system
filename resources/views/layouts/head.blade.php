@@ -41,12 +41,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
 
 
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+
 
     <link rel="stylesheet" href="{{ asset('mystyle/css.css') }}">
     <script>
     $('.ui.dropdown').dropdown();
 
     </script>
+
+    <style>
+        .ui.steps .step:after {
+            z-index: 1;
+        }
+    </style>
     @livewireStyles
 </head>
 <body>

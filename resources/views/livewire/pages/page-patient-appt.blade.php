@@ -19,6 +19,11 @@
             @include('livewire.components.organisms.modal.modal-appointment');
         @endif --}}
 
+
+        <x-organisms.ui.confirm-dialog 
+            wire-confirm="confirm"
+            content="Confirm Delete?"
+        />
     {{-- <x-alert type="error" message="{{ session('message') }}" /> --}}
 
     </div>

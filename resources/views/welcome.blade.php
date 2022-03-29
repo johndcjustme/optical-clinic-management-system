@@ -13,10 +13,10 @@
         {{-- </div> --}}
         <div class="flex flex_y_center gap_1">
             <div>
-                <p onclick="location.assign('/login')">SIGN IN</p>
+                <a href="#" onclick="location.assign('/login')"><span class="ui text blue">SIGN IN</span></a>
             </div>
             <div>
-                <button style="background: transparent; border:1px solid #004FC6; color:#004FC6; border-radius: 3em; padding-left: 1.3em; padding-right: 1.3em;"><i class="fa-solid fa-calendar-check mr_3"></i> BOOK NOW</button>
+                <button onclick="window.location.assign('/register')" class="ui button primary"><i class="fa-solid fa-calendar-check mr_3"></i> BOOK NOW</button>
             </div>
         </div>
     </div>
@@ -25,14 +25,11 @@
             <div class="relative">
                 <div>
                     <div>
-                        <p class="" style="color: #004FC6;letter-spacing:0.2rem; font-weight:normal; font-size:1.2rem; margin-bottom: -0.2em">DANGO OPTICAL CLINIC</p>
+                        <p class="" style="letter-spacing:0.2rem; font-weight:normal; font-size:1.2rem; margin-bottom: -0.2em"><span class="ui text blue">DANGO OPTICAL CLINIC</span></p>
                         <h1 style="line-height: 0.9em; font-size: 3.8rem;">
-                            <span class="" style="color: #004FC6;"><span class="dark_400">SEE</span> CLEAR.</span><br>
-                            <span class="" style="color: #004FC6;"><span class="dark_400">SEE</span> BETTER.</span>
+                            <span class="ui text blue"><span class="dark_400">SEE</span> CLEAR.</span><br>
+                            <span class="ui text blue"><span class="dark_400">SEE</span> BETTER.</span>
                         </h1>
-                    </div>
-                    <div style="margin-top: 4em">
-                        <p><i class="fa-solid fa-angle-right mr_5"></i> About Us</p>
                     </div>
                 </div>
             </div>

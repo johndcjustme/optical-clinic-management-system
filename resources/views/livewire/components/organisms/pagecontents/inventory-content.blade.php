@@ -3,38 +3,38 @@
     @section('section-page-title', 'Inventory')
 
     @section('section-links')
-        <x-molecules.ui.group-buttons>
-            <x-molecules.ui.group-buttons.button 
-                wire-click="$set('subPage', 1)" 
-                active="{{ $subPage == 1 }}"
-                label="Items" />
+            <x-molecules.ui.group-buttons>
+                <x-molecules.ui.group-buttons.button 
+                    wire-click="$set('subPage', 1)" 
+                    active="{{ $subPage == 1 }}"
+                    label="Items" />
 
-                <div class="ui buttons" style="z-index: 100" x-init="">
-                    <div class="ui combo top right pointing dropdown icon button">
-                        <i class="dropdown icon"></i>
-                        <div class="menu">
-                            <div wire:click.prevent="$set('onDisplayItemType', 'all')" data-value="all" class="item">
-                                All</div>
-                            <div wire:click.prevent="$set('onDisplayItemType', 'le')" data-value="le" class="item">
-                                Lense</div>
-                            <div wire:click.prevent="$set('onDisplayItemType', 'fr')" data-value="fr" class="item">
-                                Frame</div>
-                            <div wire:click.prevent="$set('onDisplayItemType', 'ac')" data-value="ac" class="item">
-                                Accessory</div>
+                    <div class="ui buttons" style="z-index: 100" x-init="">
+                        <div class="ui combo top right pointing dropdown icon button">
+                            <i class="dropdown icon"></i>
+                            <div class="menu">
+                                <div wire:click.prevent="$set('onDisplayItemType', 'all')" data-value="all" class="item">
+                                    All</div>
+                                <div wire:click.prevent="$set('onDisplayItemType', 'le')" data-value="le" class="item">
+                                    Lense</div>
+                                <div wire:click.prevent="$set('onDisplayItemType', 'fr')" data-value="fr" class="item">
+                                    Frame</div>
+                                <div wire:click.prevent="$set('onDisplayItemType', 'ac')" data-value="ac" class="item">
+                                    Accessory</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <x-molecules.ui.group-buttons.button wire-click="$set('subPage', 2)" active="{{ $subPage == 2 }}"
-                label="Supplier" />
-            <x-molecules.ui.group-buttons.button wire-click="$set('subPage', 3)" active="{{ $subPage == 3 }}"
-                label="In / Out" />
-            </x-molecules.ui.group-buttons.butt>
-        @endsection
+                <x-molecules.ui.group-buttons.button wire-click="$set('subPage', 2)" active="{{ $subPage == 2 }}"
+                    label="Supplier" />
+                <x-molecules.ui.group-buttons.button wire-click="$set('subPage', 3)" active="{{ $subPage == 3 }}"
+                    label="In / Out" />
+            </x-molecules.ui.group-buttons.button>
+    @endsection
 
 
 
         
-        @section('section-heading-left')
+    @section('section-heading-left')
 
             @switch($subPage)
                 @case(1)
@@ -104,9 +104,9 @@
                         <x-slot name="thead">
                             <x-organisms.ui.table.th-checkbox/>
                             <x-organisms.ui.table.th label="Name" order-by="item_name" />
-                            <x-organisms.ui.table.th label="Type" order-by="item_type" />
+                            <x-organisms.ui.table.th label="Category" order-by="item_type" />
                             <x-organisms.ui.table.th label="Supplier" />
-                            <x-organisms.ui.table.th label="Remaining" order-by="item_qty" />
+                            <x-organisms.ui.table.th label="Stocks" order-by="item_qty" />
                             <x-organisms.ui.table.th label="Price" order-by="item_price" />
                             <x-organisms.ui.table.th-more/>
                         </x-slot>
@@ -134,9 +134,11 @@
                                         desc="{{ isset($item->supplier->supplier_address) ? $item->supplier->supplier_address : '' }}"
                                         desc-icon="{{ isset($item->supplier->supplier_address) ? 'fa-location-dot' : '' }}" /> 
                                     <x-organisms.ui.table.td 
-                                        text="{{ $item->item_qty }}" />
+                                        text="{{ $item->item_qty }}" 
+                                        desc="{{ isset($item->item_buffer) ? 'Low Stock: ' . $item->item_buffer : ''; }}"/>
                                     <x-organisms.ui.table.td 
                                         text="{{ number_format($item->item_price) }}" 
+                                        desc="{{ isset($item->item_cost) ? 'Cost: ' . $item->item_cost : ''; }}"
                                         text-icon="fa-peso-sign" />
                                     <x-organisms.ui.table.td-more>
                                         <x-atom.more.option

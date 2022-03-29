@@ -46,7 +46,7 @@ class User extends Authenticatable
 
     public function post()
     {
-        return $this->hasMany(Post::class, 'patient_admin_id');
+        return $this->hasMany(Post::class);
     }
 
 
@@ -63,5 +63,10 @@ class User extends Authenticatable
     public function patient()
     {
         return $this->hasOne(Patient::class);
+    }
+
+    public function commentcomment()
+    {
+        return $this->hasMany(Commentcomment::class);
     }
 }

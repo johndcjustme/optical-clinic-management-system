@@ -11,14 +11,14 @@ class Comment extends Model
 
     protected $fillable = [
         'post_id',
-        'role',
-        'patient_user_id',
+        'user_id',
         'comment_content',
+        // 'patient_user_id',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'patient_user_id', 'id');
+        return $this->belongsTo(User::class);
     }
 
     public function patient()

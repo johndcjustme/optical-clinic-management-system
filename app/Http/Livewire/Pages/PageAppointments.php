@@ -7,6 +7,9 @@ use App\Models\Schedsetting;
 use App\Models\Appointment;
 use App\Models\Patient;
 
+use App\Models\Time;
+
+
 use Illuminate\Support\Facades\Storage;
 
 
@@ -47,7 +50,7 @@ class PageAppointments extends Component
 
     public $isUpdate = false, $isAdd = false, $addAppt = false;
 
-    public $editTime = false, $editTimeId = '';
+    // public $editTime = false, $editTimeId = '';
 
     public $colName = 'appt_date', $direction = 'asc';
 
@@ -62,13 +65,13 @@ class PageAppointments extends Component
     public $day = false;
 
 
-    public $time = [
-        'active'    => false,
-        'am_from'   => '',
-        'am_to'     => '',
-        'pm_from'   => '',
-        'pm_to'     => '',
-    ];
+    // public $time = [
+    //     'active'    => false,
+    //     'am_from'   => '',
+    //     'am_to'     => '',
+    //     'pm_from'   => '',
+    //     'pm_to'     => '',
+    // ];
 
     public $apptStatus = [
         1 => "For Approval",
@@ -76,6 +79,7 @@ class PageAppointments extends Component
         3 => "Rescheduled",
         4 => "Missed",
         5 => "Fulfilled",
+        6 => "Cancelled",
     ];
 
     public $delete = [
@@ -84,6 +88,7 @@ class PageAppointments extends Component
     ];
 
 
+    public $timeSched;
 
     public function myTab($value)
     {
@@ -181,6 +186,7 @@ class PageAppointments extends Component
             case 2: return '#5cb85c'; break;
             case 3: return '#5bc0de'; break;
             case 4: return '#d9534f'; break;
+            case 6: return '#f62681'; break;
             default:
         }
     }
@@ -193,6 +199,7 @@ class PageAppointments extends Component
             case 3: return $this->apptStatus[3]; break;
             case 4: return $this->apptStatus[4]; break;
             case 5: return $this->apptStatus[5]; break;
+            case 6: return $this->apptStatus[6]; break;
             default:
         }
     }
@@ -215,6 +222,9 @@ class PageAppointments extends Component
 
 
 
+
+
+  
 
 
 
@@ -404,18 +414,39 @@ class PageAppointments extends Component
 
 
     
-    public function editTime($id)
+    // public function editTime($id)
+    // {
+    //     $this->editTimeId = $id;
+    //     $this->editTime = true;
+
+    //     $schedsetting = Schedsetting::find($id);
+
+    //     $this->time['am_from']  = $schedsetting->schedset_am_from;
+    //     $this->time['am_to']    = $schedsetting->schedset_am_to;
+    //     $this->time['pm_from']  = $schedsetting->schedset_pm_from;
+    //     $this->time['pm_to']    = $schedsetting->schedset_pm_to;
+    // }
+
+
+    public function addTime()
     {
-        $this->editTimeId = $id;
-        $this->editTime = true;
+        $this->validate(
+            ['timeSched' => 'required',], 
+            ['timeSched.required' => '*Required']
+        );
 
-        $schedsetting = Schedsetting::find($id);
+        $this->resetErrorBag();
 
-        $this->time['am_from']  = $schedsetting->schedset_am_from;
-        $this->time['am_to']    = $schedsetting->schedset_am_to;
-        $this->time['pm_from']  = $schedsetting->schedset_pm_from;
-        $this->time['pm_to']    = $schedsetting->schedset_pm_to;
+        Time::create(['time' => $this->timeSched]);
+        
+        $this->timeSched = '';
     }
+
+    public function deleteTime($id)
+    {
+        Time::destroy($id);
+    }
+
 
     public function updateDay($status, $id)
     {
@@ -425,28 +456,28 @@ class PageAppointments extends Component
             ? $schedsetting->update(['schedset_checked' => true])
             : $schedsetting->update(['schedset_checked' => false]);
 
-            $this->reset(['editTime', 'editTimeId']);
+            // $this->reset(['editTime', 'editTimeId']);
     }
 
 
 
-    public function updateSchedSettings($id)
-    {
-        // dd($id . ' ' .  . ' ' . . ' ' .  . ' ' . ;
-        Schedsetting::find($id)
-            ->update([
-                'schedset_am_from'  => $this->time['am_from'], 
-                'schedset_am_to'    => $this->time['am_to'] , 
-                'schedset_pm_from'  => $this->time['pm_from'],
-                'schedset_pm_to'    => $this->time['pm_to'],
-            ]);
-        $this->reset(['editTime', 'editTimeId', 'time']);
-    }
+    // public function updateSchedSettings($id)
+    // {
+    //     // dd($id . ' ' .  . ' ' . . ' ' .  . ' ' . ;
+    //     Schedsetting::find($id)
+    //         ->update([
+    //             'schedset_am_from'  => $this->time['am_from'], 
+    //             'schedset_am_to'    => $this->time['am_to'] , 
+    //             'schedset_pm_from'  => $this->time['pm_from'],
+    //             'schedset_pm_to'    => $this->time['pm_to'],
+    //         ]);
+    //     $this->reset(['editTime', 'editTimeId', 'time']);
+    // }
 
-    public function cancelUpdateSchedSettings()
-    {
-        $this->reset(['editTime', 'editTimeId', 'time']);
-    }
+    // public function cancelUpdateSchedSettings()
+    // {
+    //     $this->reset(['editTime', 'editTimeId', 'time']);
+    // }
 
     public function updateSchedSettingsAll()
     {

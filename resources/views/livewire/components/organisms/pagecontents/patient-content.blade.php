@@ -9,6 +9,11 @@
     @endsection
 
     @section('section-heading-left')
+        <div>
+            <x-atoms.ui.button wire:click.prevent="patientShowModal('isAdd', null)" class="primary basic tiny">
+                <i class="icon plus"></i> New
+            </x-atoms.ui.button>
+        </div>
         <div class="flex flex_y_center gap_1">
             {{-- <p>Show</p> --}}
             <select wire:model="showInPatient" class="input_small">
@@ -19,9 +24,6 @@
     @endsection
 
     @section('section-heading-right')
-        <div>
-            <x-input.search wire-model="searchLense"/>
-        </div>
         <div class="flex gap_1">
             <x-atom.sort>
                 <x-atom.sort.sort-content 
@@ -64,15 +66,56 @@
         <div>
             <x-atom.btn-circle wire-click="patientShowModal('isAdd', null)"/>
         </div>
+        <div> <x-atoms.ui.search wire-model="searchItem" placeholder="Search..."/> </div>
     @endsection
 
     @section('section-main')
 
+        <x-organisms.ui.table class="selectable">
+            <x-slot name="thead">
+                <x-organisms.ui.table.th-checkbox/>
+                <x-organisms.ui.table.th label="Name" order-by="supplier_name" />
+                <x-organisms.ui.table.th label="" order-by="item_type" />
+                <x-organisms.ui.table.th label="Status" />
+                <x-organisms.ui.table.th-more/>
+            </x-slot>
+            <x-slot name="tbody">
+                @forelse ($pts as $pt)   
+                    <tr>
+                        <x-organisms.ui.table.td 
+                            checkbox="selectedPatients" 
+                            checkbox-value="{{ $pt->id }}"/>
+                        <x-organisms.ui.table.td 
+                            text="{{ $pt->patient_lname . ', ' . $pt->patient_fname . ' ' . $pt->patient_mname}}"
+                            desc="{{ $pt->patient_address }}"
+                            desc-icon="fa-location-dot"
+                            avatar="{{ $this->storage('avatars', $pt->patient_avatar) }}"/>
+                        <x-organisms.ui.table.td 
+                            text="Scheduled"/>
+                        <x-organisms.ui.table.td 
+                            text=""
+                            desc=""/>
+                        <x-organisms.ui.table.td-more>
+                            <x-atom.more.option
+                                wire-click="showModal('update', 'supplier', {{ $pt->id }})"
+                                option-name="Edit" />
+                            <x-atom.more.option 
+                                wire-click="deletingSupplier({{ $pt->id }})"
+                                option-name="Delete" />
+                        </x-organisms.ui.table.td>
+                    </tr>
+                @empty
+                    <x-organisms.ui.table.search-no-results colspan="7"/>
+                @endforelse
+            </x-slot>
+        </x-organisms.ui.table>
+
+
+{{-- 
         <div class="items">
             @switch($tab)
                 @case(1)
                     <x-layout.lists-section>
-                        {{-- <h5 class="dark_200 m_5">Today's patients</h5> --}}
                         @switch($showInPatient)
                             @case(1)
                                 <x-layout.details>
@@ -262,17 +305,14 @@
                                     <x-atom.column-title  
                                         wire-click="sortBy('item', 'item_name')"
                                         col-title="Name"
-                                        {{-- arrow-direction="{{ $this->item_sortColumn === 'item_name' && $this->item_sortDirection === 'asc' }}" --}}
                                     />
                                     <x-atom.column-title  
                                         wire-click=""
                                         col-title="Contact"
-                                        {{-- arrow-direction="{{ $this->item_sortColumn === 'item_name' && $this->item_sortDirection === 'asc' }}" --}}
                                     />
                                     <x-atom.column-title  
                                         wire-click=""
                                         col-title=""
-                                        {{-- arrow-direction="{{ $this->le_sortColumn === 'lense_qty' && $this->le_sortDirection === 'asc' }}" --}}
                                     />
                                     <x-atom.column-title/>
                                 </x-layout.lists-section.lists-list>
@@ -329,7 +369,6 @@
                         @endswitch
                         
                         
-                        {{-- @endfor --}}
                     </x-layout.lists-section>
                     @break
 
@@ -343,7 +382,7 @@
                 @default
                     
             @endswitch
-        </div>
+        </div> --}}
 
     @endsection
 

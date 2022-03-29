@@ -9,6 +9,10 @@ use Illuminate\Support\Str;
 use App\Models\Patient;
 use Faker;
 
+// use ArielMejiaDev\LarapexCharts\LarapexChart;
+
+
+
 class PatientSeeder extends Seeder
 {
     /**
@@ -20,9 +24,93 @@ class PatientSeeder extends Seeder
     {
         $faker = Faker\Factory::create();
 
-        $patient1 = Patient::create([
-            'patient_fname' => $faker->name, 
-            'patient_lname' => $faker->name,
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
+        ]);
+
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
+        ]);
+
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
+        ]);
+
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
+        ]);
+        
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
+        ]);
+
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
+        ]);
+        
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
+        ]);
+
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
+        ]);
+        
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
+        ]);
+
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
+        ]);
+        
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
+        ]);
+
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
+            'patient_mname' => 'S',
+            'patient_mobile' => '094848484848',
+        ]);
+        
+        Patient::create([
+            'patient_fname' => Str::random(10), 
+            'patient_lname' => Str::random(10),
             'patient_mname' => 'S',
             'patient_mobile' => '094848484848',
         ]);

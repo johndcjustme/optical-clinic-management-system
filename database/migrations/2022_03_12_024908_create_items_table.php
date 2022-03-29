@@ -23,6 +23,8 @@ class CreateItemsTable extends Migration
             $table->string('item_size')->nullable();
             $table->string('item_type')->nullable();
             $table->integer('item_price')->nullable();
+            $table->integer('item_cost')->nullable();
+            $table->integer('item_buffer')->nullable();
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
 

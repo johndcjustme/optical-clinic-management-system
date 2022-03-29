@@ -1,7 +1,7 @@
 @php    
     $totalAmount = 0;
 
-    $formId;
+    $formId = '';
     if ($modal['isAddPatient']) {
         $wireSubmitTo = 'addPt';
         $label = 'Add Patient';
@@ -31,13 +31,13 @@
 <x-organisms.modal>
 
     @section('modal_title')
-        <div class="full_w flex flex_x_between">
+        {{-- <div class="full_w flex flex_x_between">
             <div></div>
             <div>
                 <x-atom.btn-close-modal wire-click="closeModal"/>  
                 <x-atom.btn-save-modal form="{{ $formId }}" val="{{ $label }}"/>  
             </div>
-        </div>
+        </div> --}}
     @endsection
 
     @section('modal_body')
@@ -59,53 +59,45 @@
 
                 <br>
                 <p class="dark_100 my_10">Personal Information</p>
-                <div class="grid grid_col_2 gap_1 mb_15">
-                    <div>
-                        <label for="">First Name 
-                            @error('pt.fname')
-                                <x-atom.error>{{ $message }}</x-atom.error>
-                            @enderror  
-                        </label>
-                        <input wire:model.defer="pt.fname" type="text">
-                        <label for="">Last Name
-                            @error('pt.lname')
-                                <x-atom.error>{{ $message }}</x-atom.error>
-                            @enderror  
-                        </label>
-                        <input wire:model.defer="pt.lname" type="text">
-                        <label for="">M.I.</label>
-                        <input wire:model.defer="pt.mname" type="text">
-                    </div>
-                    <div>
-                        <label for="">Gender</label>
-                        <select wire:model.defer="pt.gender" name="" id="">
-                            <option value="" selected>--None--</option>
-                            <option value="female">Female</option>
-                            <option value="male">Male</option>
-                        </select>
-                        <label for="">Occupation</label>
-                        <input wire:model.defer="pt.occ" type="text" name="" id="">
-                        <label for="">Address</label>
-                        <input wire:model.defer="pt.addr" type="text" name="" id="">
+                <div class="ui form">
+                    <div class="two fields">
+                        <div class="field">
+                            <x-atoms.ui.label>First name @error('pt.fname') <span class="ui text red"> • {{ $message }}</span> @enderror </x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="pt.fname" type="text" class="mb_7"/>
+    
+                            <x-atoms.ui.label>Last name @error('pt.lname') <span class="ui text red"> • {{ $message }}</span> @enderror </x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="pt.lname" type="text" class="mb_7"/>
+    
+                            <x-atoms.ui.label>M.I.</x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="pt.mname" type="text" class="mb_7"/>
+                        </div>
+                        <div class="field">
+                            <x-atoms.ui.label>Gender</x-atoms.ui.label>    
+                            <x-atoms.ui.select wire:model.defer="pt.gender" class="mb_7">
+                                <option value="" selected hidden>Select</option>
+                                <option class="item" value="m">Male</option>
+                                <option class="item" value="f">Female</option>
+                            </x-atoms.ui.select>
+
+                            <x-atoms.ui.label>Last name</x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="pt.occ" type="text" class="mb_7"/>
+    
+                            <x-atoms.ui.label>Address</x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="pt.addr" type="text" class="mb_7"/>
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid grid_col_2 gap_1">
-                    <div>
-                        <label for="">Contact Number
-                            @error('pt.no')
-                                <x-atom.error>{{ $message }}</x-atom.error>
-                            @enderror  
-                        </label>
-                        <input wire:model.defer="pt.no" type="text" max="12">
-                    </div>
-                    <div>
-                        <label for="">Email Address
-                            @error('pt.email')
-                                <x-atom.error>{{ $message }}</x-atom.error>
-                            @enderror  
-                        </label>
-                        <input wire:model.defer="pt.email" type="email">
+                <div class="ui form">
+                    <div class="two fields">
+                        <div class="field">
+                            <x-atoms.ui.label>Contact number @error('pt.no') <span class="ui text red"> • {{ $message }}</span> @enderror </x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="pt.no" type="text" class="mb_7"/>
+                        </div>
+                        <div class="field">
+                            <x-atoms.ui.label>Email address @error('pt.email') <span class="ui text red"> • {{ $message }}</span> @enderror </x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="pt.email" type="email" class="mb_7"/>
+                        </div>
                     </div>
                 </div>
                 <br>

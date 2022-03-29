@@ -76,6 +76,10 @@
                                             @include('livewire.components.organisms.pagecontents.appointments-content.appointment-list')
                                         @endforeach
 
+                                        @foreach ($appts->where('appt_status', 6)  as $appt)
+                                            @include('livewire.components.organisms.pagecontents.appointments-content.appointment-list')
+                                        @endforeach
+
                                         @foreach ($appts->where('appt_status', 5)  as $appt)
                                             @include('livewire.components.organisms.pagecontents.appointments-content.appointment-list')
                                         @endforeach

@@ -11,13 +11,13 @@ class Like extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'user_id',
         'post_comment_id',
-        'patient_user_id',
-        'reacted_by_patient_user_id',
-        'reacted_by_role',
         'post_type',
-        'role',
-        'like_dislike',
+        // 'reacted_by_patient_user_id',
+        // 'reacted_by_role',
+        // 'role',
+        // 'like_dislike',
     ];
 
     public function post() 
