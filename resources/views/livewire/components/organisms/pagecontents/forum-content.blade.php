@@ -3,18 +3,18 @@
     @section('section-page-title', 'Forum')
 
     @section('section-links')
-    <div class="flex flex_x_center gap_1" style="width:100%;">
+    <div class="flex flex_x_center gap_1" style="width:100%;" wire:poll.visible>
         <x-molecules.ui.group-buttons>
             <x-molecules.ui.group-buttons.button 
-                wire-click="$set('subPage', 1)" 
+                wire-click="subPage(1)" 
                 active="{{ $subPage == 1 }}"
                 label="Forum" />
             <x-molecules.ui.group-buttons.button 
-                wire-click="$set('subPage', 2)" 
+                wire-click="subPage(2)" 
                 active="{{ $subPage == 2 }}"
-                label="Message" />
+                label="Message {{ $this->newMessage(Auth::user()->id) }}" />
             <x-molecules.ui.group-buttons.button 
-                wire-click="$set('subPage', 3)" 
+                wire-click="subPage(3)" 
                 active="{{ $subPage == 3 }}"
                 label="Members" />
         </x-molecules.ui.group-buttons.button>
@@ -29,6 +29,8 @@
     @endsection
 
     @section('section-main')
+
+ 
 
 
         @switch($subPage)
@@ -129,9 +131,9 @@
                                             
                                             <div x-show="openComment" x-transition.scale.origin.bottom>
                             
-                                                <div class="mt_7">
+                                                {{-- <div class="mt_7">
                                                     <h3 class="ui dividing header">Comments</h3>
-                                                </div>
+                                                </div> --}}
                     
                     
                                                 <div x-data="{replyPost: false}">
@@ -274,47 +276,106 @@
                 <div class="flex flex_x_center">
                     <div class="flex flex_column" style="max-width:400px; width:100%;">
                         <div class="ui minimal comments">
+                            
+                                @if (Auth::user()->user_role == 3)
 
-                            <form class="ui reply form">
-                                <div class="field">
-                                    <textarea style="height: 75px" rows="25" placeholder="White a message..."></textarea>
-                                </div>
-                                <div class="flex flex_x_end">
-                                    <button class="ui blue button tiny">Post</button>
-                                </div>
-                            </form>
+                                    <h3 class="ui dividing header">Conversation</h3>
 
-                            <h3 class="ui dividing header">Conversation</h3>
+                                    @error('body') <x-atoms.ui.validation id="body" message="{{ $message }}" header="Required"/> @enderror
 
-                            <div class="comment">
-                                <a class="avatar">
-                                    <img src="/images/avatar/small/matt.jpg">
-                                </a>
-                                <div class="content">
-                                    <a class="author">Matt</a>
-                                    <div class="metadata">
-                                        <span class="date">Today at 5:42PM</span>
-                                    </div>
-                                    <div class="text">
-                                        How artistic!
-                                    </div>
-                                </div>
-                            </div>
+                                    <form wire:submit.prevent="sendMessage({{ Auth::user()->id }}, 1)" class="ui reply form mb_15">
+                                        <div class="field">
+                                            <textarea wire:model.defer="body" style="height: 75px" rows="25" placeholder="White a message..."></textarea>
+                                        </div>
+                                        <div class="flex flex_x_end">
+                                            <button type="submit" class="ui blue button tiny">Post</button>
+                                        </div>
+                                    </form>
 
-                            <div class="comment">
-                                <a class="avatar">
-                                    <img src="/images/avatar/small/matt.jpg">
-                                </a>
-                                <div class="content">
-                                    <a class="author">Matt</a>
-                                    <div class="metadata">
-                                        <span class="date">Today at 5:42PM</span>
+                                    <div style="max-height:500px; overflow-y:auto;">
+                                        @foreach ($this->displayMessage(Auth::user()->id) as $message)
+
+                                            <div class="comment">
+                                                <a class="avatar">
+                                                    <x-atom.profile-photo size="33px" path="{{ $this->storage($message->user->avatar) }}"/>
+                                                </a>
+                                                <div class="content">
+                                                    <a class="author">{{ $message->user->id == Auth::user()->id ? 'You' : $message->user->name }}</a>
+                                                    <div class="metadata">
+                                                        <span class="date">{{ $message->created_at->diffForHumans() }}</span>
+                                                    </div>
+                                                    <div class="text">
+                                                        {{ $message->body }}
+                                                    </div>
+                                                </div>
+                                            </div>
+        
+                                        @endforeach
                                     </div>
-                                    <div class="text">
-                                        How artistic!
-                                    </div>
-                                </div>
-                            </div>
+
+                                @endif
+    
+                                @if (Auth::user()->user_role == 1)
+                                    {{-- @foreach (App\Models\Message::with('user')->where('sender_id', Auth::user()->id)->orWhere('receiver_id', Auth::user()->id)->latest()->get() as $message) --}}
+                                        
+                                    @if ($patient > 0)
+                                        <h3 class="ui dividing header"> <i wire:click.prevent="$set('patient', 0)" class="fa-solid fa-arrow-left mr_3"></i> Conversation</h3>
+
+                                        @error('body') <x-atoms.ui.validation id="body" message="{{ $message }}" header="Required"/> @enderror
+
+                                        <form wire:submit.prevent="sendMessage({{ Auth::user()->id }}, {{ $patient }})" class="ui reply form mb_15">
+                                            <div class="field">
+                                                <textarea wire:model.defer="body" style="height: 75px" rows="25" placeholder="White a message..."></textarea>
+                                            </div>
+                                            <div class="flex flex_x_end">
+                                                <button type="submit" class="ui blue button tiny">Post</button>
+                                            </div>
+                                        </form>
+
+                                        <div style="max-height:500px; overflow-y:auto;">
+                                            @foreach($this->displayMessage($patient) as $conversation)
+
+                                                <div class="comment">
+                                                    <a class="avatar">
+                                                        <x-atom.profile-photo size="33px" path="{{ $this->storage($conversation->user->avatar) }}"/>
+                                                    </a>
+                                                    <div class="content">
+                                                        <a class="author">{{ $conversation->user->id == Auth::user()->id ? 'You' : $conversation->user->name }}</a>
+                                                        <div class="metadata">
+                                                            <span class="date">{{ $conversation->created_at->diffForHumans() }}</span>
+                                                        </div>
+                                                        <div class="text">
+                                                            {{ $conversation->body }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <h3 class="ui dividing header">Messages</h3>
+                                        <div class="flex flex_column gap_1">
+
+                                            @foreach ($chatrooms as $room)
+                                                    <div class="flex gap_1" wire:click.prevent="$set('patient', {{ $room->user->id }})">
+                                                        <div class="avatar">
+                                                            <x-atom.profile-photo size="2.8em" path="{{ $this->storage($room->user->avatar) }}"/>
+                                                        </div>
+                                                        <div class="content" style="width:100%;">                                    
+                                                            <div class="flex flex_x_between gap_1">
+                                                                <div style="font-weight:bold">{{ $room->user->name }}</div>
+                                                                <small style="opacity: 0.5;">{{ $room->updated_at->diffForHumans() }} </small>
+                                                            </div>
+                                                            <div>
+                                                                {{ $room->new_message > 0 ? $room->new_message . ' new messages' : App\Models\Message::where('sender_id', $room->user->id)->latest()->first()->body }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            @endforeach
+
+                                        </div>
+                                    @endif
+                                @endif
 
                         </div>
                     </div>
@@ -330,23 +391,24 @@
 
                             
                             <div class="flex flex_column gap_1">
-                            @foreach (App\Models\Member::with('user')->get() as $member)
                                 
-                                <div class="flex flex_y_center gap_1">
-                                    <div class="avatar">
-                                        <x-atom.profile-photo size="2.8em" path="{{ $this->storage($member->user->avatar) }}"/>
-                                    </div>
-                                    <div class="content" style="width:100%;">                                    
-                                        <div class="flex flex_x_between gap_1">
-                                            <div style="font-weight:bold">{{ $member->user->name}}</div>
-                                            <small style="opacity: 0.5; font-size:0.7rem;">Date joined: {{ $this->date($member->created_at) }} </small>
+                                @foreach (App\Models\Member::with('user')->get() as $member)
+                                    <div class="flex gap_1">
+                                        <div class="avatar">
+                                            <x-atom.profile-photo size="2.8em" path="{{ $this->storage($member->user->avatar) }}"/>
                                         </div>
-                                        <small class="text">
-                                            {{ $member->user->email }}
-                                        </small>
+                                        <div class="content" style="width:100%;">                                    
+                                            <div class="flex flex_x_between gap_1">
+                                                <div style="font-weight:bold">{{ $member->user->name}}</div>
+                                                <small style="opacity: 0.5; font-size:0.7rem;">Date joined: {{ $this->date($member->created_at) }} </small>
+                                            </div>
+                                            <small class="text">
+                                                {{ $member->user->email }}
+                                            </small>
+                                        </div>
                                     </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+
                             </div>
                         </div>
                     </div>

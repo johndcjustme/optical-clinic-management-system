@@ -14,12 +14,11 @@
             @include('livewire.components.organisms.pagecontents.patient-content')      
         </div>
 
-        {{-- @if ($modal['patientShowModal']) --}}
+        @if ($modal['show'])
             @include('livewire.components.organisms.modal.modal-patient');
-        {{-- @endif --}}
+        @endif
 
         {{-- <x-alert type="error" message="{{ session('message') }}" /> --}}
-
 
         <x-organisms.ui.confirm-dialog 
             wire-confirm="confirm"

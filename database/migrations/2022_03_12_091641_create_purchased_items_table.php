@@ -17,6 +17,7 @@ class CreatePurchasedItemsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('purchase_id');
             $table->unsignedBigInteger('item_id')->nullable();
+            $table->integer('item_price')->nullable();
             $table->integer('qty')->nullable();
 
             $table->foreign('purchase_id')

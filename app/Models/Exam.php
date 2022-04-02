@@ -25,6 +25,7 @@ class Exam extends Model
         'exam_OS_CVA',
         'exam_ADD',
         'exam_PD',
+        'exam_remarks',
     ];
 
     public function patients()

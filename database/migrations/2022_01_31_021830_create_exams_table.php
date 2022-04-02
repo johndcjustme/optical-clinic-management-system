@@ -18,20 +18,21 @@ class CreateExamsTable extends Migration
             $table->id();
 
             $table->unsignedBigInteger('patient_id');
-            $table->double('exam_OD_SPH')->nullable();
-            $table->double('exam_OD_CYL')->nullable();
-            $table->double('exam_OD_AXIS')->nullable();
-            $table->double('exam_OD_NVA')->nullable();
-            $table->double('exam_OD_PH')->nullable();
-            $table->double('exam_OD_CVA')->nullable();
-            $table->double('exam_OS_SPH')->nullable();
-            $table->double('exam_OS_CYL')->nullable();
-            $table->double('exam_OS_AXIS')->nullable();
-            $table->double('exam_OS_NVA')->nullable();
-            $table->double('exam_OS_PH')->nullable();
-            $table->double('exam_OS_CVA')->nullable();
-            $table->double('exam_ADD')->nullable();
-            $table->double('exam_PD')->nullable();
+            $table->string('exam_OD_SPH')->nullable();
+            $table->string('exam_OD_CYL')->nullable();
+            $table->string('exam_OD_AXIS')->nullable();
+            $table->string('exam_OD_NVA')->nullable();
+            $table->string('exam_OD_PH')->nullable();
+            $table->string('exam_OD_CVA')->nullable();
+            $table->string('exam_OS_SPH')->nullable();
+            $table->string('exam_OS_CYL')->nullable();
+            $table->string('exam_OS_AXIS')->nullable();
+            $table->string('exam_OS_NVA')->nullable();
+            $table->string('exam_OS_PH')->nullable();
+            $table->string('exam_OS_CVA')->nullable();
+            $table->string('exam_ADD')->nullable();
+            $table->string('exam_PD')->nullable();
+            $table->string('exam_remarks')->nullable();
             $table->timestamps();
             $table->foreign('patient_id')
                 ->references('id')

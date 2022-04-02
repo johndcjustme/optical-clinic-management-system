@@ -69,4 +69,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Commentcomment::class);
     }
+
+    public function message()
+    {
+        return $this->hasMany(Message::class, 'sender_id', 'id');
+    } 
+
+    public function hasmessage()
+    {
+        return $this->hasOne(Message::class, 'sender_id', 'id')->latestOfMany();
+    }
+
+    public function chatroom()
+    {
+        return $this->hasOne(Chatroom::class, 'user_id', 'id');
+    }
 }

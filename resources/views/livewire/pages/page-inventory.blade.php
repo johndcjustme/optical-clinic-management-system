@@ -16,9 +16,9 @@
             @include('livewire.components.organisms.pagecontents.inventory-content')      
         </div>
 
-        {{-- @if ($modal['show']) --}}
-        @includeIf('livewire.components.organisms.modal.modal-inventory')
-        {{-- @endif --}}
+        @if ($modal['show'])
+            @includeIf('livewire.components.organisms.modal.modal-inventory')
+        @endif
 
         <x-alert type="error" message="{{ session('message') }}" />
 

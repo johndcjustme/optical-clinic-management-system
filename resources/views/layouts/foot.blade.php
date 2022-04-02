@@ -78,8 +78,10 @@ style="
 
 
 
-<script src="{{ $chart->cdn() }}"></script>
-{{ $chart->script() }}
+
+
+
+
 
 
 
@@ -90,6 +92,11 @@ style="
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+
+@stack('js')
+
 
 
 
@@ -97,56 +104,6 @@ style="
 <script src="https://cdn.jsdelivr.net/gh/livewire/turbolinks@v0.1.x/dist/livewire-turbolinks.js" data-turbolinks-eval="false" data-turbo-eval="false"></script>
 
 
-
-
-
-<script>
-
-
-    $('.table-inventory-dropdown-image').dropdown();
-
-
-    $('.select_dropdown_modal').dropdown();
-
-
-    
-
-
-    window.addEventListener('confirm-dialog', event => {
-        $("#fade").modal({
-            fadeDuration: 75,
-            showClose: false
-        });
-    })
-
-    window.addEventListener('form-modal', event => {
-        $('#form-modal').modal({
-            fadeDuration: 75,
-            showClose: false
-        })
-    })
-
-    window.addEventListener('confirm-dialog-close', event => {
-        $.modal.close();
-    })
-
-
-    window.addEventListener('toast', event => {
-        $('body')
-        .toast({
-            title: event.detail.title,
-            class: event.detail.class,
-            showIcon: 'check',
-            message: event.detail.message,
-            closeOnClick: true,
-            compact: true,
-            position: 'bottom right',
-            cloneModule: false,
-        });
-    })
-
-
-</script>
 
 
 

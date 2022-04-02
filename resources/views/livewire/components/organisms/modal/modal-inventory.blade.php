@@ -32,8 +32,8 @@
         <div></div>
         <div class="">
             {{-- <div class="ui small buttons"> --}}
-                <a href="#" class="ui button tiny basic" rel="modal:close">Close</a>
-                {{-- <x-atoms.ui.button wire:click.prevent="closeModal" class="basic tiny">Close</x-atoms.ui.button> --}}
+                {{-- <a href="#" class="ui button tiny basic" rel="modal:close">Close</a> --}}
+                <x-atoms.ui.button wire:click.prevent="closeModal" class="basic tiny">Close</x-atoms.ui.button>
                 <x-atoms.ui.button class="secondary tiny" form="{{ $formId }}" type="submit">Save</i></x-atoms.ui.button>
         </div>
     @endsection

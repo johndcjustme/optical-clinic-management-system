@@ -8,6 +8,8 @@ use App\Models\Comment;
 use App\Models\User;
 use App\Models\Like;
 use App\Models\Member;
+use App\Models\Message;
+use App\Models\Chatroom;
 use App\Models\Commentcomment;
 use App\Models\Comment_in_comment;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +31,13 @@ class PageForum extends Component
 
     public $deleteId;
 
+    public $body = '';
+
+    public $room, $message = false;
+
     public $newPost = false;
+
+    public $patient = 0;
 
     public $delete = [
         'post' => false,
@@ -37,23 +45,51 @@ class PageForum extends Component
     ];
 
     protected $queryString = [
-        'subPage',
+        'subPage', 
+        'room' => ['except' => '', 'except' => 0],
+        'patient' => ['except' => '', 'except' => 0],
     ];
 
     public function render()
     {
-
-
         return view('livewire.pages.page-forum', [
             'posts' => Post::with('user')->latest()->get(),
             'comments' => Comment::with('user')->latest()->get(),
             'commentcomments' => Commentcomment::with('user')->latest()->get(),
+            'chatrooms' => Chatroom::with('user')->latest('updated_at')->limit(50)->get(),
         ])
             ->extends('layouts.app')
             ->section('content');
     }
 
+    public function validationInput()
+    {
+        $this->validate(
+            [ 'body' => 'required|max:255', ],
+            [ 'body.required' => 'Write some message.', ]
+        );
+    }
 
+
+    public function subPage($value)
+    {        
+        $value == 2 
+            ? Message::where('receiver_id', Auth::user()->id)->update(['is_read' => true])
+            : '';
+        $this->subPage = $value;
+    }
+
+    public function room($patientId)
+    {   
+        Message::where('receiver_id', Auth::user()->id)->update(['is_read' => true]);
+
+        $chatroom = Chatroom::where('user_id', $patientId)->first();
+        $chatroom->update(['new_message' => 0]);
+
+        // $this->message = true;
+        $this->patient = $patientId;
+    }
+    
     public function joinForum($userId)
     {
         $member = Member::create([ 'user_id' => $userId ]);
@@ -62,22 +98,15 @@ class PageForum extends Component
             ? $this->dispatchBrowserEvent('toast',[
                     'title' => null,
                     'class' => 'success',
-                    'message' => 'Congratulations. You are now a member of this forum.',
-                ])
+                    'message' => 'Congratulations. You are now a member of this forum.', ])
             : $this->dispatchBrowserEvent('toast',[
                     'title' => null,
                     'class' => 'error',
-                    'message' => 'Error. Please try again.',
-                ]);
+                    'message' => 'Error. Please try again.', ]);
     }
 
 
-    public function checkMember($userId)
-    {
-        return Member::where('user_id', $userId)->first();
-    }
-
-
+    public function checkMember($userId)        { return Member::where('user_id', $userId)->first(); }
 
 
     public function createPost()
@@ -192,13 +221,8 @@ class PageForum extends Component
 
     public function confirm()
     {
-        if ($this->delete['post']) {
-            $this->deletePost();
-        }
-
-        if ($this->delete['comment']) {
-            $this->deleteComment();
-        }
+        $this->delete['post'] ? $this->deletePost() : '';
+        $this->delete['comment'] ? $this->deleteComment() : '';
     }
 
 
@@ -212,37 +236,66 @@ class PageForum extends Component
     }
 
 
-    public function countPostLikes($postId)
-    {
-        return Like::where('post_comment_id', $postId)->where('post_type', 1)->count();
-    }
+    public function countPostLikes($postId)                     { return Like::where('post_comment_id', $postId)->where('post_type', 1)->count(); }
 
-    public function countCommentLikes($commentId, $postType)
-    {
-        return Like::where('post_comment_id', $commentId)->where('post_type', $postType)->count();
-    }
+    public function countCommentLikes($commentId, $postType)    { return Like::where('post_comment_id', $commentId)->where('post_type', $postType)->count(); }
 
-    public function countPostComments($postId)
-    {
-        return Comment::where('post_id', $postId)->count();
-    }
+    public function countPostComments($postId)                  { return Comment::where('post_id', $postId)->count(); }
 
-    public function countCommentComments($commentId)
-    {
-        return Commentcomment::where('comment_id', $commentId)->count();
-    }
+    public function countCommentComments($commentId)            { return Commentcomment::where('comment_id', $commentId)->count(); }
 
     public function countPosts()
     {
         $posts = Post::all()->count();
-        return $posts > 1 ? $posts . ' Posts' : $posts . ' Post';
+        return $posts > 1 
+                    ? $posts . ' Posts' 
+                    : $posts . ' Post';
     }
 
     public function countMembers()
     {
         $members = Member::all()->count();
-        return $members > 1 ? $members . ' Members' : $members . ' Member';
+        return $members > 1 
+                    ? $members . ' Members' 
+                    : $members . ' Member';
     }
+
+
+    public function displayMessage($patientId) 
+    {
+        return Message::with('user')->where('sender_id', $patientId)->orWhere('receiver_id', $patientId)->latest()->limit(50)->get();
+    }
+
+
+    public function newMessage($userId)
+    {
+        $count = Message::where('receiver_id', $userId)->where('is_read', false)->count();
+
+        return $count > 0 
+                    ? '• ' . $count 
+                    : '';
+    }
+
+    public function sendMessage($senderId, $receiverId) 
+    {
+        // dd($senderId .' ' . $receiverId . $this->body);
+        $this->validationInput();
+
+        if ($senderId != 1) {
+            Chatroom::updateOrCreate(
+                ['user_id' => $senderId],
+                ['user_id' => $senderId, 'new_message' => DB::raw('new_message + 1')]);
+        }
+
+        Message::create([
+            'sender_id' => $senderId,
+            'body' => $this->body,
+            'receiver_id' => $receiverId,
+            'is_read' => false, ]);             
+   
+        $this->body = '';
+    }
+
 
 
 

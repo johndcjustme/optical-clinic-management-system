@@ -14,12 +14,17 @@ use App\Models\Purchased_item;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Storage;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
+
 
 
 
 
 class PagePatient extends Component
 {
+    use WithPagination;
+
 
     public $tab = 1;
 
@@ -27,12 +32,29 @@ class PagePatient extends Component
 
     public $itemType, $searchLense, $searchItem;
 
+    public $searchPatient = '';
+
     public $purchaseId, $purchasePatientId, $latestPurchase;
 
     public $showInPatient = 1;
 
+    public $subPage = 1;
+
+    public $historyPage;
+
+    public $patientId;
+
+    public $pageNumber = 10;
+
+    public 
+        $total = 0,
+        $discount = 0,
+        $balance = 0,
+        $deposit = 0;
+
 
     public $modal = [
+        'show' => false,
         'patientShowModal'     => false,
             'isAddPatient'      => false,
             'isUpdatePatient'   => false,
@@ -74,6 +96,7 @@ class PagePatient extends Component
         'lname'   => '',
         'mname'   => '',
         'addr'    => '',
+        'age'    => '',
         'no'      => '',
         'gender'  => '',
         'occ'     => '',
@@ -101,35 +124,79 @@ class PagePatient extends Component
         'created_at'   => '',
         'updated_at'   => '',
         'exam_PD'      => '',
+        'exam_remarks'      => '',
     ];
 
-    protected $rules = [
-        'pt.fname' => 'required',
-        'pt.lname' => 'required',
-        'pt.email' => 'email',
-    ];
+    // protected $rules = [
+    //     'pt.fname' => 'required',
+    //     'pt.lname' => 'required',
+    // ];
 
-    protected $messages = [
-        'pt.fname.required' => 'Required',
-        'pt.lname.required' => 'Required',
-        'pt.email.email'    => 'Enter valid email',
+    // protected $messages = [
+    //     'pt.fname.required' => 'Required',
+    //     'pt.lname.required' => 'Required',
+    // ];
+
+    protected $queryString = [
+        'searchPatient' => ['except' => ''],
+        'subPage' => 1,
+        'historyPage' => 1,
+        'patientId' => ['except' => ''],
     ];
 
     protected $listeners = ['getLastExam'];
 
     public function render() 
     {
+   
+        $this->total();
+
+        // $purchased_item->item->item_price->
+        
+        number_format($this->total, 2);
+
+
+
         $searchItem = '%' . $this->searchItem . '%';
         $items = Item::where('item_name', 'like', $searchItem)->get();
 
+        $searchPatient = $this->searchPatient . '%';
+        $pts = Patient::where('patient_fname', 'like', $searchPatient)
+                ->orWhere('patient_lname', 'like', $searchPatient)
+                ->orWhere('patient_mname', 'like', $searchPatient)
+                ->paginate($this->pageNumber);
+
         return view('livewire.pages.page-patient',[
-                'pts' => Patient::all(),
+                'pts' => $pts,
                 'selectedItems' => Purchased_item::with('item')->where('purchase_id', $this->latest_purchase['id'])->orderBy('id', 'desc')->get(),
                 'items' => $items,
                 'purchases' => Purchase::with('patient')->get(),
             ])
             ->extends('layouts.app')
             ->section('content');
+    }
+
+
+    public function date($date) { return \Carbon\Carbon::parse($date)->isoFormat('MMM D, YYYY'); }
+
+
+    public function total()
+    {
+        $this->total = 0;
+
+        $purchase_item =  Purchased_item::where('purchase_id', $this->latest_purchase['id'])->get();
+
+        foreach ($purchase_item as $pi) {
+            $this->total += $pi->qty * $pi->item_price;
+        }
+
+        !empty($this->discount) && ($this->discount > 0)
+            ? $this->total = $this->total - $this->discount
+            : NULL;
+
+        $this->deposit > 0
+            ? $this->balance = $this->total - $this->deposit
+            : $this->balance = 0;
     }
 
     public function purchaseNewItem($ptId)
@@ -156,6 +223,7 @@ class PagePatient extends Component
         Purchased_item::create([
             'purchase_id' => $purchaseId, 
             'item_id' => $itemId,
+            'item_price' => $itemPrice,
             'qty' => '1',
         ]);
 
@@ -165,8 +233,8 @@ class PagePatient extends Component
     public function inc_dec_item($data, $itemId) 
     {
 
-        if ($data == 'inc') { $dbRaw = 'qty + 1'; }
-        if ($data == 'dec') { $dbRaw = 'qty - 1'; }
+        $data == 'inc' ? $dbRaw = 'qty + 1' : NULL;
+        $data == 'dec' ? $dbRaw = 'qty - 1' : NULL;
 
         Purchased_item::findOrFail($itemId)
             ->update(['qty' => DB::raw($dbRaw)]);
@@ -177,24 +245,34 @@ class PagePatient extends Component
     public function exam_purchase_tab($data, $patientId)
     {
         $findPt = Patient::findOrFail($patientId);
-        $this->pt['id'] = $findPt->id;
-        $this->pt['fullname'] = $findPt->patient_lname . ', ' . $findPt->patient_fname . ' ' . $findPt->patient_mname;
-        $this->pt['addr'] = $findPt->patient_address;
+        $this->pt['avatar']     = $findPt->patient_avatar;
+        $this->pt['id']         = $findPt->id;
+        $this->pt['fullname']   = $findPt->patient_lname . ', ' . $findPt->patient_fname . ' ' . $findPt->patient_mname;
+        $this->pt['addr']       = $findPt->patient_address;
+        $this->pt['gender']     = $findPt->patient_gender;
+        $this->pt['occ']        = $findPt->patient_occupation;
+        $this->pt['age']      = $findPt->patient_age;
+        $this->pt['no']         = $findPt->patient_mobile;
+        $this->pt['email']      = $findPt->patient_email;
 
         switch ($data) {
             case 'exam':
-                // $this->exam['previous'] = Exam::where('patient_id', $patientId)->count();
-                $this->getLastExam($this->pt['id']);
+                $this->exam['previous'] = Exam::where('patient_id', $patientId)->count();
+                $this->getLastExam($patientId);
                 $this->modal['exam_purchase_tab'] = 1;
                 break;
             case 'purchase':
                 $this->latestPurchase = $this->isPatientPurchased($patientId);
                 $this->latest_purchase['id'] = $this->latestPurchase->id ?? null;
-                $this->latest_purchase['discount'] = $this->latestPurchase->discount ?? '0';
-                $this->latest_purchase['deposit'] = $this->latestPurchase->deposit ?? '0';
-                $this->latest_purchase['balance'] = $this->latestPurchase->balance ?? '0';
+                $this->discount = $this->latestPurchase->discount ?? '0';
+                $this->deposit = $this->latestPurchase->deposit ?? '0';
+                $this->balance = $this->latestPurchase->balance ?? '0';
                 $this->latest_purchase['date'] = $this->latestPurchase->created_at ?? '';
                 $this->modal['exam_purchase_tab'] = 2;
+                break;
+            case 'patient':
+
+                $this->modal['exam_purchase_tab'] = 3;
                 break;
         }
     }
@@ -205,17 +283,30 @@ class PagePatient extends Component
 
     public function savePayment($purchaseId)
     {
+        // dd($this->total . ', ' . $this->balance . ', ' . $this->deposit . ', ' . $this->discount);
         Purchase::where('id', $purchaseId)
             ->update([
-                'discount' => $this->latest_purchase['discount'],
-                'deposit' => $this->latest_purchase['deposit'],
+                'total' => $this->total,
+                'deposit' => $this->deposit,
+                'balance' => $this->balance,
+                'discount' => $this->discount,
             ]);
+
         session()->flash('savedPayment', 'Saved');
     }
 
     public function addPt()
     {
-        $this->validate();
+        $this->validate(
+            [
+                'pt.fname' => 'required|max:100',
+                'pt.lname' => 'required|max:100',
+            ],
+            [
+                'pt.fname.required' => 'Required',  
+                'pt.lname.required' => 'Required',
+            ]
+        );
 
         Patient::create([
             'patient_fname' => $this->pt['fname'],
@@ -236,14 +327,14 @@ class PagePatient extends Component
         $this->validate();
         $updatePt = Patient::findOrFail($this->pt['id']);
         $updatePt->update([
-           'patient_fname' => $this->pt['fname'],
-           'patient_mname' => $this->pt['mname'],
-           'patient_lname' => $this->pt['lname'],
-           'patient_mobile' => $this->pt['no'],
-           'patient_gender' => $this->pt['gender'], 
-           'patient_address' => $this->pt['addr'], 
+           'patient_fname'      => $this->pt['fname'],
+           'patient_mname'      => $this->pt['mname'],
+           'patient_lname'      => $this->pt['lname'],
+           'patient_mobile'     => $this->pt['no'],
+           'patient_gender'     => $this->pt['gender'], 
+           'patient_address'    => $this->pt['addr'], 
            'patient_occupation' => $this->pt['occ'], 
-           'patient_email' => $this->pt['email'], 
+           'patient_email'      => $this->pt['email'], 
         ]);
         if ($updatePt) {
             session()->flash('message', 'Updated successfully.');
@@ -291,6 +382,7 @@ class PagePatient extends Component
                 'exam_OS_CVA'  => $this->exam['exam_OS_CVA'],
                 'exam_ADD'     => $this->exam['exam_ADD'],
                 'exam_PD'     => $this->exam['exam_PD'],
+                'exam_remarks'     => $this->exam['exam_remarks'],
             ]);
         session()->flash('savedExam', 'Saved');
     }
@@ -320,6 +412,7 @@ class PagePatient extends Component
             $this->exam['exam_OS_CVA']   = $getExam->exam_OS_CVA;
             $this->exam['exam_ADD']      = $getExam->exam_ADD;
             $this->exam['exam_PD']      = $getExam->exam_PD;
+            $this->exam['exam_remarks']      = $getExam->exam_remarks;
 
             $this->exam['last'] = true;
 
@@ -332,6 +425,8 @@ class PagePatient extends Component
 
     public function patientShowModal($data, $patientId)
     {
+        $this->resetErrorBag();
+
         switch ($data) {
             case 'isAdd':
                 $this->modal['isAddPatient'] = true;
@@ -360,12 +455,13 @@ class PagePatient extends Component
                 $this->modal['exam_purchase_tab'] = 2;
                 break;
         }
-        // $this->modal['patientShowModal'] = true;
+        $this->modal['show'] = true;
         $this->dispatchBrowserEvent('form-modal'); 
     }
 
     public function closeModal()
     {
+        $this->modal['show'] = false;
         $this->reset(['pt','modal', 'searchItem']);
         $this->resetErrorBag();
     }
@@ -377,7 +473,59 @@ class PagePatient extends Component
         else {
             return Storage::disk('avatars')->url('default-user-avatar.png'); } 
     }
+    
+    public function history($historyPage, $patientId) 
+    {
+        $this->findPatient($patientId);
 
+        $this->patientId = $patientId;
+
+        switch ($historyPage) {
+            case 1: $this->historyPage = 1; break;
+            case 2: $this->historyPage = 2; break;
+            default:
+        }
+        $this->subPage = 3;
+    }
+
+
+    public function findPatient($patientId)
+    {
+        $this->patientId = $patientId;
+        $findPt = Patient::findOrFail($this->patientId);
+        $this->pt['avatar']     = $findPt->patient_avatar;
+        $this->patientId         = $findPt->id;
+        $this->pt['fullname']   = $findPt->patient_lname . ', ' . $findPt->patient_fname . ' ' . $findPt->patient_mname;
+        $this->pt['addr']       = $findPt->patient_address;
+        $this->pt['gender']     = $findPt->patient_gender;
+        $this->pt['occ']        = $findPt->patient_occupation;
+        $this->pt['age']      = $findPt->patient_age;
+        $this->pt['no']         = $findPt->patient_mobile;
+        $this->pt['email']      = $findPt->patient_email;
+    }
+
+
+    public function fullName($patientId)
+    {
+        $findPt = Patient::findOrFail($patientId);
+        return $this->pt['fullname']   = $findPt->patient_lname . ', ' . $findPt->patient_fname . ' ' . $findPt->patient_mname;
+    }
+
+    public function AGE_ADDR($patientId)
+    {
+        $patient = Patient::findOrFail($patientId);
+        return $patient->patient_age . ' • ' . $patient->patient_address;
+    }
+
+    public function countExam($patientId)
+    {
+        return Exam::where('patient_id', $patientId)->count();
+    }
+
+    public function countPurchase($patientId)
+    {
+        return Purchase::where('patient_id', $patientId)->count();
+    }
 
 
 

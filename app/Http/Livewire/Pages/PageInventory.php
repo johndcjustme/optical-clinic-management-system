@@ -200,6 +200,7 @@ class PageInventory extends Component
     public function updatedSubPage($pageId)
     {
         $this->resetPage();
+        $this->reset(['modal']);
         $this->subPage = $pageId;
     }
 
@@ -585,6 +586,7 @@ class PageInventory extends Component
             }
             $this->modal['update'] = true;
         }
+        $this->modal['show'] = true;
         $this->dispatchBrowserEvent('form-modal'); 
     }
 
