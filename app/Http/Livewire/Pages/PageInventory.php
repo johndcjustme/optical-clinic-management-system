@@ -259,9 +259,9 @@ class PageInventory extends Component
             'item_type'     => $this->item['type'],
             'item_price'    => $this->item['price'],
             'supplier_id'   => $this->item['supplier'],
-            'item_qty'      => $this->item['qty'],
+            'item_qty'      => $this->item['qty'] + $this->item['buffer'],
             'item_size'     => $this->item['size'],
-            'item_buffer'     => $this->item['buffer'],
+            'item_buffer'   => $this->item['buffer'],
             'item_cost'     => $this->item['cost'],
             'created_at'    => now(),
             'updated_at'    => now(),
@@ -293,7 +293,7 @@ class PageInventory extends Component
             'item_type'     => $this->item['type'],
             'item_price'    => $this->item['price'],
             'supplier_id'   => $this->item['supplier'], 
-            'item_qty'      => $this->item['qty'],
+            'item_qty'      => $this->item['qty'] + $this->item['buffer'],
             'item_size'     => $this->item['size'],
             'item_buffer'   => $this->item['buffer'],
             'item_cost'     => $this->item['cost'],
@@ -317,6 +317,19 @@ class PageInventory extends Component
             'class' => 'success',
             'message' => 'Item updated successfully.',
         ]);
+    }
+
+    public function itemQty($itemId)
+    {
+        $item = Item::find($itemId);
+        $qty = $item->item_qty;
+        $buffer = $item->item_buffer;
+
+        if ($qty > $buffer) {
+            return $qty - $buffer;
+        } elseif ($qty < $buffer) {
+            return '0';
+        }
     }
 
     public function deletingItem($itemId)
@@ -600,8 +613,6 @@ class PageInventory extends Component
 
     public function storage($disk, $url) 
     {
-
-
         if (!empty($url) || ($url != null)) {
             return Storage::disk($disk)->url($url); } 
         else {

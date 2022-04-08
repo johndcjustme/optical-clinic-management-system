@@ -1,6 +1,15 @@
 <x-layout.page-content>
 
-    @section('section-page-title', 'Users')
+    @section('section-page-title')
+        <div class="">
+            <div>
+                <x-atoms.ui.header title="Users"/>
+            </div>
+            <div>
+                <small></small>
+            </div>
+        </div>
+    @endsection
 
     @section('section-links')
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus, aperiam.</p>

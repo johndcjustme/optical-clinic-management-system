@@ -14,9 +14,9 @@
             @include('livewire.components.organisms.pagecontents.appointments-content')      
         </div>
 
-        {{-- @if ($apptShowModal) --}}
-        @include('livewire.components.organisms.modal.modal-appointment')
-        {{-- @endif --}}
+        @if ($modal['show'])
+            @include('livewire.components.organisms.modal.modal-appointment')
+        @endif
 
         <x-alert type="error" message="{{ session('message') }}" />
 

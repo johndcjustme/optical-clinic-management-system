@@ -18,6 +18,7 @@ class Purchase extends Model
         'discount',
         'balance',
         'deposit',
+        'duedate',
     ];
     
     public function purchased_item()

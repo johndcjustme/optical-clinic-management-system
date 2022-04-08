@@ -27,7 +27,10 @@ class CreatePatientsTable extends Migration
             $table->string('patient_email')->nullable();
             $table->string('patient_gender')->nullable();
             $table->string('patient_status')->nullable();
-            $table->timestamps();
+            $table->boolean('patient_queue')->nullable();
+            $table->boolean('patient_exam_status')->nullable();
+            $table->dateTime('created_at');
+            $table->dateTime('updated_at');
 
             $table->foreign('user_id')
                 ->references('id')

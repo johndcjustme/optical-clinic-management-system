@@ -16,7 +16,16 @@
 
 <x-layout.page-content>
 
-    @section('section-page-title', 'My Account')
+    @section('section-page-title')
+        <div class="">
+            <div>
+                <x-atoms.ui.header title="My Account"/>
+            </div>
+            <div>
+                <small></small>
+            </div>
+        </div>
+    @endsection
 
     @section('section-links') 
         Account Settings

@@ -25,96 +25,108 @@ class PatientSeeder extends Seeder
         $faker = Faker\Factory::create();
 
         Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
+            'patient_fname' => Str::random(4),
+            'patient_lname' => Str::random(5),
+            'patient_mname' => Str::random(4), 
+            'patient_address' => Str::random(5) . 'address',
+            'patient_age' => 23,
+            'patient_occupation' => Str::random(7),
+            'patient_mobile' => 12344567678,
+            'patient_email' => Str::random(4) . '@test.com',
+            'patient_gender' => 'male',
         ]);
 
         Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
+            'patient_fname' => Str::random(4),
+            'patient_lname' => Str::random(5),
+            'patient_mname' => Str::random(4), 
+            'patient_address' => Str::random(5) . 'address',
+            'patient_age' => 23,
+            'patient_occupation' => Str::random(7),
+            'patient_mobile' => 12344567678,
+            'patient_email' => Str::random(4) . '@test.com',
+            'patient_gender' => 'male',
         ]);
 
-        Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
-        ]);
 
         Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
-        ]);
-        
-        Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
+            'patient_fname' => Str::random(4),
+            'patient_lname' => Str::random(5),
+            'patient_mname' => Str::random(4), 
+            'patient_address' => Str::random(5) . 'address',
+            'patient_age' => 23,
+            'patient_occupation' => Str::random(7),
+            'patient_mobile' => 12344567678,
+            'patient_email' => Str::random(4) . '@test.com',
+            'patient_gender' => 'male',
         ]);
 
-        Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
-        ]);
-        
-        Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
-        ]);
 
         Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
-        ]);
-        
-        Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
+            'patient_fname' => Str::random(4),
+            'patient_lname' => Str::random(5),
+            'patient_mname' => Str::random(4), 
+            'patient_address' => Str::random(5) . 'address',
+            'patient_age' => 23,
+            'patient_occupation' => Str::random(7),
+            'patient_mobile' => 12344567678,
+            'patient_email' => Str::random(4) . '@test.com',
+            'patient_gender' => 'male',
         ]);
 
-        Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
-        ]);
-        
-        Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
-        ]);
 
         Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
+            'patient_fname' => Str::random(4),
+            'patient_lname' => Str::random(5),
+            'patient_mname' => Str::random(4), 
+            'patient_address' => Str::random(5) . 'address',
+            'patient_age' => 23,
+            'patient_occupation' => Str::random(7),
+            'patient_mobile' => 12344567678,
+            'patient_email' => Str::random(4) . '@test.com',
+            'patient_gender' => 'male',
         ]);
-        
+
+
         Patient::create([
-            'patient_fname' => Str::random(10), 
-            'patient_lname' => Str::random(10),
-            'patient_mname' => 'S',
-            'patient_mobile' => '094848484848',
+            'patient_fname' => Str::random(4),
+            'patient_lname' => Str::random(5),
+            'patient_mname' => Str::random(4), 
+            'patient_address' => Str::random(5) . 'address',
+            'patient_age' => 23,
+            'patient_occupation' => Str::random(7),
+            'patient_mobile' => 12344567678,
+            'patient_email' => Str::random(4) . '@test.com',
+            'patient_gender' => 'male',
         ]);
-        
+
+
+        Patient::create([
+            'patient_fname' => Str::random(4),
+            'patient_lname' => Str::random(5),
+            'patient_mname' => Str::random(4), 
+            'patient_address' => Str::random(5) . 'address',
+            'patient_age' => 23,
+            'patient_occupation' => Str::random(7),
+            'patient_mobile' => 12344567678,
+            'patient_email' => Str::random(4) . '@test.com',
+            'patient_gender' => 'male',
+        ]);
+
+
+        Patient::create([
+            'patient_fname' => Str::random(4),
+            'patient_lname' => Str::random(5),
+            'patient_mname' => Str::random(4), 
+            'patient_address' => Str::random(5) . 'address',
+            'patient_age' => 23,
+            'patient_occupation' => Str::random(7),
+            'patient_mobile' => 12344567678,
+            'patient_email' => Str::random(4) . '@test.com',
+            'patient_gender' => 'male',
+        ]);
+
+
         //
         // DB::table('patients')->insert([
         //     'patient_photo_path' => 'nopath',

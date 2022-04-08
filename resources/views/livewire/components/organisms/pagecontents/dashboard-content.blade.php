@@ -1,6 +1,15 @@
 <x-layout.page-content>
 
-    @section('section-page-title', 'Dashboard')
+    @section('section-page-title')
+        <div class="">
+            <div>
+                <x-atoms.ui.header title="Dashboard"/>
+            </div>
+            <div>
+                <small></small>
+            </div>
+        </div>
+    @endsection
 
     @section('section-links')
         <p style="font-size: 1.3rem;">Hi <b>{{ session()->get('curr_user_name') }}</b>, have a nice day.</p>

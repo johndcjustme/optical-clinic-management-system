@@ -4,7 +4,16 @@
 
 <x-layout.page-content>
 
-    @section('section-page-title', 'Appointments')
+    @section('section-page-title')
+        <div class="">
+            <div>
+                <x-atoms.ui.header title="Appointments"/>
+            </div>
+            <div>
+                <small></small>
+            </div>
+        </div>
+    @endsection
 
     @section('section-links')
         <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla, similique.</p>

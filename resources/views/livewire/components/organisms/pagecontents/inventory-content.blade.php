@@ -1,6 +1,15 @@
 <x-layout.page-content>
 
-    @section('section-page-title', 'Inventory')
+    @section('section-page-title')
+        <div class="">
+            <div>
+                <x-atoms.ui.header title="Inventory"/>
+            </div>
+            <div>
+                <small></small>
+            </div>
+        </div>
+    @endsection
 
     @section('section-links')
             <x-molecules.ui.group-buttons>
@@ -28,6 +37,8 @@
                     label="Supplier" />
                 <x-molecules.ui.group-buttons.button wire-click="$set('subPage', 3)" active="{{ $subPage == 3 }}"
                     label="In / Out" />
+                <x-molecules.ui.group-buttons.button wire-click="$set('subPage', 4)" active="{{ $subPage == 4 }}"
+                    label="Ledger" />
             </x-molecules.ui.group-buttons.button>
     @endsection
 
@@ -51,7 +62,7 @@
                             </div>
                         @else
                             <x-atoms.ui.button wire:click.prevent="showModal('add', 'item', null)" class="primary basic tiny">
-                                <i class="icon plus"></i> New
+                                <i class="icon plus"></i> Add Item
                             </x-atoms.ui.button>
                         @endif
                     </div>
@@ -71,7 +82,7 @@
                             </div>
                         @else
                             <x-atoms.ui.button wire:click.prevent="showModal('add', 'supplier', null)" class="primary basic tiny">
-                                <i class="icon plus"></i> New
+                                <i class="icon plus"></i> Add Supplier
                             </x-atoms.ui.button>
                         @endif
                     </div>
@@ -134,7 +145,7 @@
                                         desc="{{ isset($item->supplier->supplier_address) ? $item->supplier->supplier_address : '' }}"
                                         desc-icon="{{ isset($item->supplier->supplier_address) ? 'fa-location-dot' : '' }}" /> 
                                     <x-organisms.ui.table.td 
-                                        text="{{ $item->item_qty }}" 
+                                        text="{{ $this->itemQty($item->id) }}" 
                                         desc="{{ isset($item->item_buffer) ? 'Low Stock: ' . $item->item_buffer : ''; }}"/>
                                     <x-organisms.ui.table.td 
                                         text="{{ number_format($item->item_price) }}" 
@@ -155,9 +166,7 @@
                         </x-slot>
                     </x-organisms.ui.table>
 
-                    <x-organisms.ui.paginator display-page-number="{{ $pageNumber }}" wire-model="pageNumber">
-                        {{ $items->links('livewire.components.paginator') }}
-                    </x-organisms.ui.paginator.item>    
+                    {{ $items->links('livewire.components.paginator') }}
                 @break
 
                 @case(2)

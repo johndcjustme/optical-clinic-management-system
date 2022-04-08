@@ -2,10 +2,14 @@
 <x-layout.page-content>
 
     @section('section-page-title')
-        <div>
-            <div> 
-                <h2>Hello {{ Auth::user()->name }}</h2>
-                <p>{{ Auth::user()->email }} | Tandag City</p>
+        <div class="">
+            <div>
+                <x-atoms.ui.header>
+                    Hello {{ Auth::user()->name }}
+                </x-atoms.ui.header>
+            </div>
+            <div>
+                <small>{{ Auth::user()->email }}</small>
             </div>
         </div>
     @endsection

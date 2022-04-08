@@ -1,6 +1,15 @@
 <x-layout.page-content>
 
-    @section('section-page-title', 'Forum')
+    @section('section-page-title')
+        <div class="">
+            <div>
+                <x-atoms.ui.header title="Forum"/>
+            </div>
+            <div>
+                <small></small>
+            </div>
+        </div>
+    @endsection
 
     @section('section-links')
     <div class="flex flex_x_center gap_1" style="width:100%;" wire:poll.visible>

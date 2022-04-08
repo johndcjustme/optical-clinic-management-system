@@ -1,42 +1,27 @@
 <x-layout.page-content>
 
     @section('section-page-title')
-        <div class="x-flex x-flex-yend">
-            <x-atoms.ui.header title="Patients" link="/patients"/>
-
-            @if ($historyPage > 0)
-                <a>/History</a>
-            @endif
-
-
-
+        <div class="">
+            <div>
+                <x-atoms.ui.header title="Patients" link="/patients"/>
+            </div>
+            <div>
+                <small>{{ $this->patientTotal() }} Patients</small>
+            </div>
         </div>
     @endsection
 
     @section('section-links')
-        {{-- <x-atom.tab-links.link tab-title="Today" wire-click="$set('tab', 1)" sub-page="{{ $tab === 1}}" />
-        <x-atom.tab-links.link tab-title="Queue (4)" wire-click="$set('tab', 2)" sub-page="{{ $tab === 2}}" />
-        <x-atom.tab-links.link tab-title="Patient list" wire-click="$set('tab', 3)" sub-page="{{ $tab === 3}}" /> --}}
         @if ($subPage != 3)
             <x-molecules.ui.group-buttons>
                 <x-molecules.ui.group-buttons.button 
-                    wire-click="$set('subPage', 1)" 
+                    wire-click="subPage(1)" 
                     active="{{ $subPage == 1 }}"
-                    label="Patients" />
-
-                    <div class="ui buttons" style="z-index: 100" x-init="">
-                        <div class="ui combo top right pointing dropdown icon button">
-                            <i class="dropdown icon"></i>
-                            <div class="menu">
-                                <div wire:click.prevent="$set('showInPatient', 1)" data-value="1" class="item">
-                                    All</div>
-                                <div wire:click.prevent="$set('showInPatient', 2)" data-value="2" class="item">
-                                    In list</div>
-                            </div>
-                        </div>
-                    </div>
-                <x-molecules.ui.group-buttons.button wire-click="$set('subPage', 2)" active="{{ $subPage == 2 }}"
-                    label="Payment History" />
+                    label="Exam List" />
+                <x-molecules.ui.group-buttons.button wire-click="subPage(4)" active="{{ $subPage == 4 }}"
+                    label="Patient List" />
+                <x-molecules.ui.group-buttons.button wire-click="subPage(2)" active="{{ $subPage == 2 }}"
+                    label="Purchase" />
             </x-molecules.ui.group-buttons.button>
         @endif
 
@@ -44,72 +29,270 @@
 
     @section('section-heading-left')
         @if ($subPage != 3)
-            <div>
-                <x-atoms.ui.button wire:click.prevent="patientShowModal('isAdd', null)" class="primary basic tiny">
-                    <i class="icon plus"></i> New
-                </x-atoms.ui.button>
-            </div>
+            @if (count($selectedPatients) > 0)
+                <div class="ui compact tiny menu" x-data="$('.ui.dropdown').dropdown()">
+                    <div class="ui dropdown item">
+                    Action
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        @switch($subPage)
+                            @case(1)
+                                <div wire:click.prevent="batchRemoveFromQueue" class="item"><i class="delete icon"></i> Remove from exam list</div>
+                                @break
+                            @case(2)
+                                
+                                @break
+                        
+                            @case(3)
+                                
+                                @break
+                            @case(4)
+                                <div class="item"><i class="edit icon"></i> Edit</div>
+                                <div class="item"><i class="add icon"></i> Add to exam list</div>
+                                <div wire:click.prevent="deletingPatients" class="item"><i class="delete icon"></i> Delete</div>
+                                @break
+                            @default
+                        @endswitch
+                    </div>
+                    </div>
+                </div>
+            @else
+                <div>
+                    <x-atoms.ui.button wire:click.prevent="patientShowModal('isAdd', null)" class="primary basic tiny">
+                        <i class="icon plus"></i> Add Patient
+                    </x-atoms.ui.button>
+                </div>
+            @endif
         @endif
     @endsection
 
     @section('section-heading-right')
-        @if ($subPage != 3)
-            <div> <x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/> </div>
-        @endif
+
+        @switch($subPage)
+            @case(1)
+                <div>
+                    <x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/>
+                </div>
+                @break
+            @case(2)
+                <div>
+                    <x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/>
+                </div>
+                <x-molecules.ui.dropdown>
+                    <x-molecules.ui.dropdown.icon/>
+                    <x-molecules.ui.dropdown.menu>
+                        <div class="item">
+                            <x-molecules.ui.dropdown.icon/>
+                            <span class="text">Filter</span>
+                            <x-molecules.ui.dropdown.menu>
+                                <div wire:click.prevent="$set('filter', 'DATE_RANGE')" class="item">
+                                    Date Range
+                                </div>
+                                <div wire:click.prevent="$set('filter', 'DATE_SINGLE')" class="item">
+                                    Single Date
+                                </div>
+                                <div class="ui divider"></div>
+                                <div class="item">
+                                    Today
+                                </div>
+                                <div class="item">
+                                    This Week
+                                </div>
+                                <div class="item">
+                                    This Month
+                                </div>
+                            </x-molecules.ui.dropdown.menu>
+                        </div>
+                        <div class="item">
+                            <x-molecules.ui.dropdown.icon/>
+                            <span class="text">Showing {{ $pageNumber }} Entries</span>
+                            <x-molecules.ui.dropdown.menu>
+                                <x-organisms.ui.paginator-number/>
+                            </x-molecules.ui.dropdown.menu>
+                        </div>
+                        <div class="item">
+                            kjdfkjdf
+                        </div>
+                        <div class="item">
+                            hello there
+                        </div>
+                    </x-molecules.ui.dropdown.menu>
+                </x-molecules.ui.dropdown>
+                @break
+            @case(3)
+                @break
+            @case(4)
+
+                @switch($filter)
+                    @case('DATE_RANGE')
+                        <div class="x-flex x-gap-1 x-flex-ycenter">
+                            <div><span class="ui text">Found {{ $filterResults }} results.</span></div>
+                            
+                            <div class="ui right mini labeled input">
+                                <div class="ui dropdown label">
+                                    <div class="text">From</div>
+                                </div>
+                                <input wire:model="date_from" type="date">
+                            </div>
+
+                            <div class="ui right mini labeled input @if ($date_to < $date_from) error @endif">
+                                <div class="ui dropdown label">
+                                    <div class="text">To</div>
+                                </div>
+                                <input wire:model="date_to" type="date">
+                            </div>
+                            <button wire:click.prevent="$set('filter', '')" class="ui tertiary tiny icon button">
+                                <i class="close icon"></i>
+                            </button>
+                        </div>
+
+                        @break
+
+                    @case('DATE_SINGLE')
+                        <div class="x-flex x-gap-1 x-flex-ycenter">
+                            <div><span class="ui text">Found {{ $filterResults }} results.</span></div>
+                            <div class="ui right mini input">
+                                <input wire:model="DATE_SINGLE" type="date">
+                            </div>
+                            <button wire:click.prevent="$set('filter', '')" class="ui tertiary tiny icon button">
+                                <i class="close icon"></i>
+                            </button>
+                        </div>
+                        @break
+
+                    @default
+                        <div>
+                            <x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/>
+                        </div>
+                @endswitch
+
+                <div>
+                    <x-molecules.ui.dropdown>
+                        <x-molecules.ui.dropdown.icon/>
+                        <x-molecules.ui.dropdown.menu>
+                            <div class="item">
+                                <x-molecules.ui.dropdown.icon/>
+                                <span class="text">Filter</span>
+                                <x-molecules.ui.dropdown.menu>
+                                    <div wire:click.prevent="$set('filter', 'DATE_RANGE')" class="item">
+                                        Date Range
+                                    </div>
+                                    <div wire:click.prevent="$set('filter', 'DATE_SINGLE')" class="item">
+                                        Single Date
+                                    </div>
+                                    <div class="ui divider"></div>
+                                    <div class="item">
+                                        Today
+                                    </div>
+                                    <div class="item">
+                                        This Week
+                                    </div>
+                                    <div class="item">
+                                        This Month
+                                    </div>
+                                </x-molecules.ui.dropdown.menu>
+                            </div>
+                            <div class="item">
+                                <x-molecules.ui.dropdown.icon/>
+                                <span class="text">Showing {{ $pageNumber }} Entries</span>
+                                <x-molecules.ui.dropdown.menu>
+                                    <x-organisms.ui.paginator-number/>
+                                </x-molecules.ui.dropdown.menu>
+                            </div>
+                            <div class="item">
+                                kjdfkjdf
+                            </div>
+                            <div class="item">
+                                hello there
+                            </div>
+                        </x-molecules.ui.dropdown.menu>
+                    </x-molecules.ui.dropdown>
+                </div>
+
+
+                @break
+        
+            @default
+                
+        @endswitch
+
     @endsection
 
     @section('section-main')
-    
         @switch($subPage)
             @case(1)
+                @if ($inqueue->where('patient_exam_status', true)->count() > 0) 
+                    <x-organisms.ui.table class="selectable unstackable">
+                        <x-slot name="thead"></x-slot>
+                        <x-slot name="tbody">
+                            @foreach ($inqueue->where('patient_exam_status', true) as $pt)   
+                                @include('livewire.components.organisms.pagecontents.patient-content.in-list-table')
+                                
+                            @endforeach
+                        </x-slot>
+                    </x-organisms.ui.table>
+                @endif
+                    
+                @if (($inqueue->where('patient_exam_status', true)->count()) > 0 && ($inqueue->where('patient_exam_status', false)->count() > 0))
+                    <center>
+                        ...
+                    </center>
+                @endif
+
+                @if ((! $inqueue->where('patient_exam_status', true)->count()) > 0 && (! $inqueue->where('patient_exam_status', false)->count() > 0))
+                    <center>
+                        <br><br>
+                        <span class="ui text blue">No content so far</span>
+                    </center>
+                @endif
+
+                @if ($inqueue->where('patient_exam_status', false)->count() > 0)
+                    <x-organisms.ui.table class="selectable unstackable">
+                        <x-slot name="thead"></x-slot>
+                        <x-slot name="tbody">
+                            @foreach ($inqueue->where('patient_exam_status', false) as $pt)   
+                                @include('livewire.components.organisms.pagecontents.patient-content.in-list-table')
+                            @endforeach
+                        </x-slot>
+                    </x-organisms.ui.table>
+                @endif
+
+                @break
+            @case(2)
                 <x-organisms.ui.table class="selectable">
                     <x-slot name="thead">
-                        <x-organisms.ui.table.th-checkbox/>
-                        <x-organisms.ui.table.th label="Name" order-by="supplier_name" />
-                        <x-organisms.ui.table.th label="Status"/>
-                        <x-organisms.ui.table.th label="Action"/>
+                        <x-organisms.ui.table.th label="Date Purchased" style="width:10em;"/>
+                        <x-organisms.ui.table.th label="Total" order-by="total"/>
+                        <x-organisms.ui.table.th label="Balance" order-by="balance"/>
+                        <x-organisms.ui.table.th label="Due Date" order-by="dudate"/>
+                        <x-organisms.ui.table.th label="Purchased By" order-by="supplier_name"/>
+                        <x-organisms.ui.table.th label="Payment Type"/>
                         <x-organisms.ui.table.th-more/>
                     </x-slot>
                     <x-slot name="tbody">
-                        @forelse ($pts as $pt)   
+                        @forelse ($purchases as $purchase)
                             <tr>
                                 <x-organisms.ui.table.td 
-                                    checkbox="selectedPatients" 
-                                    checkbox-value="{{ $pt->id }}"/>
+                                    desc="{{ $this->date($purchase->created_at) }}"/>
+                                <x-organisms.ui.table.td
+                                    text="{{ number_format($purchase->total) }}"
+                                    text-icon="fa-peso-sign"/>
+                                <x-organisms.ui.table.td
+                                    text="{{ empty($purchase->balance) || ($purchase->balance == 0) ? 'Paid' : number_format($purchase->balance); }}"
+                                    text-icon="{{ empty($purchase->balance) || ($purchase->balance == 0) ? '' : 'fa-peso-sign';}}"
+                                    desc="{{ !empty($purchase->deposit) || ($purchase->deposit > 0) ?  number_format($purchase->deposit) . ' Depo' : ''; }}"
+                                    desc-icon="{{ !empty($purchase->deposit) || ($purchase->deposit > 0) ? 'fa-peso-sign' : '' }}"/>
+                                <x-organisms.ui.table.td
+                                    text="{{ empty($purchase->duedate) || ($purchase->duedate == null) ? '--' : $this->date($purchase->duedate); }}"/>
                                 <x-organisms.ui.table.td 
-                                    text="{{ $pt->patient_lname . ', ' . $pt->patient_fname . ' ' . $pt->patient_mname}}"
-                                    desc="{{ isset($pt->patient_address) ? $pt->patient_address : ''; }}"
-                                    desc-icon="{{ isset($pt->patient_address) ? 'fa-location-dot' : ''; }}"
-                                    avatar="{{ $this->storage($pt->patient_avatar) }}"/>
-                                <x-organisms.ui.table.td 
-                                    text="Scheduled"/>
-                                <x-organisms.ui.table.td>
-                                    <div class="flex flex_y_center full_w" style="gap:0.8em">
-                                        <div>
-                                            <div wire:click.prevent="patientShowModal('isExam', {{ $pt->id }})" class="clickable_icon">
-                                                <i class="fa-solid fa-pen  green"></i>
-                                            </div>
-                                        </div>
-                                        <div wire:click.prevent="patientShowModal('isPurchase', {{ $pt->id }})">
-                                            <div class="clickable_icon">
-                                                <i class="fa-solid fa-cart-shopping" style="color: rgb(255, 81, 0)"></i>
-                                            </div>
-                                        </div>
-                                    </div>  
-                                </x-organisms.ui.table.td>
+                                    text="{{ $purchase->patient->patient_lname . ', ' . $purchase->patient->patient_fname . ' ' . $purchase->patient->patient_mname }}"
+                                    avatar="{{ $this->storage($purchase->patient->patient_avatar) }}"/>
+                                <x-organisms.ui.table.td
+                                    text="On Hand"/>
                                 <x-organisms.ui.table.td-more>
                                     <x-atom.more.option
-                                        wire-click="showModal('update', 'supplier', {{ $pt->id }})"
-                                        option-name="Edit" />
-                                    <x-atom.more.option 
-                                        wire-click="deletingSupplier({{ $pt->id }})"
-                                        option-name="Delete" />
-                                    <x-atom.more.option 
-                                        wire-click="history(1, {{ $pt->id }})"
-                                        option-name="Exam History" />
-                                    <x-atom.more.option 
-                                        wire-click="history(2, {{ $pt->id }})"
-                                        option-name="Purchase History" />
+                                        wire-click="patientShowModal('isPurchase', {{ $purchase->patient->id }})"
+                                        option-name="Details"/>
                                 </x-organisms.ui.table.td>
                             </tr>
                         @empty
@@ -117,68 +300,13 @@
                         @endforelse
                     </x-slot>
                 </x-organisms.ui.table>
-                <x-organisms.ui.paginator display-page-number="{{ $pageNumber }}" wire-model="pageNumber">
-                    {{ $pts->links('livewire.components.paginator') }}
-                </x-organisms.ui.paginator.item>    
-                @break
-            @case(2)
-                <x-organisms.ui.table class="selectable">
-                    <x-slot name="thead">
-                        <x-organisms.ui.table.th-checkbox/>
-                        <x-organisms.ui.table.th label="Date" style="width:10em;"/>
-                        <x-organisms.ui.table.th label="Name" order-by="supplier_name" />
-                        <x-organisms.ui.table.th label="Payment Type"/>
-                        <x-organisms.ui.table.th label="Balance"/>
-                        <x-organisms.ui.table.th label="Total"/>
-                        <x-organisms.ui.table.th-more/>
-                    </x-slot>
-                    <x-slot name="tbody">
-                        @foreach (App\Models\Purchase::with('purchased_item')->with('patient')->get() as $purchase)
-                            
-                        {{-- @for ($i = 1; $i < 10; $i++)    --}}
-                            <tr>
-                                <x-organisms.ui.table.td 
-                                    checkbox="selectedPatients" 
-                                    checkbox-value=""/>
-                                <x-organisms.ui.table.td 
-                                    text=""
-                                    desc="{{ $this->date($purchase->created_at) }}"/>
-                                <x-organisms.ui.table.td 
-                                    text="{{ $purchase->patient->patient_lname . ', ' . $purchase->patient->patient_fname . ' ' . $purchase->patient->patient_mname }}"
-                                    avatar="{{ $this->storage($purchase->patient->patient_avatar) }}"
-                                    desc=""/>
-                                <x-organisms.ui.table.td
-                                    text="On Hand"
-                                    desc=""/>
-                                <x-organisms.ui.table.td
-                                    text="{{ empty($purchase->balance) || ($purchase->balance == 0) ? 'Paid' : $purchase->balance; }}"
-                                    text-icon="{{ empty($purchase->balance) || ($purchase->balance == 0) ? '' : 'fa-peso-sign';}}"
-                                    desc=""/>
-                                <x-organisms.ui.table.td
-                                    text="{{ $purchase->total }}"
-                                    text-icon="fa-peso-sign"
-                                    desc=""/>
-                                <x-organisms.ui.table.td-more>
-                                    <x-atom.more.option
-                                        wire-click="patientShowModal('isPurchase', {{ $purchase->patient->id }})"
-                                        option-name="Edit" />
-                                    <x-atom.more.option 
-                                        wire-click="deletingSupplier('id')"
-                                        option-name="Delete" />
-                                </x-organisms.ui.table.td>
-                            </tr>
-                        {{-- @endfor --}}
-                        @endforeach
-
-                    </x-slot>
-                </x-organisms.ui.table>
                 @break
             @case(3)
                 <div style="max-width: 600px; width: 600px; margin-right:auto; margin-left:auto">
                         <div class="x-flex x-flex-ycenter" style="width:100%;">
-                            <h2>
+                            <h3>
                                 Patient History
-                            </h2>
+                            </h3>
                         </div>
                     <br><br>
 
@@ -197,7 +325,7 @@
                             <div class="full_w x-flex x-flex-xend x-flex-ycenter">
                                     <div class="mr_10">
                                         @switch($historyPage)
-                                            @case(1) Exams: {{ $this->countExam($patientId) }} @break
+                                            @case(1) Exams:    {{ $this->countExam($patientId) }} @break
                                             @case(2) Purchase: {{ $this->countPurchase($patientId) }} @break
                                             @default
                                         @endswitch
@@ -206,24 +334,24 @@
                                         <x-molecules.ui.group-buttons.button 
                                             wire-click="$set('historyPage', 1)" 
                                             active="{{ $historyPage == 1 }}"
-                                            label="Exam" />
+                                            label="Exam"/>
                                         <x-molecules.ui.group-buttons.button 
                                             wire-click="$set('historyPage', 2)" 
                                             active="{{ $historyPage == 2 }}"
-                                            label="Purchase" />
+                                            label="Purchase"/>
                                     </x-molecules.ui.group-buttons.button>
                             </div><br>
 
                             @switch($historyPage)
                                 @case(1)
-                                        @foreach (App\Models\Exam::where('patient_id', $patientId)->latest()->get() as $exam)
+                                        @foreach ($examsHistory as $exam)
                                             <div class="x-flex x-flex-xbetween x-flex-ycenter mb_3">
                                                 <div>
                                                     <p style="opacity: 0.7;">{{ $this->date($exam->created_at) }}</p>
                                                 </div>
                                                 <div class="x-flex x-gap-1">
-                                                    <i title="Edit" class="pointer fa-regular fa-pen-to-square"></i>
-                                                    <i title="Delete" class="pointer fa-regular fa-trash-can"></i>
+                                                    <i wire:click.prevent="editExamHistory({{ $exam->id }})" title="Edit" class="pointer fa-regular fa-pen-to-square"></i>
+                                                    <i wire:click.prevent="deletingExam({{ $exam->id }})" title="Delete" class="pointer fa-regular fa-trash-can"></i>
                                                 </div>
                                             </div>
                                             <div style="overflow-x:auto">
@@ -285,19 +413,17 @@
                                                         </tr>
                                                     </x-slot>
                                                 </x-organisms.ui.table>
-                                            </div>
-                                            <br>
+                                            </div><br><br>
                                         @endforeach
                                     @break
                                 @case(2)
-                                    @foreach (App\Models\Purchase::where('patient_id', $patientId)->latest()->get() as $purchase)
+                                    @foreach ($purchasesHistory as $purchase)
                                         <div class="x-flex x-flex-xbetween x-flex-ycenter mb_3">
                                             <div>
                                                 <p style="opacity: 0.7;">{{ $this->date($purchase->created_at) }}</p>
                                             </div>
                                             <div class="x-flex x-gap-1">
-                                                <i title="Edit" class="pointer fa-regular fa-pen-to-square"></i>
-                                                <i title="Delete" class="pointer fa-regular fa-trash-can"></i>
+                                                <i wire:click.prevent="deletingPurchase({{ $purchase }})" title="Delete" class="pointer fa-regular fa-trash-can"></i>
                                             </div>
                                         </div>
                                         <div style="overflow-x:auto">
@@ -313,53 +439,31 @@
                                                         <tr>
                                                             <x-organisms.ui.table.td text="{{ $purchase_item->item->item_name }}"/>
                                                             <x-organisms.ui.table.td text="{{ $purchase_item->qty}}"/>
-                                                            <x-organisms.ui.table.td text="{{ $purchase_item->item_price }}"/>
-                                                            <x-organisms.ui.table.td text="{{ $purchase_item->qty * $purchase_item->item_price }}"/>
+                                                            <x-organisms.ui.table.td text-icon="fa-peso-sign" text="{{ number_format($purchase_item->item_price) }}"/>
+                                                            <x-organisms.ui.table.td text-icon="fa-peso-sign" text="{{ number_format($purchase_item->qty * $purchase_item->item_price) }}"/>
                                                         </tr>
                                                     @endforeach
                                                     <tr>
+                                                        <x-organisms.ui.table.td colspan="4"/>
+                                                    </tr>
+                                                    <tr>
+                                                        <x-organisms.ui.table.td><b>DEP:</b> <span class="ui text blue ml_5" style="font-weight: bold"><i class="fa-solid fa-peso-sign mr_3"></i>{{ number_format($purchase->deposit) }}</span></x-organisms.ui.table.td>
+                                                        <x-organisms.ui.table.td><b>BAL:</b> <span class="ui text blue ml_5" style="font-weight: bold"><i class="fa-solid fa-peso-sign mr_3"></i>{{ number_format($purchase->balance) }}</span></x-organisms.ui.table.td>
+                                                        <x-organisms.ui.table.td><b>DIS:</b> <span class="ui text blue ml_5" style="font-weight: bold"><i class="fa-solid fa-peso-sign mr_3"></i>{{ number_format($purchase->discount) }}</span></x-organisms.ui.table.td>
+                                                        <x-organisms.ui.table.td><b>TOTAL:</b> <span class="ui text blue ml_5" style="font-weight: bold"><i class="fa-solid fa-peso-sign mr_3"></i>{{ number_format($purchase->total) }}</span></x-organisms.ui.table.td>
+                                                    </tr>
+                                                    {{-- <tr>
                                                         <td colspan="3" style="font-weight:bold; text-align:right;">DISCOUNT</td>
                                                         <x-organisms.ui.table.td text="{{ $purchase->discount }}"/>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="3" style="font-weight:bold; text-align:right;">TOTAL</td>
                                                         <x-organisms.ui.table.td text="{{ $purchase->total }}"/>
-                                                    </tr>
+                                                    </tr> --}}
                                                 </x-slot>
                                             </x-organisms.ui.table>
-{{-- 
-                                            <table class="ui celled table unstackable">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Item</th>
-                                                        <th>Quantity</th>
-                                                        <th>Price</th>
-                                                        <th>Sub Total</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach (App\Models\Purchased_item::with('item')->where('purchase_id', $purchase->id)->get() as $purchase_item)
-                                                        <tr>
-                                                            <td>{{ $purchase_item->item->item_name }}</td>
-                                                            <td>{{ $purchase_item->qty}}</td>
-                                                            <td>{{ $purchase_item->item_price }}</td>
-                                                            <td>{{ $purchase_item->qty * $purchase_item->item_price }}</td>
-                                                        </tr>
-                                                    @endforeach
-                                                        <tr>
-                                                            <td colspan="3" style="font-weight:bold; text-align:right;">DISCOUNT </td>
-                                                            <td>{{ $purchase->discount }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan="3" style="font-weight:bold; text-align:right;">TOTAL </td>
-                                                            <td>{{ $purchase->total }}</td>
-                                                        </tr>
-                                                </tbody>
-                                            </table> --}}
-                                        </div>
-                                        <br>
+                                        </div><br><br>
                                     @endforeach
-
                                     @break
                                 @default
                                     
@@ -368,11 +472,109 @@
                     </div>
                 </div>
                 @break
+            @case(4) 
+                <x-organisms.ui.table class="selectable unstackable">
+                    <x-slot name="thead">
+                        <x-organisms.ui.table.th-checkbox/>
+                        <x-organisms.ui.table.th label="" style="width: 9em"/>
+                        <x-organisms.ui.table.th label="Name" order-by="patient_lname" />
+                        <x-organisms.ui.table.th label=""/>
+                        <x-organisms.ui.table.th label=""/>
+                        <x-organisms.ui.table.th label="Date Added" order-by="created_at"/>
+                        <x-organisms.ui.table.th label="" style="width: 2em"/>
+                        <x-organisms.ui.table.th-more/>
+                    </x-slot>
+                    <x-slot name="tbody">
+                        @php
+                            $count = 1;
+                        @endphp
+                        @forelse ($pts as $pt)   
+                            <tr>
+                                <x-organisms.ui.table.td 
+                                    checkbox="selectedPatients" 
+                                    checkbox-value="{{ $pt->id }}"
+                                    style="width: 3em"/>
+                                <x-organisms.ui.table.td>
+                                    <div class="flex flex_y_center full_w" style="gap:0.8em">
+                                        <div>
+                                            <div wire:click.prevent="patientShowModal('isExam', {{ $pt->id }})" class="clickable_icon">
+                                                <span class="ui text teal">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div wire:click.prevent="patientShowModal('isPurchase', {{ $pt->id }})">
+                                            <div class="clickable_icon">
+                                                <span class="ui text blue">
+                                                    <i class="fa-solid fa-cart-shopping"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>  
+                                </x-organisms.ui.table.td>
+                                <x-organisms.ui.table.td 
+                                    text="{{ $pt->patient_lname . ', ' . $pt->patient_fname . ' ' . $pt->patient_mname}}"
+                                    desc="{{ !empty($pt->patient_address) || ($pt->patient_address != NULL) ? $pt->patient_address : ''; }}"
+                                    desc-icon="{{ !empty($pt->patient_address) || ($pt->patient_address != NULL) ? 'fa-location-dot' : ''; }}"
+                                    avatar="{{ $this->storage($pt->patient_avatar) }}"/>
+                                <x-organisms.ui.table.td 
+                                    desc="Exams: {{ $this->countExam($pt->id) }}"/>
+                                <x-organisms.ui.table.td 
+                                    desc="Purchases: {{ $this->countPurchase($pt->id) }}"/>
+                                {{-- <x-organisms.ui.table.td>
+                                    <x-atoms.ui.button wire:click.prevent="addToQueue( {{ $pt->id}} )" class="mini basic">
+                                        Add to Queue
+                                    </x-atoms.ui.button>
+                                </x-organisms.ui.table.td> --}}
+                                <x-organisms.ui.table.td 
+                                    text="{{ $this->date($pt->created_at) }}"/>
+                                <x-organisms.ui.table.td>
+                                    <span class="ui text green" data-inverted="" data-tooltip="Currently in exam list" data-position="top right" data-variation="tiny">
+                                        {{ $this->examListIndicator($pt->id) }}
+                                    </span>
+                                </x-organisms.ui.table.td>
+                                <x-organisms.ui.table.td-more style="width: 3em">
+                                    <x-atom.more.option
+                                        wire-click="patientShowModal('isUpdate', {{ $pt->id }})"
+                                        option-name="Edit"/>
+                                    <x-atom.more.option 
+                                        wire-click="deletingPatient({{ $pt->id }})"
+                                        option-name="Delete"/>
+                                    <x-atom.more.option 
+                                        wire-click="history(1, {{ $pt->id }})"
+                                        option-name="Exam History"/>
+                                    <x-atom.more.option 
+                                        wire-click="history(2, {{ $pt->id }})"
+                                        option-name="Purchase History"/>
+                                    <div class="divider"></div>
+                                    @if ($this->currentlyInPaientList($pt->id))
+                                        <x-atom.more.option 
+                                            wire-click="removeFromQueue({{ $pt->id }})"
+                                            option-name="Remove from exam list" />
+                                    @else
+                                        <x-atom.more.option 
+                                            wire-click="addToQueue({{ $pt->id }})"
+                                            option-name="Add to exam list" />
+                                    @endif
+                                </x-organisms.ui.table.td>
+                            </tr>
+                        @empty
+                            <x-organisms.ui.table.search-no-results colspan="7"/>
+                        @endforelse
+                    </x-slot>
+                </x-organisms.ui.table>
+                {{ $pts->links('livewire.components.paginator') }}
+                @break
             @default
                 
         @endswitch
         
 
+
+
+
+
+        
 
 
 

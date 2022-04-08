@@ -9,6 +9,7 @@ class Patient extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
         'user_id',
         'patient_avatar',
@@ -22,6 +23,8 @@ class Patient extends Model
         'patient_email',
         'patient_mobile',
         'patient_password',
+        'patient_queue',
+        'patient_exam_status',
     ];
 
     public function exam()
@@ -58,9 +61,4 @@ class Patient extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    // public function latestPurchase()
-    // {
-    //     return $this->hasOne(Purchase::class)->latestOfMany();
-    // }
 }

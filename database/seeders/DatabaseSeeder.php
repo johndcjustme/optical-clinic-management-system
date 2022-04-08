@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
         $faker = Faker\Factory::create();
 
         $patient = Patient::create([
-            'patient_avatar' => 'default-avatar-pt.png',
             'patient_fname' => Str::random(4),
             'patient_lname' => Str::random(5),
             'patient_mname' => Str::random(4), 

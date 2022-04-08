@@ -1,6 +1,15 @@
 <x-layout.page-content>
 
-    @section('section-page-title', 'Orders')
+    @section('section-page-title')
+        <div class="">
+            <div>
+                <x-atoms.ui.header title="Orders"/>
+            </div>
+            <div>
+                <small></small>
+            </div>
+        </div>
+    @endsection
 
     @section('section-links')
             {{-- <x-atom.tab-links.link tab-title="All Orders" wire-click="myTab(1)" sub-page="{{ $this->myTab == 1 }}"/>

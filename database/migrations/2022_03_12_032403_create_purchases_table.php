@@ -23,6 +23,7 @@ class CreatePurchasesTable extends Migration
             $table->double('discount')->nullable();
             $table->double('balance')->nullable();
             $table->double('deposit')->nullable();
+            $table->dateTime('duedate')->nullable();
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
 

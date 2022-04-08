@@ -2,7 +2,7 @@
 
 
 
-<div>
+<div class="x-flex x-flex-xend">   
     @if ($paginator->hasPages())
         <nav role="navigation" aria-label="Pagination Navigation" class="ui small basic buttons">
             <span>
