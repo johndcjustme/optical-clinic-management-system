@@ -8,7 +8,7 @@
 
 <div class="ui left pointing tiny inverted dropdown icon" x-init="$('.ui.dropdown').dropdown();">
     <i class="ellipsis vertical icon grey" style="padding:0.2em;"></i>
-    <div class="menu" style="z-index: 500">
+    <div class="menu tiny" style="z-index: 500">
         {{ $slot }}
     </div>
 </div>

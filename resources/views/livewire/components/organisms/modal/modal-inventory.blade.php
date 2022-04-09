@@ -1,7 +1,7 @@
 @php
-     $formId = '';
-        $wireSubmit = '';
-        $btnLabel = '';
+    $formId = '';
+    $wireSubmit = '';
+    $btnLabel = '';
         
     if ($modal['add']) {
         if ($modal['item']) {
@@ -28,13 +28,12 @@
 <x-organisms.modal>
 
     @section('modal_title')
-
-        <div></div>
+        <div>
+            
+        </div>
         <div class="">
-            {{-- <div class="ui small buttons"> --}}
-                {{-- <a href="#" class="ui button tiny basic" rel="modal:close">Close</a> --}}
-                <x-atoms.ui.button wire:click.prevent="closeModal" class="basic tiny">Close</x-atoms.ui.button>
-                <x-atoms.ui.button class="secondary tiny" form="{{ $formId }}" type="submit">Save</i></x-atoms.ui.button>
+            <x-atoms.ui.button wire:click.prevent="closeModal" class="basic tiny">Close</x-atoms.ui.button>
+            <x-atoms.ui.button class="secondary tiny" form="{{ $formId }}" type="submit">Save</i></x-atoms.ui.button>
         </div>
     @endsection
 
@@ -47,7 +46,6 @@
                 @case($modal['item'])
                     @include('livewire.components.organisms.modal.modal-inventory.add-edit-item')
                     @break
-
                 @case($modal['supplier'])
                     @include('livewire.components.organisms.modal.modal-inventory.add-edit-supplier')
                     @break
@@ -58,10 +56,3 @@
     @endsection
 
 </x-organisms.modal>
-
-
-
-{{-- 
-<script>
-    $('.ui.dropdown').dropdown();
-</script> --}}

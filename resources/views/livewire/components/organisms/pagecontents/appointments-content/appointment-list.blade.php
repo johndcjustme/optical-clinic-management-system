@@ -19,9 +19,23 @@
         text="{{ $appt->patient->patient_mobile }}"
         text-icon="fa-square-phone"/>
     <x-organisms.ui.table.td
-        desc="{{ $appt->created_at }}"/>
+        desc="{{ $this->date($appt->created_at) . ' @ ' . $this->time($appt->created_at) }}"/>
     <x-organisms.ui.table.td-more style="width: 1em">
-        <x-atom.more.option wire-click="apptShowModal('isUpdate', {{ $appt->id }})" option-name="Edit" />
-        <x-atom.more.option wire-click="deletingAppt({{ $appt->id }})" option-name="Delete" />
+        <x-atom.more.option 
+            wire-click="apptShowModal('isUpdate', {{ $appt->id }})" 
+            option-name="Edit" />
+        <x-atom.more.option 
+            wire-click="deletingAppt({{ $appt->id }})" 
+            option-name="Delete"/>
+        <div class="ui divider"></div>
+        <x-atom.more.option 
+            wire-click="approvingAppt({{ $appt->id }})" 
+            option-name="Approve" class="{{ $this->moreOption_disableApprove($appt->id) ? 'disabled' : '' }}"/>
+        <x-atom.more.option 
+            wire-click="cancelingAppt({{ $appt->id }})" 
+            option-name="Cancel" class="{{ $this->moreOption_disableCancel($appt->id) ? 'disabled' : '' }}"/>
+        <x-atom.more.option 
+            wire-click="apptShowModal('isUpdate', {{ $appt->id }})" 
+            option-name="Reschedule"/>
     </x-organisms.ui.table.td>
 </tr>

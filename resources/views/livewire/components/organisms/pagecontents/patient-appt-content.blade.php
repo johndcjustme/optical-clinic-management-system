@@ -169,7 +169,7 @@
                                 <x-organisms.ui.table class="selectable">
                                     <x-slot name="thead">
                                         {{-- <x-organisms.ui.table.th-checkbox/> --}}
-                                        <x-organisms.ui.table.th label="Date"/>
+                                        <x-organisms.ui.table.th label="My Appointment"/>
                                         <x-organisms.ui.table.th label="Status" style="width:25%"/>
                                         <x-organisms.ui.table.th label="Contact Number" style="width:25%"/>
                                         <x-organisms.ui.table.th label="Date Created" style="width:25%"/>

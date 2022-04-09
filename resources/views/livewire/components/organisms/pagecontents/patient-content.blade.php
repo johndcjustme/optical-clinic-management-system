@@ -91,7 +91,10 @@
                                 <div wire:click.prevent="$set('filter', 'DATE_SINGLE')" class="item">
                                     Single Date
                                 </div>
-                                <div class="ui divider"></div>
+                                <div class="header">
+                                    Filter by tag
+                                </div>
+                                <div class="divider"></div>
                                 <div class="item">
                                     Today
                                 </div>

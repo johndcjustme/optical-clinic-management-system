@@ -7,7 +7,7 @@
     }
 </style> --}}
 
-<div class="item" wire:click.prevent="{{ $wireClick }}">
+<div {{ $attributes->merge(['class' => 'item']) }} wire:click.prevent="{{ $wireClick }}">
     {{-- <div class="ui blue empty circular label"></div> --}}
     <span class="">
         {{ $optionName }}

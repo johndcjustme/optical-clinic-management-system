@@ -35,13 +35,12 @@
 <x-organisms.modal>
 
     @section('modal_title')
-        <div class="full_w flex flex_x_between">
-            <div></div>
-            <div>
-                <a wire:click.prevent="closeModal" class="ui button tiny basic" rel="modal:close">Close</a>
+        <div></div>
+        <div>
+            <a wire:click.prevent="closeModal" class="ui button tiny basic" rel="modal:close">Close</a>
+            @if ($modal['isAddPatient'] || $modal['isUpdatePatient'])
                 <x-atoms.ui.button class="secondary tiny" form="{{ $formId }}" type="submit">Save</i></x-atoms.ui.button>
-                {{-- <x-atom.btn-save-modal form="{{ $formId }}" val="{{ $label }}"/>   --}}
-            </div>
+            @endif
         </div>
     @endsection
 
@@ -101,7 +100,7 @@
                         </div>
                     </div>
                 </div>
-
+                <p class="dark_100 my_10">Contact Details</p>
                 <div class="ui form">
                     <div class="two fields">
                         <div class="field">
@@ -115,7 +114,7 @@
                     </div>
                 </div>
                 <br>
-                <div class="grid grid_col_2 gap_1 mt_10">
+                <div class="grid grid_col_2 gap_1">
                     <div>
                         <div class="ui checkbox small">
                             <input wire:model="pt.queue" type="checkbox" class="pointer" id="queue" value="">

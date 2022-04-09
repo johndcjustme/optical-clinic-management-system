@@ -37,7 +37,7 @@
         desc="{{ isset($pt->patient_address) ? $pt->patient_address : ''; }}"
         desc-icon="{{ isset($pt->patient_address) ? 'fa-location-dot' : ''; }}"
         avatar="{{ $this->storage($pt->patient_avatar) }}"/>
-    <x-organisms.ui.table.td text="Scheduled" style="width:15em"/>
+    <x-organisms.ui.table.td text="{{ $this->isScheduled($pt->id) }}" style="width:15em"/>
     <x-organisms.ui.table.td-more style="width: 3em">
         <x-atom.more.option
             wire-click="patientShowModal('isUpdate', {{ $pt->id }})"

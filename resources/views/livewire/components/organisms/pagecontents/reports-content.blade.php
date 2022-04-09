@@ -6,7 +6,7 @@
                 <x-atoms.ui.header title="Reports"/>
             </div>
             <div>
-                <small>{{ $this->patientTotal() }} Patients</small>
+                <small></small>
             </div>
         </div>
     @endsection

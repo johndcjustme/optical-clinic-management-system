@@ -26,7 +26,7 @@
                     border-radius:0.8em;">
 
                 <div class="">
-                    <div>
+                    <div class="x-flex x-flex-xbetween x-flex-ycenter">
                         @yield('modal_title')
                     </div>
                     <div>

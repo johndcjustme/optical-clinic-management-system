@@ -10,13 +10,12 @@
                 <x-atoms.ui.header title="Appointments"/>
             </div>
             <div>
-                <small></small>
+                <small>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla, similique.</small>
             </div>
         </div>
     @endsection
 
     @section('section-links')
-        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla, similique.</p>
     @endsection
 
     @section('section-heading-left')
@@ -44,14 +43,14 @@
     @endsection
 
     @section('section-heading-right')
-        <div> <x-atoms.ui.search wire-model="searchAppt" placeholder="Search Patient..."/> </div>
+        <div> <x-atoms.ui.search wire-model="searchAppt" placeholder="Search..."/> </div>
     @endsection
 
     @section('section-main')
         <div class="items">
             @if($this->myTab == 1)
                 <x-layout.lists-section>               
-                    @if (!empty($appts))
+                    @if (count($appts) > 0)
                         {{-- <x-layout.details>
                             <x-slot name="details_summary">
                                 New Appointments ({{ $this->countForApprovalAppts() }})
@@ -61,7 +60,7 @@
                                 <x-organisms.ui.table class="selectable">
                                     <x-slot name="thead">
                                         <x-organisms.ui.table.th-checkbox/>
-                                        <x-organisms.ui.table.th label="Date" order-by="appt_date" style="width:9em"/>
+                                        <x-organisms.ui.table.th label="Appointment" order-by="appt_date" style="width:9em"/>
                                         <x-organisms.ui.table.th label="Status" order-by="appt_status" style="width:10em"/>
                                         <x-organisms.ui.table.th label="Patient Name" order-by="patient_name"/>
                                         <x-organisms.ui.table.th label="Contact Number" style="width:14em"/>
@@ -142,6 +141,13 @@
                                 @endforelse
                             </x-slot>
                         </x-layout.details> --}}
+                    @else
+                    <br>
+                        <div>
+                            <center>
+                                <span class="ui large grey text">Empty.</span>
+                            </center>
+                        </div>
                     @endif
 
                     

@@ -10,6 +10,7 @@ use App\Models\Exam;
 use App\Models\Lense;
 use App\Models\Item;
 use App\Models\Purchase;
+use App\Models\Appointment;
 use App\Models\Purchased_item;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -382,6 +383,16 @@ class PagePatient extends Component
     //     Purchase::findOrFail($id)->delete();
     //     $this->exam_purchase_tab('purchase', $this->pt['id']);
     // }
+
+    public function isScheduled($patientId)
+    {
+        $appt = Appointment::where('patient_id', $patientId)->where('appt_date' , date('Y-m-d'))->first();
+        if ($appt) {
+            return 'Scheduled';
+        } else {
+            return '';
+        }
+    }
 
     public function addItem($purchaseId, $itemId, $itemPrice)
     {

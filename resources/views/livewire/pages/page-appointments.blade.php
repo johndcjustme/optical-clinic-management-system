@@ -21,8 +21,8 @@
         <x-alert type="error" message="{{ session('message') }}" />
 
         <x-organisms.ui.confirm-dialog 
-            wire-confirm="delete"
-            content="Confirm Delete?"
+            wire-confirm="confirm"
+            content="{{ $confirmationMessage }}"
         />
     
     </div>
