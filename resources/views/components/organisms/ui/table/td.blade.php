@@ -2,7 +2,7 @@
     <div class="flex flex_y_center">
         <div>
             @if (!empty($checkbox))
-                <div class="ui checkbox small">
+                <div class="ui child checkbox tiny">
                     <input wire:model="{{ $checkbox }}" type="checkbox" class="pointer" value="{{ $checkboxValue }}">
                     <label></label>
                 </div>

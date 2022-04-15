@@ -8,13 +8,13 @@
             @yield('section-links')
         </div>
         <br><br>
-        <div class="flex flex_x_between flex_y_center">
+        <div class="x-flex x-flex-xbetween x-flex-ycenter">
 
-            <div class="flex gap_1">
+            <div class="x-flex x-flex-ycenter x-gap-1">
                 @yield('section-heading-left')
             </div>
 
-            <div class="flex flex_y_center gap_1">
+            <div class="x-flex x-flex-ycenter x-gap-1">
                 @yield('section-heading-right')
             </div>
 

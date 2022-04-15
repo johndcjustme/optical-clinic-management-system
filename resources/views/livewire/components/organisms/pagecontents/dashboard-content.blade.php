@@ -3,7 +3,7 @@
     @section('section-page-title')
         <div class="">
             <div>
-                <x-atoms.ui.header title="Dashboard"/>
+                <x-atoms.ui.header title="Dashboard" />
             </div>
             <div>
                 <small></small>
@@ -27,8 +27,57 @@
     @endsection
 
     @section('section-main')
-
         <div style="display:flex; flex-direction:column; gap:1em;">
+
+
+            <div class="ui three column grid">
+                <div class="column">
+                    <div class="ui fluid card">
+                        <div class="content">
+                            <div class="header">Elliot Fu</div>
+                            <div class="description">
+                              Elliot Fu is a film-maker from New York. lorem
+                            </div>
+                        </div>
+                         <div class="ui bottom attached button">
+                        <i class="add icon"></i>
+                            Add Friend
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui fluid card">
+                        <div class="content">
+                            <div class="header">Elliot Fu</div>
+                            <div class="description">
+                              Elliot Fu is a film-maker from New York.
+                            </div>
+                        </div>
+                         <div class="ui bottom attached button">
+                        <i class="add icon"></i>
+                            Add Friend
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui fluid card">
+                        <div class="content">
+                            <div class="header">Elliot Fu</div>
+                            <div class="description">
+                              Elliot Fu is a film-maker from New York.
+                            </div>
+                        </div>
+                         <div class="ui bottom attached button">
+                        <i class="add icon"></i>
+                            Add Friend
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
 
 
             <div class="" style="display:grid; grid-template-columns: 37% 37% auto; gap:1em;">
@@ -54,7 +103,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="b_1 x-flex x-flex-center" style="box-shadow: 0 0 25px -4PX rgba(76, 90, 121, 0.521); padding:1em">
+                <div class="b_1 x-flex x-flex-center"
+                    style="box-shadow: 0 0 25px -4PX rgba(76, 90, 121, 0.521); padding:1em">
                     <div>
                         <div class="">
                             <h3>Orders</h3>
@@ -76,7 +126,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="b_1 x-flex x-flex-xbetween x-flex-column" style="box-shadow: 0 0 25px -4PX rgba(76, 90, 121, 0.521); padding:2em">
+                <div class="b_1 x-flex x-flex-xbetween x-flex-column"
+                    style="box-shadow: 0 0 25px -4PX rgba(76, 90, 121, 0.521); padding:2em">
                     <div>
                         <div>
                             <h5>Item Name</h5>
@@ -404,12 +455,9 @@
                 <div class="b_1" style="padding: 3em">
                 </div>
                 <div class="b_1">
-                    <div>
-                        <span>{{ $recentSubscribers }}</span>
-                    </div>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut nihil sequi aut alias ipsum placeat, quis
-                    id! Reprehenderit quibusdam cupiditate quos aliquam eligendi, odit quas adipisci voluptatibus libero,
-                    minus mollitia!
+                    <livewire:livewire-column-chart
+                        :column-chart-model="$columnChartModel"
+                    />
                 </div>
             </div>
 
@@ -421,7 +469,6 @@
 
 
         </div>
-
     @endsection
 
 </x-layout.page-content>

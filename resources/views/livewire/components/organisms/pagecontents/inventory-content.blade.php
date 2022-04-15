@@ -12,6 +12,33 @@
     @endsection
 
     @section('section-links')
+
+        <div class="ui compact tiny menu" style="z-index:300;" x-init="$('ui.floating.labeled').dropdown()">
+            <div class="item {{ $subPage == 1 ? 'active' : '' }}">
+                <div class="ui floating dropdown">
+                    <i class="filter icon" style="margin-right:0.8em;"></i>
+                    <span class="text">
+                        @switch($onDisplayItemType)
+                            @case('all') All <div class="ui description">{{ $this->countItems('all') }}</div> @break
+                            @case('le') Lense <div class="ui description">{{ $this->countItems('le') }}</div> @break
+                            @case('fr') Frame <div class="ui description">{{ $this->countItems('fr') }}</div> @break
+                            @case('ac') Accessory <div class="ui description">{{ $this->countItems('ac') }}</div> @break
+                            @default
+                        @endswitch
+                    </span>
+                    <div class="menu">
+                        <div wire:click.prevent="$set('onDisplayItemType', 'all')" data-value="all" class="item"><span class="text">All</span><span class="description">{{ $this->countItems('all') }}</span></div>
+                        <div wire:click.prevent="$set('onDisplayItemType', 'le')" data-value="le" class="item"><span class="text">Lense</span><span class="description">{{ $this->countItems('le') }}</span></div>
+                        <div wire:click.prevent="$set('onDisplayItemType', 'fr')" data-value="fr" class="item"><span class="text">Frame</span><span class="description">{{ $this->countItems('fr') }}</span></div>
+                        <div wire:click.prevent="$set('onDisplayItemType', 'ac')" data-value="ac" class="item"><span class="text">Accessory</span><span class="description">{{ $this->countItems('ac') }}</span></div>
+                    </div>
+                </div>
+            </div>
+            <div wire:click.prevent="$set('subPage', 3)" class="item {{ $subPage == 3 ? 'active' : '' }}">In Itmes</div>
+            <div class="item">Out Items</div>
+        </div>
+
+{{--             
             <x-molecules.ui.group-buttons>
                 <x-molecules.ui.group-buttons.button 
                     wire-click="$set('subPage', 1)" 
@@ -39,7 +66,7 @@
                     label="In / Out" />
                 <x-molecules.ui.group-buttons.button wire-click="$set('subPage', 4)" active="{{ $subPage == 4 }}"
                     label="Ledger" />
-            </x-molecules.ui.group-buttons.button>
+            </x-molecules.ui.group-buttons.button> --}}
     @endsection
 
 
@@ -49,26 +76,21 @@
 
             @switch($subPage)
                 @case(1)
-                    <div>
-                        @if (count($selectedItems) > 0)
-                            <div class="ui tiny basic icon buttons">
-                                <x-atoms.ui.button wire:click.prevent="deletingItems">
-                                    <i class="fa-solid fa-trash mr_2 red"></i>
-                                    {{ 'items (' . count($selectedItems) . ')' }}
-                                </x-atoms.ui.button>
-                                <x-atoms.ui.button wire:click.prevent="$set('selectedItems', [])">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </x-atoms.ui.button>
-                            </div>
-                        @else
-                            <x-atoms.ui.button wire:click.prevent="showModal('add', 'item', null)" class="primary basic tiny">
-                                <i class="icon plus"></i> Add Item
-                            </x-atoms.ui.button>
-                        @endif
-                    </div>
+                    @if (count($selectedItems) > 0)
+                        <x-atoms.ui.header-dropdown-menu wire-close="$set('selectedItems', [])" class="left pointing tiny">
+                            <x-slot name="label">
+                                {{ count($selectedItems) }} Selected 
+                            </x-slot>
+                            <x-slot name="menu"> 
+                                <div wire:click.prevent="deletingItems" class="item"><i class="delete icon"></i> Delete</div>
+                            </x-slot>
+                        </x-atoms.ui.header-dropdown-menu>
+                    @else
+                        <x-atoms.ui.header-add-btn label="Add Item" wire-click="showModal('add', 'item', null)"/>
+                    @endif
                 @break
 
-                @case(2)
+                {{-- @case(2)
                     <div>
                         @if (count($selectedSuppliers) > 0)
                             <div class="ui tiny basic icon buttons">
@@ -86,7 +108,7 @@
                             </x-atoms.ui.button>
                         @endif
                     </div>
-                @break
+                @break --}}
 
                 @case(3)
                     IN / OUT
@@ -100,7 +122,7 @@
         @section('section-heading-right')
             @switch($subPage)
                 @case(1) <div> <x-atoms.ui.search wire-model="searchItem" placeholder="Search..."/> </div> @break
-                @case(2) <div> <x-atoms.ui.search wire-model="searchSupplier" placeholder="Search..."/> </div> @break
+                {{-- @case(2) <div> <x-atoms.ui.search wire-model="searchSupplier" placeholder="Search..."/> </div> @break --}}
                 @case(3) <div> <x-atoms.ui.search wire-model="search_in_out_of_item" placeholder="Search..."/> </div> @break
                 @default
             @endswitch
@@ -170,7 +192,7 @@
                 @break
 
                 @case(2)
-                    <x-organisms.ui.table class="selectable">
+                    {{-- <x-organisms.ui.table class="selectable">
                         <x-slot name="thead">
                             <x-organisms.ui.table.th-checkbox/>
                             <x-organisms.ui.table.th label="Name" order-by="supplier_name" />
@@ -209,7 +231,7 @@
                                 <x-organisms.ui.table.search-no-results colspan="7"/>
                             @endforelse
                         </x-slot>
-                    </x-organisms.ui.table>
+                    </x-organisms.ui.table> --}}
                     @break
 
                 @case(3)

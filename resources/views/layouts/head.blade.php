@@ -121,7 +121,7 @@
 
 
     <style>
-        .dashed-top-2 {
+        .x-dashed-top-2 {
             border-top: 2px dashed rgb(194, 194, 194);
         }
 

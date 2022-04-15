@@ -34,4 +34,9 @@ class Item extends Model
     {
         return $this->hasMany(Purchased_item::class);
     }
+
+    public function ordered_item()
+    {
+        return $this->hasMany(Ordered_item::class);
+    }
 }

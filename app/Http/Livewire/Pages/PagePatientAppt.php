@@ -7,11 +7,18 @@ use App\Models\Patient;
 use App\Models\Appointment;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Time;
+use App\Models\Day;
+use App\Models\Year;
 
 
 
 class PagePatientAppt extends Component
 {
+
+
+    public $month;
+    public $day;
+    public $year;
 
     public $appt = [
         'date' => '',
@@ -67,6 +74,13 @@ class PagePatientAppt extends Component
 
     public function render()
     {
+
+        $month = date('m', mktime(0,0,0,$this->month,$this->day,$this->year));
+        $day = date('d', mktime(0,0,0,$this->month,$this->day,$this->year));
+        $year = date('Y', mktime(0,0,0,$this->month,$this->day,$this->year));
+
+        $this->appt['date'] = $year . '-' . $month . '-' . $day;
+
         $patient = Patient::where('user_id', Auth::user()->id)->first();
 
         if ($this->step == 1) {
@@ -89,8 +103,8 @@ class PagePatientAppt extends Component
             return view('livewire.pages.page-patient-appt', [
                 'my_appts' => $myAppts,
             ])
-                ->extends('layouts.app')
-                ->section('content');
+            ->extends('layouts.app')
+            ->section('content');
         } else {
             $this->step = 1;
             return view('livewire.pages.page-patient-appt')
@@ -98,6 +112,13 @@ class PagePatientAppt extends Component
                 ->section('content');
         }
 
+    }
+
+    public function mount()
+    {
+        $this->month = date('m');
+        $this->day = date('d');
+        $this->year = date('Y');
     }
 
     public function date($date) { return \Carbon\Carbon::parse($date)->isoFormat('MMM D, YYYY'); }
@@ -289,6 +310,13 @@ class PagePatientAppt extends Component
         if ($this->cancelAppt) {
             $this->cancelAppt();
         }
+    }
+
+
+    public function findDay($day)
+    {
+        $days = Day::where('day', $day)->where('status', false)->first();
+        if ($days) return true;
     }
 
     // public function createAppt()

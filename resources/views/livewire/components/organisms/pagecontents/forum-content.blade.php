@@ -13,6 +13,22 @@
 
     @section('section-links')
     <div class="flex flex_x_center gap_1" style="width:100%;" wire:poll.visible>
+
+        <div style="margin-left:auto; margin-right:auto;">
+            <div class="ui compact menu">
+                <div class="link item @if ($subPage == 1) active @endif" wire:click.prevent="subPage(1)">
+                    Forum
+                </div>
+                <div class="link item @if ($subPage == 2) active @endif" wire:click.prevent="subPage(2)">
+                    Message
+                </div>
+                <div class="link item @if ($subPage == 3) active @endif" wire:click.prevent="subPage(3)">
+                    Members
+                </div>
+            </div>
+        </div>
+{{-- 
+
         <x-molecules.ui.group-buttons>
             <x-molecules.ui.group-buttons.button 
                 wire-click="subPage(1)" 
@@ -26,7 +42,7 @@
                 wire-click="subPage(3)" 
                 active="{{ $subPage == 3 }}"
                 label="Members" />
-        </x-molecules.ui.group-buttons.button>
+        </x-molecules.ui.group-buttons.button> --}}
     </div>
     @endsection
 

@@ -17,8 +17,8 @@
             <div
                 @click.away="$wire.closeModal()"
                 style="
-                    max-width:500px;
-                    width:500px;
+                    max-width:{{ $maxWidth }};
+                    min-width:{{ $minWidth }};
                     height:auto;    
                     margin:50px auto;
                     background:white;

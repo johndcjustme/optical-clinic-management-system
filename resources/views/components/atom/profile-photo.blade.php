@@ -2,7 +2,7 @@
     style="
         height:{{ $size }}; 
         width:{{ $size }}; 
-        border-radius: 50%;
+        border-radius: 0.7em;
         background: url('{{ $path }}') no-repeat center;
         background-size: cover;
         background-position: center top;

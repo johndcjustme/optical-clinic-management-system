@@ -1,0 +1,1 @@
+<span class="ui text error">*</span>

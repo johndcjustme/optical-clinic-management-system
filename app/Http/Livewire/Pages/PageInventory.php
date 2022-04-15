@@ -52,18 +52,18 @@ class PageInventory extends Component
         'has_image'     => '',
     ];
 
-    public $su = [
-        'id'            => '',
-        'name'          => '',
-        'address'       => '',
-        'no'            => '',
-        'email'         => '',
-        'bank'          => '',
-        'acc'           => '',
-        'branch'        => '',
-        'avatar'        => '',
-        'has_avatar'    => false,
-    ];
+    // public $su = [
+    //     'id'            => '',
+    //     'name'          => '',
+    //     'address'       => '',
+    //     'no'            => '',
+    //     'email'         => '',
+    //     'bank'          => '',
+    //     'acc'           => '',
+    //     'branch'        => '',
+    //     'avatar'        => '',
+    //     'has_avatar'    => false,
+    // ];
 
     public $delete = [
         'item'      => false,
@@ -74,13 +74,15 @@ class PageInventory extends Component
 
 
     public 
-        $su_sortDirection = 'asc',
+        // $su_sortDirection = 'asc',
         $item_sortDirection = 'asc',
         
-        $item_sortColumn = 'item_name',
-        $su_sortColumn = 'supplier_name';
+        $item_sortColumn = 'item_name';
+        // $su_sortColumn = 'supplier_name';
 
-    public $searchSupplier, $searchItem = '';
+    public 
+        $searchItem = '';
+        // $searchSupplier, 
 
     public $inventoryChangeTable, $onDisplayItemType = 'all';
 
@@ -89,8 +91,8 @@ class PageInventory extends Component
         $colName = ''; 
 
     public 
-        $selectedItems = [],
-        $selectedSuppliers = [];
+        $selectedItems = [];
+        // $selectedSuppliers = [];
 
     public $deletingItem = null;
 
@@ -133,6 +135,7 @@ class PageInventory extends Component
     
     public function render()
     { 
+
         switch ($this->subPage) {
             case 1:
                 $this->colName = 'item_name';
@@ -160,23 +163,23 @@ class PageInventory extends Component
                 break;
 
             case 2:
-                $this->colName = 'supplier_name';
+                // $this->colName = 'supplier_name';
 
-                $searchSupplier = $this->searchSupplier . '%';
-                $suppliers = Supplier::where('supplier_name', 'like', $searchSupplier)
-                    ->orWhere('supplier_address', 'like', $searchSupplier)
-                    ->orWhere('supplier_contact_no', 'like', $searchSupplier)
-                    ->orWhere('supplier_email', 'like', $searchSupplier)
-                    ->orderBy('supplier_name', $this->direction)
-                    ->get();
+                // $searchSupplier = $this->searchSupplier . '%';
+                // $suppliers = Supplier::where('supplier_name', 'like', $searchSupplier)
+                //     ->orWhere('supplier_address', 'like', $searchSupplier)
+                //     ->orWhere('supplier_contact_no', 'like', $searchSupplier)
+                //     ->orWhere('supplier_email', 'like', $searchSupplier)
+                //     ->orderBy('supplier_name', $this->direction)
+                //     ->get();
 
-                    return view('livewire.pages.page-inventory', 
-                    [   
-                        'suppliers' => $suppliers,
-                    ])
-                    ->extends('layouts.app')
-                    ->section('content');
-                break;
+                //     return view('livewire.pages.page-inventory', 
+                //     [   
+                //         'suppliers' => $suppliers,
+                //     ])
+                //     ->extends('layouts.app')
+                //     ->section('content');
+                // break;
 
             case 3:
                 return view('livewire.pages.page-inventory', ['suppliers' => Supplier::all()])
@@ -197,6 +200,12 @@ class PageInventory extends Component
         // 
     }
 
+
+    public function updatedOnDisplayItemType()
+    {
+        $this->subPage = 1;
+    }
+
     public function updatedSubPage($pageId)
     {
         $this->resetPage();
@@ -208,7 +217,7 @@ class PageInventory extends Component
 
     public function updatedSearchItem() { $this->resetPage(); }
 
-    public function resetFields() { $this->reset(['modal', 'su', 'item']); }
+    public function resetFields() { $this->reset(['modal', 'item']); }
 
     public function itemType($itemType)
     {
@@ -392,144 +401,153 @@ class PageInventory extends Component
 
 
 
-
-
-
-
-    public function addSupplier()
+    public function countItems($type)
     {
+        return $type == 'all' ? Item::all()->count() : Item::where('item_type', $type)->count();
+    }
 
-        $this->validate( 
-            [
-                'su.name' => 'required',
-                'su.no' => 'required',
-                'su.email' => 'email|nullable',
-                'su.avatar' => 'image|max:1024|nullable',
-            ],
-            [
-                'su.name.required' => 'Required',
-                'su.no.required' => 'Required',
-                'su.email.email' => 'valid Email only',
-            ],
-        );
 
-        $createSupplier = [
-            'supplier_name'         => $this->su['name'],
-            'supplier_address'      => $this->su['address'],
-            'supplier_contact_no'   => $this->su['no'],
-            'supplier_email'        => $this->su['email'],
-            'supplier_bank'         => $this->su['bank'],
-            'supplier_acc_no'       => $this->su['acc'],
-            'supplier_branch'       => $this->su['branch'],
-        ];
 
-        if (!empty($this->su['avatar']) || ($this->su['avatar'] != null)) {
 
-            $createSupplier += ['supplier_avatar' => $this->su['avatar']->hashName()];
 
-            $this->su['avatar']->store('/', 'avatars');            
-        }
+
+
+
+
+    // public function addSupplier()
+    // {
+
+    //     $this->validate( 
+    //         [
+    //             'su.name' => 'required',
+    //             'su.no' => 'required',
+    //             'su.email' => 'email|nullable',
+    //             'su.avatar' => 'image|max:1024|nullable',
+    //         ],
+    //         [
+    //             'su.name.required' => 'Required',
+    //             'su.no.required' => 'Required',
+    //             'su.email.email' => 'valid Email only',
+    //         ],
+    //     );
+
+    //     $createSupplier = [
+    //         'supplier_name'         => $this->su['name'],
+    //         'supplier_address'      => $this->su['address'],
+    //         'supplier_contact_no'   => $this->su['no'],
+    //         'supplier_email'        => $this->su['email'],
+    //         'supplier_bank'         => $this->su['bank'],
+    //         'supplier_acc_no'       => $this->su['acc'],
+    //         'supplier_branch'       => $this->su['branch'],
+    //     ];
+
+    //     if (!empty($this->su['avatar']) || ($this->su['avatar'] != null)) {
+
+    //         $createSupplier += ['supplier_avatar' => $this->su['avatar']->hashName()];
+
+    //         $this->su['avatar']->store('/', 'avatars');            
+    //     }
      
-        Supplier::create($createSupplier);
+    //     Supplier::create($createSupplier);
 
-        $this->closeModal();
+    //     $this->closeModal();
         
-        $this->dispatchBrowserEvent('toast', [
-            'title' => null,
-            'class' => 'success',
-            'message' => 'Supplier added successfully.',
-        ]);
-    }
+    //     $this->dispatchBrowserEvent('toast', [
+    //         'title' => null,
+    //         'class' => 'success',
+    //         'message' => 'Supplier added successfully.',
+    //     ]);
+    // }
 
-    public function updateSupplier($supplierId)
-    {
-        $foundSupplier = Supplier::findOrFail($this->su['id']);
+    // public function updateSupplier($supplierId)
+    // {
+    //     $foundSupplier = Supplier::findOrFail($this->su['id']);
 
-        $updateSupplier = [
-            'supplier_name'         => $this->su['name'],
-            'supplier_address'      => $this->su['address'],
-            'supplier_contact_no'   => $this->su['no'],
-            'supplier_email'        => $this->su['email'],
-            'supplier_bank'         => $this->su['bank'],
-            'supplier_acc_no'       => $this->su['acc'],
-            'supplier_branch'       => $this->su['branch'],
-        ];
+    //     $updateSupplier = [
+    //         'supplier_name'         => $this->su['name'],
+    //         'supplier_address'      => $this->su['address'],
+    //         'supplier_contact_no'   => $this->su['no'],
+    //         'supplier_email'        => $this->su['email'],
+    //         'supplier_bank'         => $this->su['bank'],
+    //         'supplier_acc_no'       => $this->su['acc'],
+    //         'supplier_branch'       => $this->su['branch'],
+    //     ];
 
-        if (!empty($this->su['avatar']) || ($this->su['avatar'] != null)) {
-            Storage::disk('avatars')->exists($foundSupplier->supplier_avatar) ? 
-                Storage::disk('avatars')->delete($foundSupplier->supplier_avatar) : '';
+    //     if (!empty($this->su['avatar']) || ($this->su['avatar'] != null)) {
+    //         Storage::disk('avatars')->exists($foundSupplier->supplier_avatar) ? 
+    //             Storage::disk('avatars')->delete($foundSupplier->supplier_avatar) : '';
             
-            $updateSupplier += ['supplier_avatar' => $this->su['avatar']->hashName()];
-            $this->su['avatar']->store('/', 'avatars');
-        }
+    //         $updateSupplier += ['supplier_avatar' => $this->su['avatar']->hashName()];
+    //         $this->su['avatar']->store('/', 'avatars');
+    //     }
 
-        $foundSupplier->update($updateSupplier);
+    //     $foundSupplier->update($updateSupplier);
 
-        $this->closeModal();
+    //     $this->closeModal();
 
-        $this->dispatchBrowserEvent('toast', [
-            'title' => null,
-            'class' => 'success',
-            'message' => 'Supplier updated successfully.',
-        ]);
-    }
+    //     $this->dispatchBrowserEvent('toast', [
+    //         'title' => null,
+    //         'class' => 'success',
+    //         'message' => 'Supplier updated successfully.',
+    //     ]);
+    // }
 
-    public function deletingSupplier($supplierId)
-    {
-        $this->su['id'] = $supplierId;
-        $this->delete['supplier'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog'); 
-    }
+    // public function deletingSupplier($supplierId)
+    // {
+    //     $this->su['id'] = $supplierId;
+    //     $this->delete['supplier'] = true;
+    //     $this->dispatchBrowserEvent('confirm-dialog'); 
+    // }
 
-    public function deletingSuppliers()
-    {
-        $this->delete['suppliers'] = true;
+    // public function deletingSuppliers()
+    // {
+    //     $this->delete['suppliers'] = true;
 
-        $this->dispatchBrowserEvent('confirm-dialog'); 
-    }
+    //     $this->dispatchBrowserEvent('confirm-dialog'); 
+    // }
 
-    public function deleteSupplier()
-    {
+    // public function deleteSupplier()
+    // {
 
-        $supplier = Supplier::find($this->su['id']);
+    //     $supplier = Supplier::find($this->su['id']);
 
-        if (isset($supplier->supplier_avatar)) {
-            Storage::disk('avatars')->exists($supplier->supplier_avatar) ?
-                Storage::disk('avatars')->delete($supplier->supplier_avatar) : '' ;
-        }
+    //     if (isset($supplier->supplier_avatar)) {
+    //         Storage::disk('avatars')->exists($supplier->supplier_avatar) ?
+    //             Storage::disk('avatars')->delete($supplier->supplier_avatar) : '' ;
+    //     }
         
-        $supplier->delete();
+    //     $supplier->delete();
 
-        $this->confirm_dialog_modal_close();
+    //     $this->confirm_dialog_modal_close();
 
-        $this->dispatchBrowserEvent('toast', [
-            'title' => null,
-            'class' => 'success',
-            'message' => 'Supplier Deleted successfully.',
-        ]);
-    }
+    //     $this->dispatchBrowserEvent('toast', [
+    //         'title' => null,
+    //         'class' => 'success',
+    //         'message' => 'Supplier Deleted successfully.',
+    //     ]);
+    // }
 
-    public function deleteSuppliers()
-    {
-        $suppliers = Supplier::find($this->selectedSuppliers);
+    // public function deleteSuppliers()
+    // {
+    //     $suppliers = Supplier::find($this->selectedSuppliers);
 
-        foreach ($suppliers as $supplier) {
-            Storage::disk('avatars')->exists($supplier->supplier_avatar) ?
-                Storage::disk('avatars')->delete($supplier->supplier_avatar) : '';
-        }
+    //     foreach ($suppliers as $supplier) {
+    //         Storage::disk('avatars')->exists($supplier->supplier_avatar) ?
+    //             Storage::disk('avatars')->delete($supplier->supplier_avatar) : '';
+    //     }
 
-        Supplier::destroy($this->selectedSuppliers);
+    //     Supplier::destroy($this->selectedSuppliers);
 
-        $this->selectedSuppliers = [];
+    //     $this->selectedSuppliers = [];
 
-        $this->confirm_dialog_modal_close();
+    //     $this->confirm_dialog_modal_close();
 
-        $this->dispatchBrowserEvent('toast', [
-            'title' => null,
-            'class' => 'success',
-            'message' => 'Suppliers Deleted successfully.',
-        ]);
-    }
+    //     $this->dispatchBrowserEvent('toast', [
+    //         'title' => null,
+    //         'class' => 'success',
+    //         'message' => 'Suppliers Deleted successfully.',
+    //     ]);
+    // }
 
 
 
@@ -542,8 +560,8 @@ class PageInventory extends Component
     {
         $this->delete['item']       ? $this->deleteItem()   : '';
         $this->delete['items']      ? $this->deleteItems()  : '';
-        $this->delete['supplier']   ? $this->deleteSupplier() : '';
-        $this->delete['suppliers']   ? $this->deleteSuppliers() : '';
+        // $this->delete['supplier']   ? $this->deleteSupplier() : '';
+        // $this->delete['suppliers']   ? $this->deleteSuppliers() : '';
 
         $this->reset(['delete']);
     }
@@ -554,8 +572,8 @@ class PageInventory extends Component
 
         if ($action == 'add') {
             if ($data == 'supplier') { 
-                $this->modal['supplier'] = true; }
-            elseif ($data == 'item') { 
+                // $this->modal['supplier'] = true; }
+            } elseif ($data == 'item') { 
                 $this->modal['item'] = true; }
 
             $this->modal['add'] = true;
@@ -581,21 +599,21 @@ class PageInventory extends Component
                 $this->modal['item'] = true; 
             }
             elseif ($data == 'supplier') { 
-                $supplier = Supplier::findOrFail($id);
-                $this->su['id']         = $supplier->id;
-                $this->su['name']       = $supplier->supplier_name;
-                $this->su['address']    = $supplier->supplier_address;
-                $this->su['no']         = $supplier->supplier_contact_no;
-                $this->su['email']      = $supplier->supplier_email;
-                $this->su['bank']       = $supplier->supplier_bank;
-                $this->su['acc']        = $supplier->supplier_acc_no;
-                $this->su['branch']     = $supplier->supplier_branch;
+                // $supplier = Supplier::findOrFail($id);
+                // $this->su['id']         = $supplier->id;
+                // $this->su['name']       = $supplier->supplier_name;
+                // $this->su['address']    = $supplier->supplier_address;
+                // $this->su['no']         = $supplier->supplier_contact_no;
+                // $this->su['email']      = $supplier->supplier_email;
+                // $this->su['bank']       = $supplier->supplier_bank;
+                // $this->su['acc']        = $supplier->supplier_acc_no;
+                // $this->su['branch']     = $supplier->supplier_branch;
 
-                !empty($supplier->supplier_avatar) || ($supplier->supplier_avatar != null) ?
-                    $this->su['has_avatar'] = true : '';
+                // !empty($supplier->supplier_avatar) || ($supplier->supplier_avatar != null) ?
+                //     $this->su['has_avatar'] = true : '';
             
             
-                $this->modal['supplier'] = true; 
+                // $this->modal['supplier'] = true; 
             }
             $this->modal['update'] = true;
         }

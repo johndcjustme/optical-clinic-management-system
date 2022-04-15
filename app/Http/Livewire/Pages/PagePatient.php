@@ -213,7 +213,7 @@ class PagePatient extends Component
         
         if ($this->subPage == 2) {
             $render += [
-                'purchases' => Purchase::with('patient')->where('total', '>', 0)->orderBy('balance', 'desc')->get(),
+                'allPurchases' => Purchase::with('patient')->where('total', '>', 0)->orderBy('balance', 'desc')->get(),
             ];
         }
 
@@ -221,7 +221,7 @@ class PagePatient extends Component
 
 
             $render += [
-                'purchasesHistory' => Purchase::where('patient_id', $this->patientId)->where('total', '>', 0)->latest()->get(),
+                'purchasesHistory' => Purchase::where('patient_id', $this->patientId)->latest()->get(),
                 'examsHistory' => Exam::where('patient_id', $this->patientId)->latest()->get(),
             ];
 
@@ -907,5 +907,11 @@ class PagePatient extends Component
     public function currentlyInPaientList($patientId)
     {
         return Patient::where('id', $patientId)->where('patient_queue', true)->first();
+    }
+
+    public function makeOrder()
+    {
+        $this->reset(['modal']);
+        return redirect()->to('/orders?subPage=1&modal[show]=1&modal[add]=1&modal[update]=0&orderPatientId=' . $this->pt['id']);
     }
 }

@@ -191,7 +191,7 @@
                                     <small class="dark_200">Created at: {{ $this->purchaseDate($latest_purchase['date']) }}</small>
                                 </p>
                             </div>
-                            <div>
+                            {{-- <div>
                                 <div class="">
                                     <div class="relative">    
                                         <div class="relative">
@@ -227,46 +227,90 @@
                                         @endif
                                     </div>
                                 </div>
+                            </div> --}}
+
+
+
+                            <div class="field">
+                                <div class="x-flex x-flex-xend">
+                                    <div class="ui dropdown labeled icon button blue" x-init="$('.ui.dropdown').dropdown()" style="z-index: 400">
+                                        <i class="add icon"></i>
+                                        <span class="">Add Item</span>
+                                        <div class="menu fluid left">
+                                            <div class="ui icon search input">
+                                                <i class="search icon"></i>
+                                                <input type="text" placeholder="Search Items...">
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="scrolling menu">
+                                                @foreach (App\Models\Item::all() as $item)
+                                                    <div class="item">
+                                                        <div class="x-flex x-flex-xbetween x-gap-1">
+                                                            <div>
+                                                                <div>
+                                                                    {{ $item->item_name }}
+                                                                </div>
+                                                                <small>
+                                                                    <i class="fa-solid fa-peso-sign"></i> {{ $item->item_price }} • {{ $item->item_desc }}
+                                                                </small>
+                                                            </div>
+                                                            <div><button class="ui button mini" wire:click.prevent="addItem('{{ $latest_purchase['id'] }}', {{ $item->id }}, {{ $item->item_price }})">+</button></div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                        
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        {{-- <ul class="hoverable my_15" style="line-height: 1rem"> --}}
+                        <br>
+                        <div class="field">
+                            <div class="ui relaxed celled list">
+
+                                @forelse ($selectedItems as $selectedItem)    
+                                
+                                    <div class="item">
+                                        <div class="x-flex x-flex-xbetween x-flex-ycenter x-gap-1 py_3">
+                                            <div class="x-flex x-gap-1">
+                                                <div class="x-flex x-flex-ycenter">
+                                                    <button wire:click.prevent="inc_dec_item('dec', {{ $selectedItem->id }})" class="ui button blue tertiary mini icon {{ $selectedItem->qty == 1 ? 'disabled' : ''  }}"><i class="minus icon"></i></button>
+                                                    <div class="px_6">{{ $selectedItem->qty }}</div>
+                                                    <button wire:click.prevent="inc_dec_item('inc', {{ $selectedItem->id }})" class="ui button blue tertiary mini icon" {{ ($selectedItem->qty == 20) || ($this->checkItemQty($selectedItem->item_id) == 0) ? 'disabled' : ''  }}><i class="add icon"></i></button>
+                                                </div>
+                                                <div>
+                                                    <div data-tooltip="{{ $this->remainingItems($selectedItem->item_id) }}" data-position="top left" data-inverted="" data-variation="mini">
+                                                        {{ $selectedItem->item->item_name }}
+                                                    </div>
+                                                    <small>
+                                                        <i class="fa-solid fa-peso-sign"></i> {{ $selectedItem->item->item_price }} • {{ $selectedItem->item->item_desc }}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <div class="x-flex x-gap-1">
+                                                <button wire:click.prevent="removeItem({{ $selectedItem->id }})" class="ui button mini icon red tertiary"  data-inverted="" data-tooltip="Remove Item" data-position="top right" data-variation="mini"><i class="close icon"></i></button>
+                                            </div>
+                                        </div> 
+                                    </div>
+
+                                @empty
+                                    <p class="text_center py_7"><i class="fa-solid fa-circle-exclamation mr_3"></i> Empty.
+                                        <span wire:click.prevent="deletePurchase({{ $latest_purchase['id'] }})" class="mr_5 red pointer"> 
+                                            Click remove empty purchase.
+                                        </span>
+                                    </p> 
+                                @endforelse
                             </div>
                         </div>
-                        <ul class="hoverable my_15" style="line-height: 1rem">
-                            @forelse ($selectedItems as $selectedItem)     
-                                <li class="flex flex_x_between flex_y_center b_1 my_4">
-                                    <div class="flex gap_1 my_3">
-                                        <div class="flex flex_y_center" style="gap:0.4em">
-                                            <button wire:click.prevent="inc_dec_item('dec', {{ $selectedItem->id }})" class="btn_small cancel" style="padding:0 2px" {{ $selectedItem->qty == 1 ? 'disabled' : ''  }}>
-                                                <i class="fa-solid fa-minus"></i>
-                                            </button>
-                                            <a class="text_center" style="width:1.5em; font-weight:bold; font-size:1rem">{{ $selectedItem->qty  }}</a>
-                                            <button wire:click.prevent="inc_dec_item('inc', {{ $selectedItem->id }})" class="btn_small cancel" style="padding:0 2px" {{ ($selectedItem->qty == 20) || ($this->checkItemQty($selectedItem->item_id) == 0) ? 'disabled' : ''  }}>
-                                                <i class="fa-solid fa-plus"></i>
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <div class="mb_4" data-tooltip="{{ $this->remainingItems($selectedItem->item_id) }}" data-position="top left" data-inverted="" data-variation="mini">
-                                                {{ $selectedItem->item->item_name }}
-                                            </div>
-                                            <small class="dark_200">
-                                                <i class="fa-solid fa-peso-sign"></i> {{ $selectedItem->item->item_price }} • {{ $selectedItem->item->item_desc }}
-                                            </small>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <i wire:click.prevent="removeItem({{ $selectedItem->id }})" title="Remove" class="fa-regular fa-trash-can pointer mr_3" style="color: red;"></i>                                            {{-- <a wire:click.prevent="removeItem({{ $selectedItem->id }})" class="noformat pointer" title="remove" style="color: red; font-size:0.8rem">REMOVE</a> --}}
-                                    </div>
-                                </li>
-                            @empty
-                                <p class="text_center py_7"><i class="fa-solid fa-circle-exclamation mr_3"></i> Empty.
-                                    <span wire:click.prevent="deletePurchase({{ $latest_purchase['id'] }})" class="mr_5 red pointer"> 
-                                        Click remove empty purchase.
-                                    </span>
-                                </p> 
-                                
-                            @endforelse
-                        </ul>
+                        <br>
 
                         @if (count($selectedItems) > 0)
-                            <div class="pt_10 dashed-top-2">
+
+                            <div class="pt_10 x-dashed-top-2">
                                 <select name="" id="">
                                     <option value="" selected hidden>Payment Type</option>
                                     <option value="">On Hand</option>
@@ -350,8 +394,8 @@
                                 </button>
                             </div>
 
-                            <div class="dashed-top-2" style="margin-top:1em; padding-top:0.5em">
-                                Item not available for patient? <a href="/order"><b>Order</b></a>
+                            <div class="x-dashed-top-2" style="margin-top:1em; padding-top:0.5em">
+                                Item not available for patient? <a wire:click.prevent="makeOrder" ><b>Order</b></a>
                             </div>
                         @endif
                     @endif

@@ -28,6 +28,12 @@
                         <span>Inventory</span>
                     </li>
                 </a>
+                <a href="/suppliers" title="Supplier">
+                    <li class="@yield('suppliers') ">
+                        <ion-icon name="bus-outline"></ion-icon>
+                        <span>Suppliers</span>
+                    </li>
+                </a>
                 <a href="/orders" title="Orders">
                     <li class="@yield('orders') ">
                         <ion-icon name="cart-outline"></ion-icon>

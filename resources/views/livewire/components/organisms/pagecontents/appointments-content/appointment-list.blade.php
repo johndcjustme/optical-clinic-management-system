@@ -1,3 +1,5 @@
+
+
 <tr>
     <x-organisms.ui.table.td
         checkbox="selectedAppts" 
@@ -17,7 +19,7 @@
         avatar="{{ $this->storage($appt->patient->patient_avatar) }}"/>
     <x-organisms.ui.table.td
         text="{{ $appt->patient->patient_mobile }}"
-        text-icon="fa-square-phone"/>
+        text-icon=" {{ !empty($appt->patient->patient_mobile) ? 'fa-square-phone' : ''; }}"/>
     <x-organisms.ui.table.td
         desc="{{ $this->date($appt->created_at) . ' @ ' . $this->time($appt->created_at) }}"/>
     <x-organisms.ui.table.td-more style="width: 1em">
@@ -39,3 +41,5 @@
             option-name="Reschedule"/>
     </x-organisms.ui.table.td>
 </tr>
+
+

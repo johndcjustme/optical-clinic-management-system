@@ -6,17 +6,26 @@ use Livewire\Component;
 use App\Models\Schedsetting;
 use App\Models\Appointment;
 use App\Models\Patient;
+use App\Models\Setting;
+use App\Models\Day;
+use App\Models\Year;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
+use Illuminate\Support\Str;
+
 
 
 use App\Models\Time;
-
+use Livewire\WithPagination;
 
 use Illuminate\Support\Facades\Storage;
 
 
 class PageAppointments extends Component
 {
+    use WithPagination;
+
+
+
 
     public Patient $pt;
 
@@ -29,6 +38,10 @@ class PageAppointments extends Component
 
     public $shedsettings_isOpen = false;
 
+    public $apptSettings = false;
+
+    public $apptSettingsTabs = 1;
+
     public $apptCreatedBy;
 
     public $selectedAppts = [];
@@ -38,6 +51,11 @@ class PageAppointments extends Component
     protected $listeners = ['mount'];
 
     public $searchAppt;
+
+    public $pageNumber = 10;
+
+    public $category = 0;
+
 
     public $appt = [
         'id'          => '',
@@ -64,7 +82,7 @@ class PageAppointments extends Component
 
     // public $editTime = false, $editTimeId = '';
 
-    public $colName = 'appt_date', $direction = 'asc';
+    public $colName = 'appt_status', $direction = 'asc';
 
     public 
         $setAll_am, 
@@ -101,8 +119,12 @@ class PageAppointments extends Component
         'approve' => false,
     ];
 
+    protected $queryString = [
+        'category',
+    ];
 
-    public $timeSched;
+
+    public $timeSched, $yearSched;
 
     public function myTab($value)
     {
@@ -113,8 +135,6 @@ class PageAppointments extends Component
     {
 
 
-
-
         $searchPatient = $this->searchPatient . '%';
         $pt = Patient::where('patient_fname' , 'like', $searchPatient)
                         ->orWhere('patient_lname', 'like', $searchPatient)
@@ -122,13 +142,20 @@ class PageAppointments extends Component
                         ->get();
 
         $searchAppt = $this->searchAppt . '%';
-        // $appts = Appointment::with('patient')->orderBy($this->colName, $this->direction)->get();
 
-        $appts = Search::new()
-            ->add(Appointment::class, 'appt_date')
-            ->add(Patient::class, 'patient_lname')
-            ->beginWithWildcard()
-            ->search('new');
+        $appts = Appointment::with('patient');
+
+        if ($this->category > 0) 
+            $appts = Appointment::with('patient')->where('appt_status', $this->category)->orderBy($this->colName, $this->direction)->paginate($this->pageNumber);
+        else
+            $appts = Appointment::with('patient')->orderBy($this->colName, $this->direction)->paginate($this->pageNumber);
+
+
+        // $appts = Search::new()
+        //     ->add(Appointment::class, 'appt_date')
+        //     ->add(Patient::class, 'patient_lname')
+        //     ->beginWithWildcard()
+        //     ->search('new');
 
         return view('livewire.pages.page-appointments', 
             [
@@ -166,6 +193,64 @@ class PageAppointments extends Component
                 : $updateStatus = ['patient_queue' => false, 'patient_exam_status' => false];
 
             Patient::where('id', $duedate->patient_id)->update($updateStatus);
+        }
+    }
+
+    public function updatedYearSched()
+    {
+        if (!empty($this->yearSched)) {
+            if (Str::length($this->yearSched) <> 4) {
+                if ($this->yearSched < date('Y')) {
+                    $this->dispatchBrowserEvent('toast',[
+                        'title'   => NULL,
+                        'class'   => 'error',
+                        'message' => 'Valid year is ' . date('Y') . ' and more than.',
+                    ]);
+                }
+                session()->flash('yearMessage', 'error');
+            } else {
+                $year = Year::where('year', $this->yearSched)->first();
+                if ($year) {
+                    session()->flash('yearMessage', 'error');
+                } else {
+                    Year::create(['year' => $this->yearSched]);
+                    $this->yearSched = '';
+                }
+            }
+        }
+    }
+
+    public function updatedTimeSched()
+    {
+        $this->addTime();
+    }
+
+
+    public function category($value)
+    {
+        switch ($value) {
+            case 0: return 'All';           break;
+            case 1: return 'For Approval';  break;
+            case 2: return 'Ongoing';       break;
+            case 3: return 'Rescheduled';   break;
+            case 4: return 'Missed';        break;
+            case 5: return 'Fulfilled';     break;
+            case 6: return 'Cancelled';     break;
+            default:
+        }
+    }
+    public function categoryDesc($value)
+    {
+        $appt = Appointment::all();
+        switch ($value) {
+            case 0: return $appt->count();                           break;
+            case 1: return $appt->where('appt_status', 1)->count();  break;
+            case 2: return $appt->where('appt_status', 2)->count();  break;
+            case 3: return $appt->where('appt_status', 3)->count();  break;
+            case 4: return $appt->where('appt_status', 4)->count();  break;
+            case 5: return $appt->where('appt_status', 5)->count();  break;
+            case 6: return $appt->where('appt_status', 6)->count();  break;
+            default:
         }
     }
 
@@ -320,6 +405,12 @@ class PageAppointments extends Component
     public function updateAppt()
     {
         // dd($this->appt['id'] . ' ' . $this->apptCreatedBy);
+        $this->validate([
+            'appt.pt_date'   => 'required',
+            'appt.pt_status' => 'required|integer',
+        ]);
+
+
         switch ($this->apptCreatedBy) {
             case 'dc':
                 Appointment::create([
@@ -341,6 +432,7 @@ class PageAppointments extends Component
         }
 
         $this->closeModal();
+        $this->resetErrorBag();
         $this->dispatchBrowserEvent('toast',[
             'title' => null,
             'class' => 'success',
@@ -379,7 +471,7 @@ class PageAppointments extends Component
 
     public function deleteAppts()
     {
-        Appointment::destroy($this->selectedAppts)->delete();
+        Appointment::destroy($this->selectedAppts);
 
         $this->selectedAppts = [];
 
@@ -525,6 +617,9 @@ class PageAppointments extends Component
                 $this->modal['update'] = true;
                 $this->apptCreatedBy = 'pt';
                 break;
+            case 'settings':
+                $this->apptSettings = true;
+                break;
 
             default:
         }
@@ -534,7 +629,7 @@ class PageAppointments extends Component
 
     public function closeModal()
     {
-        $this->reset(['modal', 'appt']);
+        $this->reset(['modal', 'appt', 'apptSettings']);
 
         $this->clearSearch(); 
 
@@ -545,6 +640,16 @@ class PageAppointments extends Component
 
 
 
+
+
+
+    // public function daysTimeTab()
+    // {
+    //     if ($this->days)
+    //         $this->time = false;
+    //     if ($this->time)
+    //         $this->days = false;
+    // }
 
 
     
@@ -562,23 +667,58 @@ class PageAppointments extends Component
     // }
 
 
+    public function selectedDay($dayId)
+    {
+        // dd($dayId);
+        $day = Day::find($dayId);
+
+        $day->status 
+            ? $day->update(['status' => false])
+            : $day->update(['status' => true]);
+    }
+
+
     public function addTime()
     {
         $this->validate(
             ['timeSched' => 'required',], 
-            ['timeSched.required' => '*Required']
+            ['timeSched.required' => 'Required']
         );
 
+        Time::create(['time' => $this->timeSched]);        
+
+        $this->timeSched = '';
+        
         $this->resetErrorBag();
 
-        Time::create(['time' => $this->timeSched]);
-        
-        $this->timeSched = '';
     }
 
     public function deleteTime($id)
     {
         Time::destroy($id);
+    }
+
+    public function deleteYear($id)
+    {
+        Year::destroy($id);
+    }
+
+    public function enableScheduling()
+    {
+        $setting = Setting::where('code', 11)->first();
+
+        $setting->status
+            ? $setting->update(['status' => false])
+            : $setting->update(['status' => true]);
+    }
+
+    public function enableSchedulingStatus($code)
+    {
+        $setting = Setting::where('code', $code)->first();
+        if ($setting->status)
+            return true;
+        else 
+            return false;
     }
 
 

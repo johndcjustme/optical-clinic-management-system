@@ -30,11 +30,12 @@
     @section('section-heading-left')
         @if ($subPage != 3)
             @if (count($selectedPatients) > 0)
-                <div class="ui compact tiny menu" x-data="$('.ui.dropdown').dropdown()">
-                    <div class="ui dropdown item">
-                    Action
-                    <i class="dropdown icon"></i>
-                    <div class="menu">
+
+                <x-atoms.ui.header-dropdown-menu wire-close="$set('selectedPatients', [])" class="left pointing tiny">
+                    <x-slot name="label">
+                        {{ count($selectedPatients) }} Selected 
+                    </x-slot>
+                    <x-slot name="menu"> 
                         @switch($subPage)
                             @case(1)
                                 <div wire:click.prevent="batchRemoveFromQueue" class="item"><i class="delete icon"></i> Remove from exam list</div>
@@ -53,15 +54,10 @@
                                 @break
                             @default
                         @endswitch
-                    </div>
-                    </div>
-                </div>
+                    </x-slot>
+                </x-atoms.ui.header-dropdown-menu>                
             @else
-                <div>
-                    <x-atoms.ui.button wire:click.prevent="patientShowModal('isAdd', null)" class="primary basic tiny">
-                        <i class="icon plus"></i> Add Patient
-                    </x-atoms.ui.button>
-                </div>
+                <x-atoms.ui.header-add-btn label="Add Patient" wire-click="patientShowModal('isAdd', null)"/>
             @endif
         @endif
     @endsection
@@ -273,7 +269,7 @@
                         <x-organisms.ui.table.th-more/>
                     </x-slot>
                     <x-slot name="tbody">
-                        @forelse ($purchases as $purchase)
+                        @forelse ($allPurchases as $purchase)
                             <tr>
                                 <x-organisms.ui.table.td 
                                     desc="{{ $this->date($purchase->created_at) }}"/>
@@ -348,7 +344,7 @@
                             @switch($historyPage)
                                 @case(1)
                                         @foreach ($examsHistory as $exam)
-                                            <div class="x-flex x-flex-xbetween x-flex-ycenter mb_3">
+                                            {{-- <div class="x-flex x-flex-xbetween x-flex-ycenter mb_3">
                                                 <div>
                                                     <p style="opacity: 0.7;">{{ $this->date($exam->created_at) }}</p>
                                                 </div>
@@ -356,7 +352,7 @@
                                                     <i wire:click.prevent="editExamHistory({{ $exam->id }})" title="Edit" class="pointer fa-regular fa-pen-to-square"></i>
                                                     <i wire:click.prevent="deletingExam({{ $exam->id }})" title="Delete" class="pointer fa-regular fa-trash-can"></i>
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                             <div style="overflow-x:auto">
                                                 <x-organisms.ui.table class="celled unstackable blue">
                                                     <x-slot name="thead">
@@ -414,6 +410,17 @@
                                                                 <span style="opacity:0.5; margin-right:0.4em">REMARKS:</span>{{ $exam->exam_remarks }}
                                                             </x-organisms.ui.table.td>
                                                         </tr>
+                                                        <tr>
+                                                            <td colspan="7">
+                                                                <div class="x-flex x-flex-ycenter x-flex-xbetween">
+                                                                    <small>{{ $this->date($exam->created_at) }}</small>
+                                                                    <div class="x-flex x-flex-xbetween">
+                                                                        <button wire:click.prevent="deletingExam({{ $exam->id }})" class="ui button tiny">Delete</button>
+                                                                        <button wire:click.prevent="editExamHistory({{ $exam->id }})" class="ui button tiny">Edit</button>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
                                                     </x-slot>
                                                 </x-organisms.ui.table>
                                             </div><br><br>
@@ -421,14 +428,14 @@
                                     @break
                                 @case(2)
                                     @foreach ($purchasesHistory as $purchase)
-                                        <div class="x-flex x-flex-xbetween x-flex-ycenter mb_3">
+                                        {{-- <div class="x-flex x-flex-xbetween x-flex-ycenter mb_3">
                                             <div>
                                                 <p style="opacity: 0.7;">{{ $this->date($purchase->created_at) }}</p>
                                             </div>
                                             <div class="x-flex x-gap-1">
                                                 <i wire:click.prevent="deletingPurchase({{ $purchase }})" title="Delete" class="pointer fa-regular fa-trash-can"></i>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         <div style="overflow-x:auto">
                                             <x-organisms.ui.table class="celled unstackable blue">
                                                 <x-slot name="thead">
@@ -455,14 +462,14 @@
                                                         <x-organisms.ui.table.td><b>DIS:</b> <span class="ui text blue ml_5" style="font-weight: bold"><i class="fa-solid fa-peso-sign mr_3"></i>{{ number_format($purchase->discount) }}</span></x-organisms.ui.table.td>
                                                         <x-organisms.ui.table.td><b>TOTAL:</b> <span class="ui text blue ml_5" style="font-weight: bold"><i class="fa-solid fa-peso-sign mr_3"></i>{{ number_format($purchase->total) }}</span></x-organisms.ui.table.td>
                                                     </tr>
-                                                    {{-- <tr>
-                                                        <td colspan="3" style="font-weight:bold; text-align:right;">DISCOUNT</td>
-                                                        <x-organisms.ui.table.td text="{{ $purchase->discount }}"/>
-                                                    </tr>
                                                     <tr>
-                                                        <td colspan="3" style="font-weight:bold; text-align:right;">TOTAL</td>
-                                                        <x-organisms.ui.table.td text="{{ $purchase->total }}"/>
-                                                    </tr> --}}
+                                                        <td colspan="4">
+                                                            <div class="x-flex x-flex-xbetween x-flex-ycenter x-gap-1">
+                                                                <small class="" style="opacity: 0.7;">{{ $this->date($purchase->created_at) }}</small>
+                                                                <button wire:click.prevent="deletingPurchase({{ $purchase }})" class="ui button tiny">Delete</button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
                                                 </x-slot>
                                             </x-organisms.ui.table>
                                         </div><br><br>
