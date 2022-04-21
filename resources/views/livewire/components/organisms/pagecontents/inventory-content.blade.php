@@ -6,67 +6,45 @@
                 <x-atoms.ui.header title="Inventory"/>
             </div>
             <div>
-                <small></small>
+                <p>Lorem, ipsum dolor.</p>
             </div>
         </div>
     @endsection
 
     @section('section-links')
 
-        <div class="ui compact tiny menu" style="z-index:300;" x-init="$('ui.floating.labeled').dropdown()">
-            <div class="item {{ $subPage == 1 ? 'active' : '' }}">
-                <div class="ui floating dropdown">
-                    <i class="filter icon" style="margin-right:0.8em;"></i>
-                    <span class="text">
-                        @switch($onDisplayItemType)
-                            @case('all') All <div class="ui description">{{ $this->countItems('all') }}</div> @break
-                            @case('le') Lense <div class="ui description">{{ $this->countItems('le') }}</div> @break
-                            @case('fr') Frame <div class="ui description">{{ $this->countItems('fr') }}</div> @break
-                            @case('ac') Accessory <div class="ui description">{{ $this->countItems('ac') }}</div> @break
+        <div class="ui compact tiny menu" style="z-index:1;" x-init="$('ui.floating.labeled').dropdown()">
+            <div class="item {{ $this->activePage(1) }}">
+                <div class="ui transparent" style="display: flex">
+                    <div wire:click.prevent="$set('subPage', 1)" class="ui mini transparent" style="display: flex;">
+                        {{ $this->tabDisplayActiveItem($onDisplayItemType) }} <div class="ui description ml_3" style="opacity: 0.6">{{ $this->countItems($onDisplayItemType) }}</div> 
+                        {{-- {{ App\Models\Category::where('id', $onDisplayItemType)->first()->name; }} --}}
+                        {{-- @switch($onDisplayItemType)
+                            @case('all') All Items<div class="ui description ml_3" style="opacity: 0.6"></div> @break
+                            @case('le') Lenses <div class="ui description ml_3" style="opacity: 0.6"></div> @break
+                            @case('fr') Frames <div class="ui description ml_3" style="opacity: 0.6"></div> @break
+                            @case('ac') Accessories <div class="ui description ml_3" style="opacity: 0.6">{{ $this->countItems('ac') }}</div> @break
                             @default
-                        @endswitch
-                    </span>
+                        @endswitch --}}
+                    </div>
+                    <div class="ui floating dropdown icon">
+                    <i class="dropdown icon"></i>
                     <div class="menu">
-                        <div wire:click.prevent="$set('onDisplayItemType', 'all')" data-value="all" class="item"><span class="text">All</span><span class="description">{{ $this->countItems('all') }}</span></div>
-                        <div wire:click.prevent="$set('onDisplayItemType', 'le')" data-value="le" class="item"><span class="text">Lense</span><span class="description">{{ $this->countItems('le') }}</span></div>
+                        <div wire:click.prevent="$set('onDisplayItemType', 'all')" data-value="all" class="item"><span class="text">All Items</span><span class="description">{{ $this->countItems('all') }}</span></div>
+                        @foreach ($categories as $category)
+                            <div wire:click.prevent="$set('onDisplayItemType', {{ $category->id }})" data-value="all" class="item"><span class="text">{{ $category->name }}</span><span class="description">{{ $this->countItems($category->id) }}</span></div>
+                        @endforeach
+                        {{-- <div wire:click.prevent="$set('onDisplayItemType', 'le')" data-value="le" class="item"><span class="text">Lense</span><span class="description">{{ $this->countItems('le') }}</span></div>
                         <div wire:click.prevent="$set('onDisplayItemType', 'fr')" data-value="fr" class="item"><span class="text">Frame</span><span class="description">{{ $this->countItems('fr') }}</span></div>
-                        <div wire:click.prevent="$set('onDisplayItemType', 'ac')" data-value="ac" class="item"><span class="text">Accessory</span><span class="description">{{ $this->countItems('ac') }}</span></div>
+                        <div wire:click.prevent="$set('onDisplayItemType', 'ac')" data-value="ac" class="item"><span class="text">Accessory</span><span class="description">{{ $this->countItems('ac') }}</span></div> --}}
+                    </div>
                     </div>
                 </div>
             </div>
-            <div wire:click.prevent="$set('subPage', 3)" class="item {{ $subPage == 3 ? 'active' : '' }}">In Itmes</div>
-            <div class="item">Out Items</div>
+            <div wire:click.prevent="$set('subPage', 3)" class="item {{ $this->activePage(3) }}">In Items</div>
+            <div wire:click.prevent="$set('subPage', 4)" class="item {{ $this->activePage(4) }}">Out Items</div>
+            <div wire:click.prevent="$set('subPage', 5)" class="item {{ $this->activePage(5) }}">Categories</div>
         </div>
-
-{{--             
-            <x-molecules.ui.group-buttons>
-                <x-molecules.ui.group-buttons.button 
-                    wire-click="$set('subPage', 1)" 
-                    active="{{ $subPage == 1 }}"
-                    label="Items" />
-
-                    <div class="ui buttons" style="z-index: 100" x-init="">
-                        <div class="ui combo top right pointing dropdown icon button">
-                            <i class="dropdown icon"></i>
-                            <div class="menu">
-                                <div wire:click.prevent="$set('onDisplayItemType', 'all')" data-value="all" class="item">
-                                    All</div>
-                                <div wire:click.prevent="$set('onDisplayItemType', 'le')" data-value="le" class="item">
-                                    Lense</div>
-                                <div wire:click.prevent="$set('onDisplayItemType', 'fr')" data-value="fr" class="item">
-                                    Frame</div>
-                                <div wire:click.prevent="$set('onDisplayItemType', 'ac')" data-value="ac" class="item">
-                                    Accessory</div>
-                            </div>
-                        </div>
-                    </div>
-                <x-molecules.ui.group-buttons.button wire-click="$set('subPage', 2)" active="{{ $subPage == 2 }}"
-                    label="Supplier" />
-                <x-molecules.ui.group-buttons.button wire-click="$set('subPage', 3)" active="{{ $subPage == 3 }}"
-                    label="In / Out" />
-                <x-molecules.ui.group-buttons.button wire-click="$set('subPage', 4)" active="{{ $subPage == 4 }}"
-                    label="Ledger" />
-            </x-molecules.ui.group-buttons.button> --}}
     @endsection
 
 
@@ -86,33 +64,19 @@
                             </x-slot>
                         </x-atoms.ui.header-dropdown-menu>
                     @else
-                        <x-atoms.ui.header-add-btn label="Add Item" wire-click="showModal('add', 'item', null)"/>
+                        <x-atoms.ui.header-add-btn label="Add Item" wire-click="showModal('add', null)"/>
                     @endif
-                @break
-
-                {{-- @case(2)
-                    <div>
-                        @if (count($selectedSuppliers) > 0)
-                            <div class="ui tiny basic icon buttons">
-                                <x-atoms.ui.button wire:click.prevent="deletingSuppliers">
-                                    <i class="fa-solid fa-trash mr_2 red"></i>
-                                    {{ 'items (' . count($selectedSuppliers) . ')' }}
-                                </x-atoms.ui.button>
-                                <x-atoms.ui.button wire:click.prevent="$set('selectedSuppliers', [])">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </x-atoms.ui.button>
-                            </div>
-                        @else
-                            <x-atoms.ui.button wire:click.prevent="showModal('add', 'supplier', null)" class="primary basic tiny">
-                                <i class="icon plus"></i> Add Supplier
-                            </x-atoms.ui.button>
-                        @endif
-                    </div>
-                @break --}}
+                    @break
+                    
+                @case(2)
+                    @break
 
                 @case(3)
-                    IN / OUT
-                @break
+                    <x-atoms.ui.header-add-btn label="In Item" wire-click="showModal('inItem', null)"/>
+                    @break
+                @case(5)
+                    <x-atoms.ui.header-add-btn label="Add Category" wire-click="showModal('addCategory', null)"/>
+                    @break
 
             @endswitch
         @endsection
@@ -155,7 +119,7 @@
                                     <x-organisms.ui.table.td>
                                         <div>
                                             <div class="ui top left pointing dropdown table-inventory-dropdown-image">
-                                                <div x-init="$('.ui.dropdown').dropdown();" style="color: {{ $this->itemColor($item->item_type) }}">{{ $this->itemType($item->item_type) }}</div>
+                                                <div x-init="$('.ui.dropdown').dropdown();" style="color: {{ $this->itemColor($item->item_type) }}">{{ $item->category->name ?? '' }}</div>
                                                 <div class="menu">
                                                     <div class="item massive" style="width:7em; height:7em; background:url('{{ $this->storage('items', $item->item_image) }}') no-repeat center; background-size:7em 7em"></div>
                                                 </div>
@@ -163,8 +127,8 @@
                                         </div>
                                     </x-organisms.ui.table.td>
                                     <x-organisms.ui.table.td 
-                                        text="{{ isset($item->supplier->supplier_name) ? $item->supplier->supplier_name : '' }}"
-                                        desc="{{ isset($item->supplier->supplier_address) ? $item->supplier->supplier_address : '' }}"
+                                        text="{{ $item->supplier->supplier_name ?? '' }}"
+                                        desc="{{ $item->supplier->supplier_address ?? '' }}"
                                         desc-icon="{{ isset($item->supplier->supplier_address) ? 'fa-location-dot' : '' }}" /> 
                                     <x-organisms.ui.table.td 
                                         text="{{ $this->itemQty($item->id) }}" 
@@ -175,7 +139,7 @@
                                         text-icon="fa-peso-sign" />
                                     <x-organisms.ui.table.td-more>
                                         <x-atom.more.option
-                                            wire-click="showModal('update', 'item', {{ $item->id }})"
+                                            wire-click="showModal('update', {{ $item->id }})"
                                             option-name="Edit" />
                                         <x-atom.more.option 
                                             wire-click="deletingItem({{ $item->id }})"
@@ -266,6 +230,78 @@
                             @endforelse --}}
                         </x-slot>
                     </x-organisms.ui.table>
+                    @break
+                @case(4)
+                    
+                    <x-organisms.ui.table class="selectable">
+                        <x-slot name="thead">
+                            <x-organisms.ui.table.th label="Date" order-by="item_name"/>
+                            <x-organisms.ui.table.th label="Item" />
+                            <x-organisms.ui.table.th label="Category" />
+                            <x-organisms.ui.table.th label="Out" />
+                            <x-organisms.ui.table.th label="Balance" />
+                            <x-organisms.ui.table.th-more/>
+                        </x-slot>
+                        <x-slot name="tbody">
+                            {{-- @forelse ($suppliers as $su) --}}
+                                <tr>
+                                    <x-organisms.ui.table.td desc="Jan 15, 2021"/>
+                                    <x-organisms.ui.table.td text="jerjehrjher"/>
+                                    <x-organisms.ui.table.td text="Lense"/>
+                                    <x-organisms.ui.table.td text="2"/>
+                                    <x-organisms.ui.table.td text="8"/>
+                                    <x-organisms.ui.table.td-more>
+                                        <x-atom.more.option
+                                            wire-click="showModal('update', 'supplier', 'ID HERE')"
+                                            option-name="Edit" />
+                                        <x-atom.more.option 
+                                            wire-click="deletingSupplier('ID HERE')"
+                                            option-name="Delete" />
+                                    </x-organisms.ui.table.td>
+                                </tr>
+                            {{-- @empty
+                                <x-organisms.ui.table.search-no-results colspan="7"/>
+                            @endforelse --}}
+                        </x-slot>
+                    </x-organisms.ui.table>
+
+                    @break
+                @case(5)
+                    @if (count($categories) > 0)
+                        <x-organisms.ui.table class="selectable">
+                            <x-slot name="thead">
+                                <x-organisms.ui.table.th-checkbox/>
+                                <x-organisms.ui.table.th label="Name" />
+                                <x-organisms.ui.table.th label="Description" />
+                                <x-organisms.ui.table.th-more/>
+                            </x-slot>
+                            <x-slot name="tbody">
+                                @foreach ($categories as $category)
+                                    <tr>
+                                        <x-organisms.ui.table.td 
+                                            checkbox="selectedItems" 
+                                            checkbox-value="{{ $category->id }}"/>
+                                        <x-organisms.ui.table.td text="{{ $category->name }}"/>
+                                        <x-organisms.ui.table.td text="{{ !empty($category->desc) ? $category->desc : '-' }}"/>
+                                        <x-organisms.ui.table.td-more>
+                                            <x-atom.more.option
+                                                wire-click="showModal('updateCategory', {{ $category->id}})"
+                                                option-name="Edit" />
+                                            <x-atom.more.option 
+                                                wire-click="deletingCategory({{ $category->id }})"
+                                                option-name="Delete" />
+                                        </x-organisms.ui.table.td>
+                                    </tr>
+                                @endforeach
+                            </x-slot>
+                        </x-organisms.ui.table>
+                    @else
+                        <x-atoms.ui.message 
+                            icon="frown open"
+                            class="mt_20"
+                            header="No category added yet."
+                            message="This section will contain categories of your inventory."/>
+                    @endif
                     @break
                 @default
             @endswitch

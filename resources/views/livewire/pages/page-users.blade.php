@@ -16,7 +16,13 @@
             @includeIf('livewire.components.organisms.modal.modal-user');
         @endif
 
-        <x-alert type="error" message="{{ session('message') }}" />
+        {{-- <x-alert type="error" message="{{ session('message') }}" /> --}}
+
+        <x-organisms.ui.confirm-dialog 
+            wire-confirm="confirm"
+            content="Confirm Delete?"
+        />
+
 
     </div>
 

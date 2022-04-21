@@ -155,7 +155,7 @@
                 <x-organisms.ui.table class="selectable">
                     <x-slot name="thead">
                         <x-organisms.ui.table.th-checkbox />
-                        <x-organisms.ui.table.th label="Appointment" order-by="appt_date" style="width:9em" />
+                        <x-organisms.ui.table.th label="Appointment" order-by="appt_date" style="width:12em" />
                         <x-organisms.ui.table.th label="Status" order-by="appt_status" style="width:10em" />
                         <x-organisms.ui.table.th label="Patient Name" order-by="patient_name" />
                         <x-organisms.ui.table.th label="Contact Number" style="width:14em" />
@@ -164,9 +164,7 @@
                     </x-slot>
                     <x-slot name="tbody">
                         @foreach ($appts as $appt)
-                            @include(
-                                'livewire.components.organisms.pagecontents.appointments-content.appointment-list'
-                            )
+                            @include('livewire.components.organisms.pagecontents.appointments-content.appointment-list')
                         @endforeach
                         {{-- @foreach ($appts->where('appt_status', 2) as $appt)
                             @include('livewire.components.organisms.pagecontents.appointments-content.appointment-list')

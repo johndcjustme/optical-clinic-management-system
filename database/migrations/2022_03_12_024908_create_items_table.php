@@ -16,6 +16,7 @@ class CreateItemsTable extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('supplier_id')->nullable();
+            $table->unsignedBigInteger('category_id')->nullable();
             $table->string('item_image')->nullable();
             $table->string('item_name')->nullable();
             $table->string('item_desc')->nullable();
@@ -31,6 +32,11 @@ class CreateItemsTable extends Migration
             $table->foreign('supplier_id')
                 ->references('id')
                 ->on('suppliers')
+                ->nullOnDelete();
+
+            $table->foreign('category_id')
+                ->references('id')
+                ->on('categories')
                 ->nullOnDelete();
         });
     }

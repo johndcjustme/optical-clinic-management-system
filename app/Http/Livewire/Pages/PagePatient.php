@@ -900,8 +900,8 @@ class PagePatient extends Component
 
     public function examListIndicator($patientId)
     {
-        $indicator = Patient::where('id', $patientId)->where('patient_queue', true)->first();
-        return $indicator ? '•' : '';
+        $patient = Patient::where('id', $patientId)->where('patient_queue', true)->first();
+        return $patient ? true : false;
     }
 
     public function currentlyInPaientList($patientId)

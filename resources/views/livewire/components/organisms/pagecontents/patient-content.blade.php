@@ -6,14 +6,14 @@
                 <x-atoms.ui.header title="Patients" link="/patients"/>
             </div>
             <div>
-                <small>{{ $this->patientTotal() }} Patients</small>
+                <p>All Patients • {{ $this->patientTotal() }}</p>
             </div>
         </div>
     @endsection
 
     @section('section-links')
         @if ($subPage != 3)
-            <x-molecules.ui.group-buttons>
+            {{-- <x-molecules.ui.group-buttons>
                 <x-molecules.ui.group-buttons.button 
                     wire-click="subPage(1)" 
                     active="{{ $subPage == 1 }}"
@@ -22,7 +22,12 @@
                     label="Patient List" />
                 <x-molecules.ui.group-buttons.button wire-click="subPage(2)" active="{{ $subPage == 2 }}"
                     label="Purchase" />
-            </x-molecules.ui.group-buttons.button>
+            </x-molecules.ui.group-buttons.button> --}}
+            <div class="ui compact tiny menu">
+                <div wire:click.prevent="subPage(1)" class="link item @if($subPage == 1) active @endif">Exam List</div>
+                <div wire:click.prevent="subPage(4)" class="link item @if($subPage == 4) active @endif">Patient List</div>
+                <div wire:click.prevent="subPage(2)" class="link item @if($subPage == 2) active @endif">Purchase</div>
+            </div>
         @endif
 
     @endsection
@@ -239,10 +244,11 @@
                 @endif
 
                 @if ((! $inqueue->where('patient_exam_status', true)->count()) > 0 && (! $inqueue->where('patient_exam_status', false)->count() > 0))
-                    <center>
-                        <br><br>
-                        <span class="ui text blue">No content so far</span>
-                    </center>
+                    <x-atoms.ui.message 
+                        icon="frown open"
+                        class="mt_20"
+                        header="Exam list is empty."
+                        message="This section will contain patients to be examined."/>
                 @endif
 
                 @if ($inqueue->where('patient_exam_status', false)->count() > 0)
@@ -270,7 +276,7 @@
                     </x-slot>
                     <x-slot name="tbody">
                         @forelse ($allPurchases as $purchase)
-                            <tr>
+                            <tr class="{{ $purchase->balance > 0 ? 'warning' : ''; }}">
                                 <x-organisms.ui.table.td 
                                     desc="{{ $this->date($purchase->created_at) }}"/>
                                 <x-organisms.ui.table.td
@@ -491,7 +497,6 @@
                         <x-organisms.ui.table.th label=""/>
                         <x-organisms.ui.table.th label=""/>
                         <x-organisms.ui.table.th label="Date Added" order-by="created_at"/>
-                        <x-organisms.ui.table.th label="" style="width: 2em"/>
                         <x-organisms.ui.table.th-more/>
                     </x-slot>
                     <x-slot name="tbody">
@@ -499,7 +504,7 @@
                             $count = 1;
                         @endphp
                         @forelse ($pts as $pt)   
-                            <tr>
+                            <tr class="{{ $this->examListIndicator($pt->id) ? 'positive' : ''; }}">
                                 <x-organisms.ui.table.td 
                                     checkbox="selectedPatients" 
                                     checkbox-value="{{ $pt->id }}"
@@ -531,18 +536,13 @@
                                     desc="Exams: {{ $this->countExam($pt->id) }}"/>
                                 <x-organisms.ui.table.td 
                                     desc="Purchases: {{ $this->countPurchase($pt->id) }}"/>
-                                {{-- <x-organisms.ui.table.td>
-                                    <x-atoms.ui.button wire:click.prevent="addToQueue( {{ $pt->id}} )" class="mini basic">
-                                        Add to Queue
-                                    </x-atoms.ui.button>
-                                </x-organisms.ui.table.td> --}}
                                 <x-organisms.ui.table.td 
                                     text="{{ $this->date($pt->created_at) }}"/>
-                                <x-organisms.ui.table.td>
+                                {{-- <x-organisms.ui.table.td>
                                     <span class="ui text green" data-inverted="" data-tooltip="Currently in exam list" data-position="top right" data-variation="tiny">
                                         {{ $this->examListIndicator($pt->id) }}
                                     </span>
-                                </x-organisms.ui.table.td>
+                                </x-organisms.ui.table.td> --}}
                                 <x-organisms.ui.table.td-more style="width: 3em">
                                     <x-atom.more.option
                                         wire-click="patientShowModal('isUpdate', {{ $pt->id }})"

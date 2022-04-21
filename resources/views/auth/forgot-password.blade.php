@@ -30,7 +30,7 @@
 
             <div class="flex flex_x_end mt_7">
                 <x-button>
-                    {{ __('Email Password Reset Link') }}
+                    {{ __('Send to my email') }}
                 </x-button>
             </div>
         </form>

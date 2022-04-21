@@ -7,6 +7,9 @@
   <tbody>
       {{ $tbody }}
   </tbody>
+  <tfoot>
+      {{ $tfoot ?? null }}
+  </tfoot>
 </table>
 
 

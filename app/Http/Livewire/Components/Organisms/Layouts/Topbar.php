@@ -36,8 +36,14 @@ class Topbar extends Component
     public $commentSectionIsOpen = true, $thisPost;
 
 
+    public $today;
+
+
     public function render()
     {
+
+        $this->today = date('Y-m-d');
+
         $posts = Post::with('patient')->with('user')->latest()->get();
         $comments = Comment::with('patient')->with('user')->latest()->get();
 

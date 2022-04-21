@@ -38,7 +38,7 @@ class PageAppointments extends Component
 
     public $shedsettings_isOpen = false;
 
-    public $apptSettings = false;
+    public $apptSettings = false, $apptSettings2 = false;
 
     public $apptSettingsTabs = 1;
 
@@ -70,9 +70,12 @@ class PageAppointments extends Component
     ];
 
     public $modal = [
-        'show'     => false,
-        'add'      => false,
-        'update'   => false,
+        'show'      => false,
+        'add'       => false,
+        'update'    => false,
+        'settings'  => false,
+        'settings2' => false,
+
     ];
 
     public 
@@ -134,6 +137,10 @@ class PageAppointments extends Component
     public function render()
     {
 
+        $this->apptSettings2 
+            ? $this->apptSettings = false 
+            : $this->apptSettings = true;
+
 
         $searchPatient = $this->searchPatient . '%';
         $pt = Patient::where('patient_fname' , 'like', $searchPatient)
@@ -194,6 +201,11 @@ class PageAppointments extends Component
 
             Patient::where('id', $duedate->patient_id)->update($updateStatus);
         }
+    }
+
+    public function updatedCategory()
+    {
+        $this->resetPage();
     }
 
     public function updatedYearSched()
@@ -593,7 +605,8 @@ class PageAppointments extends Component
     
     public function apptShowModal($data, $id)
     {
-        $this->reset(['appt', 'modal']);
+        $this->reset(['modal', 'appt']);
+
         switch ($data) {
             case 'isAdd':
                 $this->modal['add'] = true;
@@ -618,9 +631,8 @@ class PageAppointments extends Component
                 $this->apptCreatedBy = 'pt';
                 break;
             case 'settings':
-                $this->apptSettings = true;
+                $this->modal['settings'] = true;
                 break;
-
             default:
         }
         $this->modal['show'] = true;
@@ -629,7 +641,7 @@ class PageAppointments extends Component
 
     public function closeModal()
     {
-        $this->reset(['modal', 'appt', 'apptSettings']);
+        $this->reset(['modal', 'appt', 'apptSettings', 'apptSettings2']);
 
         $this->clearSearch(); 
 

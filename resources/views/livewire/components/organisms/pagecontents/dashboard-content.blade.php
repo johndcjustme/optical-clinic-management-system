@@ -1,3 +1,9 @@
+{{-- @php
+
+    for ($i = 1; $i <= date('t', mktime(0, 0, 0, 1, 1, 2022)); $i++) { 
+        echo date('Y-m-d', mktime(0, 0, 0, 1, $i, 2022)) . '<br>';
+    }
+@endphp --}}
 <x-layout.page-content>
 
     @section('section-page-title')
@@ -6,21 +12,12 @@
                 <x-atoms.ui.header title="Dashboard" />
             </div>
             <div>
-                <small></small>
+                <p style="font-size: 1.3rem;">Hi <b>{{ session()->get('curr_user_name') }}</b>, have a nice day.</p>
             </div>
         </div>
     @endsection
 
     @section('section-links')
-        <p style="font-size: 1.3rem;">Hi <b>{{ session()->get('curr_user_name') }}</b>, have a nice day.</p>
-
-
-        {{-- name:       {{ $currentUser->curr_user() }} --}}
-        {{-- id:         {{ $mysession_id }}
-        avatar:     {{ $mysession_avatar }}
-        role:       {{ $mysession_role }}
-        email:      {{ $mysession_email }}
-        passcode:   {{ $mysession_passcode }} --}}
     @endsection
 
     @section('section-heading')
@@ -29,47 +26,90 @@
     @section('section-main')
         <div style="display:flex; flex-direction:column; gap:1em;">
 
-
-            <div class="ui three column grid">
-                <div class="column">
-                    <div class="ui fluid card">
+            <div class="ui grid">
+                <div class="four wide computer eight wide tablet column">
+                    <div class="ui fluid raised link card">
                         <div class="content">
-                            <div class="header">Elliot Fu</div>
-                            <div class="description">
-                              Elliot Fu is a film-maker from New York. lorem
+                            <div class="header">
+                                <span class="ui text blue">• Patient's Total</span>
+                            </div>
+                            <div class="ui horizontal statistic blue">
+                                <div class="value">
+                                    {{ $this->totalOfPatients('all') }}
+                                </div>
+                                <div class="label">Patients</div>
                             </div>
                         </div>
-                         <div class="ui bottom attached button">
-                        <i class="add icon"></i>
+                        <div class="ui bottom attached button blue">
+                            <i class="add icon"></i>
                             Add Friend
                         </div>
                     </div>
                 </div>
-                <div class="column">
-                    <div class="ui fluid card">
+                <div class="four wide computer eight wide tablet column">
+                    <div class="ui fluid raised link card">
                         <div class="content">
-                            <div class="header">Elliot Fu</div>
-                            <div class="description">
-                              Elliot Fu is a film-maker from New York.
+                            <div class="header">
+                                <span class="ui text green">
+                                    • Today
+                                </span>
+                            </div>
+                            <div class="ui horizontal statistic">
+                                <div class="value">
+                                    {{ $this->totalOfPatients('today') }}
+                                </div>
+                                <div class="label">
+                                    Patients
+                                </div>
                             </div>
                         </div>
-                         <div class="ui bottom attached button">
-                        <i class="add icon"></i>
-                            Add Friend
+                        <div class="ui bottom attached button green">
+                            View
+                            <i class="arrow right icon"></i>
                         </div>
                     </div>
                 </div>
-                <div class="column">
-                    <div class="ui fluid card">
+                <div class="four wide computer eight wide tablet column">
+                    <div class="ui fluid raised link card">
                         <div class="content">
-                            <div class="header">Elliot Fu</div>
-                            <div class="description">
-                              Elliot Fu is a film-maker from New York.
+                            <div class="header">
+                                <span class="ui text teal">
+                                    • Yesterday
+                                </span>
+                            </div>
+                            <div class="ui horizontal statistic">
+                                <div class="value">
+                                    {{ $this->totalOfPatients('yesterday') }}
+                                </div>
+                                <div class="label">
+                                    Patients
+                                </div>
                             </div>
                         </div>
-                         <div class="ui bottom attached button">
-                        <i class="add icon"></i>
-                            Add Friend
+                        <div class="ui bottom attached button teal">
+                            View
+                            <i class="arrow right icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="four wide computer eight wide tablet column">
+                    <div class="ui fluid raised link card">
+                        <div class="content">
+                            <div class="header">
+                                <span class="ui text orange">• This Week</span>
+                            </div>
+                            <div class="ui horizontal statistic">
+                                <div class="value">
+                                    {{ $this->totalOfPatients('thisWeek') }}
+                                </div>
+                                <div class="label">
+                                    Patients
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui bottom attached button orange">
+                            View
+                            <i class="arrow right icon"></i>
                         </div>
                     </div>
                 </div>
@@ -79,155 +119,119 @@
 
 
 
-
-            <div class="" style="display:grid; grid-template-columns: 37% 37% auto; gap:1em;">
-                <div class="b_1" style="box-shadow: 0 0 25px -4PX rgba(76, 90, 121, 0.521); padding:2em 1em">
-                    <div>
-                        <div class="">
-                            <h3>Patients</h3>
-                        </div>
-                        <br>
-                        <div class="x-flex x-flex-ycenter x-flex-xaround">
-                            <div class="br_1 px_15 x-flex x-flex-center x-flex-column" style="width:100%;">
-                                <h1><span class="ui text large">512</span></h1>
-                                <p>TOTAL</p>
+            <div class="ui grid">
+                <div class="ten wide computer ten wide tablet sixteen wide mobile column" style="width:60%;">
+                    <div class="ui raised link card fluid" style="height:330px;">
+                        <div class="content">
+                            <div class="x-flex x-flex-xbetween">
+                                <div>
+                                    <div class="ui header">
+                                        Patients By Year
+                                    </div>
+                                    <div>
+                                        <span class="ui text big">
+                                            204
+                                        </span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="ui selection compact dropdown" x-init="$('.ui.selection').dropdown()">
+                                        <i class="dropdown icon"></i>
+                                        <div class="text">{{ $year }}</div>
+                                        <div class="menu">
+                                            <div wire:click.prevent="$set('year', 2021)" class="item">2021</span></div>
+                                            <div wire:click.prevent="$set('year', 2022)" class="item">2022</span></div>
+                                            <div wire:click.prevent="$set('year', 2023)" class="item">2023</span></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="br_1 px_15 x-flex x-flex-center x-flex-column" style="width:100%;">
-                                <h1>512</h1>
-                                <p>TODAY</p>
-                            </div>
-                            <div class="px_15 x-flex x-flex-column x-flex-ycenter" style="width:100%;">
-                                <h1>512</h1>
-                                <p>YESTERDAY</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="b_1 x-flex x-flex-center"
-                    style="box-shadow: 0 0 25px -4PX rgba(76, 90, 121, 0.521); padding:1em">
-                    <div>
-                        <div class="">
-                            <h3>Orders</h3>
-                        </div>
-                        <br>
-                        <div class="x-flex x-flex-ycenter x-flex-xbetween">
-                            <div class="br_1 px_15 x-flex x-flex-center x-flex-column" style="width:100%;">
-                                <h1><span class="ui text large">512</span></h1>
-                                <p>PENDING</p>
-                            </div>
-                            <div class="br_1 px_15 x-flex x-flex-center x-flex-column" style="width:100%;">
-                                <h1>512</h1>
-                                <p>RECEIVED</p>
-                            </div>
-                            <div class="px_15 x-flex x-flex-column x-flex-ycenter" style="width:100%;">
-                                <h1>512</h1>
-                                <p>CLAIMED</p>
+                            <div style="height:230px">
+                                <livewire:livewire-area-chart
+                                    key="{{ $areaChartModel->reactiveKey() }}"
+                                    :area-chart-model="$areaChartModel"
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="b_1 x-flex x-flex-xbetween x-flex-column"
-                    style="box-shadow: 0 0 25px -4PX rgba(76, 90, 121, 0.521); padding:2em">
-                    <div>
-                        <div>
-                            <h5>Item Name</h5>
-                        </div>
-                        <div class="x-flex x-flex-xbetween" style="font-size: 0.75rem">
-                            <div>60%</div>
-                            <div>40%</div>
-                        </div>
-                        <div style="background:gray;">
-                            <div style="height:4px; width:60%; background:blue;"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <h5>Item Name</h5>
-                        </div>
-                        <div class="x-flex x-flex-xbetween" style="font-size: 0.75rem">
-                            <div>60%</div>
-                            <div>40%</div>
-                        </div>
-                        <div style="background:gray;">
-                            <div style="height:4px; width:60%; background:blue;"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <h5>Item Name</h5>
-                        </div>
-                        <div class="x-flex x-flex-xbetween" style="font-size: 0.75rem">
-                            <div>60%</div>
-                            <div>40%</div>
-                        </div>
-                        <div style="background:gray;">
-                            <div style="height:4px; width:60%; background:blue;"></div>
+                <div class="six wide computer six wide tablet sixteen wide mobile column" style="width:40%">
+                    <div class="ui raised link card fluid" style="height:330px;">
+                        <div class="content">
+                            <livewire:livewire-column-chart :column-chart-model="$columnChartModel" />
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div></div>
 
-            <div class="" style="display:grid; grid-template-columns: auto 40%; gap:1em;">
-                <div class="b_1" style="padding:2em; box-shadow: 0 0 25px -4PX rgba(76, 90, 121, 0.521);">
-                    <div class="flex flex_x_between gap_1">
-                        <div>
-                            <h4>Patients by Year</h4>
+
+
+{{-- 
+            <div class="ui four column grid">
+                <div class="column">
+                    <div class="ui fluid card">
+                        <div class="content">
+                            <div class="header">All Orders</div>
+                            <div class="description">
+                                Elliot Fu is a film-maker from New York.
+                            </div>
                         </div>
-                        <div class="flex flex_x_end gap_1" style="z-index: 1000">
-                            <select class="ui dropdown mini" wire:model="year" name="" id="">
-                                <option class="item" value="" selected hidden>Select Year</option>
-                                <option class="item" value="22">2022</option>
-                                <option class="item" value="28">2021</option>
-                                <option class="item" value="40">2020</option>
-                                <option class="item" value="15">2019</option>
-                            </select>
-                            <script>
-                                $('.ui.dropdown').dropdown()
-                            </script>
+                        <div class="ui bottom attached button">
+                            <i class="add icon"></i>
+                            Add Friend
                         </div>
-                    </div>
-                    <br><br>
-                    <div>
-                        <div id="chartYearlyPatients"></div>
                     </div>
                 </div>
-                <div class="b_1" style="padding:2em; box-shadow: 0 0 25px -4PX rgba(76, 90, 121, 0.521);">
-                    <div class="flex flex_x_between mb_8">
-                        <div>
-                            <h4>Patients by Month</h4>
+                <div class="column">
+                    <div class="ui fluid card">
+                        <div class="content">
+                            <div class="header">Ongoing Orders</div>
+                            <div class="ui statistic">
+                                <div class="value">
+                                    100
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex flex_x_end gap_1">
-                            <select name="" id="">
-                                <option value="" selected hidden>Select year</option>
-                                <option value="">2022</option>
-                                <option value="">2021</option>
-                                <option value="">2020</option>
-                            </select>
-                            <select name="" id="">
-                                <option value="" selected hidden>Select Month</option>
-                                <option value="">January</option>
-                                <option value="">February</option>
-                                <option value="">March</option>
-                                <option value="">April</option>
-                                <option value="">May</option>
-                                <option value="">June</option>
-                                <option value="">July</option>
-                                <option value="">August</option>
-                                <option value="">September</option>
-                                <option value="">November</option>
-                                <option value="">December</option>
-                            </select>
+                        <div class="ui bottom attached button">
+                            View
+                            <i class="arrow right icon"></i>
                         </div>
-                    </div>
-                    <div style="padding:1em">
-                        <div id="chartMonthlyPatients"></div>
                     </div>
                 </div>
-            </div>
-
-
+                <div class="column">
+                    <div class="ui fluid card">
+                        <div class="content">
+                            <div class="header">Pending Orders</div>
+                            <div class="ui statistic">
+                                <div class="value">
+                                    65
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui bottom attached button">
+                            View
+                            <i class="arrow right icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui fluid card">
+                        <div class="content">
+                            <div class="header">Recieved Orders</div>
+                            <div class="ui statistic">
+                                <div class="value">
+                                    1,000
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui bottom attached button">
+                            View
+                            <i class="arrow right icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div> --}}
 
 
 
@@ -455,9 +459,7 @@
                 <div class="b_1" style="padding: 3em">
                 </div>
                 <div class="b_1">
-                    <livewire:livewire-column-chart
-                        :column-chart-model="$columnChartModel"
-                    />
+                    <livewire:livewire-column-chart :column-chart-model="$columnChartModel" />
                 </div>
             </div>
 

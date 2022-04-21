@@ -19,6 +19,8 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'role_id',
+        'avatar',
         'email',
         'password',
         'user_role',
@@ -83,5 +85,10 @@ class User extends Authenticatable
     public function chatroom()
     {
         return $this->hasOne(Chatroom::class, 'user_id', 'id');
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 }

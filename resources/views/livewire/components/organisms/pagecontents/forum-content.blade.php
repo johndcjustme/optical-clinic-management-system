@@ -12,7 +12,7 @@
     @endsection
 
     @section('section-links')
-    <div class="flex flex_x_center gap_1" style="width:100%;" wire:poll.visible>
+    <div class="flex flex_x_center gap_1" style="width:100%;">
 
         <div style="margin-left:auto; margin-right:auto;">
             <div class="ui compact menu">
@@ -156,20 +156,15 @@
                                             
                                             <div x-show="openComment" x-transition.scale.origin.bottom>
                             
-                                                {{-- <div class="mt_7">
-                                                    <h3 class="ui dividing header">Comments</h3>
-                                                </div> --}}
-                    
-                    
-                                                <div x-data="{replyPost: false}">
+                                                <div x-data="{replyPost: true}">
                                                     <div class="my_7">
                                                         <a @click="replyPost = ! replyPost" class="pointer">Add comment</a>
                                                     </div>
-                                                    <form x-show="replyPost" @click.outside="replyPost = false" wire:submit.prevent="replyPost({{ $post->id }}, {{ Auth::user()->id }})" class="ui reply form">
-                                                        <div class="field">
-                                                            <textarea wire:model.defer="commentContent" placeholder="Write a comment on this post..." style="height:50px;"></textarea>
+                                                    <form x-show="replyPost" @click.outside="replyPost = false" wire:submit.prevent="replyPost({{ $post->id }}, {{ Auth::user()->id }})">
+                                                        <div class="ui input fluid">
+                                                            <textarea wire:model.defer="commentContent" row="5" placeholder="Write a comment on this post..." style="height:3em; width:100%"></textarea>
                                                         </div>
-                                                        <div class="flex flex_x_end">
+                                                        <div class="flex flex_x_end mt_5">
                                                             <button type="submit" class="ui button primary tiny">Add comment</button>
                                                         </div>
                                                     </form>
@@ -206,7 +201,7 @@
                                                                     {{ $comment->comment_content }}
                                                                 </div>
                         
-                                                                <div x-data="{comment_comment: false}">
+                                                                <div x-data="{comment_comment: true}">
                                                                     <div class="reaction flex flex_y_center gap_1">
                                                                         <span @click="comment_comment = ! comment_comment" class="pointer">
                                                                             <i :class="comment_comment ? 'fa-solid' : 'fa-regular'" class=" fa-comment"></i>
@@ -224,7 +219,7 @@
                                                                             <div x-data="{ replyComment : false }" class="mt_7 pointer">
                                                                                 <a @click="replyComment = ! replyComment">Add Comment</a>
                                                                                 <form x-show="replyComment"  @click.outside="replyComment = false" wire:submit.prevent="replyComment({{ $comment->id }}, {{ Auth::user()->id }})" x-show="open" @click.outside="open= false" class="ui reply form">
-                                                                                    <div class="field">
+                                                                                    <div class="ui input fluid">
                                                                                         <textarea wire:model.defer="commentContent"></textarea>
                                                                                     </div>
                                                                                     <button type="submit" class="ui button primary tiny">Add reply</button>
@@ -448,3 +443,4 @@
     @endsection
 
 </x-layout.page-content>
+

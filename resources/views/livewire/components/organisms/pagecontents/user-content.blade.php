@@ -6,126 +6,119 @@
                 <x-atoms.ui.header title="Users"/>
             </div>
             <div>
-                <small></small>
+                <p>All Users {{ count($users) }}</p>
             </div>
         </div>
     @endsection
 
     @section('section-links')
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus, aperiam.</p>
+        <div class="ui compact tiny menu">
+            <div wire:click.prevent="$set('role', '')" class="link item @if(empty($role)) active @endif">All</div>
+            @foreach ($allRoles as $menu)
+                <div wire:click.prevent="$set('role', {{ $menu->id }})" class="link item @if($role == $menu->id) active @endif @if($users->where('role_id', $menu->id)->count() <= 0) disabled @endif">{{ $menu->role }}</div>
+            @endforeach
+        </div>
     @endsection
 
     @section('section-heading-left')
-        <button wire:click.prevent="deleteUsers" class="bg_red {{ !empty($selectedUsers) ? '' : 'nodisplay' }}">Delete ({{ count($selectedUsers) }})</button>
+        @if (count($selectedUsers) > 0)
+            <x-atoms.ui.header-dropdown-menu wire-close="$set('selectedUsers', [])" class="left pointing tiny">
+                <x-slot name="label">
+                    {{ count($selectedUsers) }} Selected 
+                </x-slot>
+                <x-slot name="menu"> 
+                    @switch($subPage)
+                        @case(1)
+                            <div wire:click.prevent="deleteUsers" class="item"><i class="delete icon"></i> Delete</div>
+                            @break
+                        @default
+                    @endswitch
+                </x-slot>
+            </x-atoms.ui.header-dropdown-menu>                
+        @else
+            <x-atoms.ui.header-add-btn label="Add User" wire-click="showModal('add', null)"/>
+        @endif
     @endsection
 
     @section('section-heading-right')
         <div>
-            <x-input.search wire-model="searchLense"/>
+            <x-atoms.ui.search wire-model="searchUser" placeholder="Search..."/>
         </div>
-        <div class="flex gap_1">
-            <x-atom.sort>
-                <x-atom.sort.sort-content 
-                    for=""
-                    span="Entries"
-                    wire-model="le_paginateVal"
-                    name=""
-                    val="" 
-                />                                
-                <x-atom.sort.sort-content 
-                    for="az"
-                    span="A-Z"
-                    wire-model="le_sortDirection"
-                    name="sort"
-                    val="asc" 
-                />
-
-                <x-atom.sort.sort-content 
-                    for="za"
-                    span="Z-A"
-                    wire-model="le_sortDirection"
-                    name="sort"
-                    val="desc" 
-                />
-
-                <x-atom.sort.sort-content 
-                    for="l_modified"
-                    span="Last Modified"
-                    wire-model="sortBy('le', 'created_at')"
-                    name="sort"
-                    val="" 
-                />
-
-                <x-atom.sort.sort-content 
-                    for="f_modified"
-                    span="First Modified"
-                    wire-model="le_sortDirection"
-                    name="sort"
-                    val="first_modified" 
-                />
-            </x-atom.sort>
-            
-        </div>
-        <div>
-            <x-atom.btn-circle wire-click="userShowModal('isAddUser', null)"/>
-        </div>
+        <x-molecules.ui.dropdown>
+            <x-molecules.ui.dropdown.icon/>
+            <x-molecules.ui.dropdown.menu>
+                <div class="item">
+                    <x-molecules.ui.dropdown.icon/>
+                    <span class="text">Filter</span>
+                    <x-molecules.ui.dropdown.menu>
+                        <div wire:click.prevent="$set('filter', 'DATE_RANGE')" class="item">
+                            All Users
+                        </div>
+                        <div class="divider"></div>
+                        <div wire:click.prevent="$set('filter', 'DATE_RANGE')" class="item">
+                            Admins Only
+                        </div>
+                        <div wire:click.prevent="$set('filter', 'DATE_SINGLE')" class="item">
+                            Users Only
+                        </div>
+                    </x-molecules.ui.dropdown.menu>
+                </div>
+                <div class="item">
+                    <x-molecules.ui.dropdown.icon/>
+                    <span class="text">Showing {{ $pageNumber }} Entries</span>
+                    <x-molecules.ui.dropdown.menu>
+                        <x-organisms.ui.paginator-number/>
+                    </x-molecules.ui.dropdown.menu>
+                </div>
+                <div wire:click.prevent="openModalRoles('add')" class="item">
+                    Roles
+                </div>
+            </x-molecules.ui.dropdown.menu>
+        </x-molecules.ui.dropdown>
     @endsection
 
     @section('section-main')
-        <div class="items">
-            <x-layout.lists-section>
-               
-                @foreach ($users as $user)
-                    <x-layout.lists-section.lists-container>
-                        <x-layout.lists-section.lists-list list-for="grid_user list">
-    
-                            <x-layout.lists-section.list-item item-name="" item-desc="">
-                                <div class="flex flex_center">
-                                    <input wire:model="selectedUsers" type="checkbox" class="pointer" value="{{ $user->id }}">
-                                </div>
-                            </x-layout.lists-section.list-item>
-                            <x-layout.lists-section.list-item item-name="" item-desc="">
-                                <div class="flex gap_1">
-                                    <div>
-                                        <x-atom.profile-photo size="2.5em" path="storage/photos/avatars/{{ $user->avatar }}" />
-                                    </div>
-                                    <div>
-                                        <p><b>{{ $user->name }}</b></p>
-                                        <p class="dark_200 mt_2" style="font-size: 0.75rem">{{ $user->user_role }}</p>
-                                    </div>
-                                </div>
-                            </x-layout.lists-section.list-item>
-                            <x-layout.lists-section.list-item item-name="" item-desc="">
-                                <div class="flex flex_y_center">
-                                    <input id="canAdd{{ $user->id }}" class="mr_3" type="checkbox" class="pointer">
-                                    <label for="canAdd{{ $user->id }}">Can Add</label>
-                                </div> 
-                            </x-layout.lists-section.list-item>
-                            <x-layout.lists-section.list-item item-name="" item-desc="">
-                                <div class="flex flex_y_center">
-                                    <input id="canUpdate{{ $user->id }}" class="mr_3" type="checkbox" class="pointer">
-                                    <label for="canUpdate{{ $user->id }}">Can Update</label>
-                                </div> 
-                            </x-layout.lists-section.list-item>
-                            <x-layout.lists-section.list-item item-name="" item-desc="">
-                                <div class="flex flex_y_center">
-                                    <input id="canDeleteEdit{{ $user->id }}" class="mr_3" type="checkbox" class="pointer">
-                                    <label for="canDeleteEdit{{ $user->id }}">Can Delete</label>
-                                </div> 
-                            </x-layout.lists-section.list-item>
-                            <x-layout.lists-section.list-item item-name="" item-desc="">
-                                <div class="flex flex_center">
-                                    <x-atom.more>
-                                        <x-atom.more.option wire-click="userShowModal('isUpdateUser', {{ $user->id }})" option-name="Edit" />
-                                    </x-atom.more>
-                                </div>
-                            </x-layout.lists-section.list-item>
-
-                        </x-layout.lists-section.lists-list>
-                    </x-layout.lists-section.lists-container>     
-                @endforeach
-            </x-layout.lists-section>
-        </div>
+        @foreach ($roles as $role)
+            @if ($users->where('role_id', $role->id)->count() > 0)
+                <x-organisms.ui.table class="selectable unstackable">
+                    <x-slot name="thead">
+                        <x-organisms.ui.table.th label="{{ Str::upper($role->role) . ' ' . count($users->where('role_id', $role->id))}}" colspan="6"/>
+                    </x-slot>
+                    <x-slot name="tbody">
+                        @forelse ($users->where('role_id', $role->id) as $user)
+                            <tr>
+                                <x-organisms.ui.table.td 
+                                    checkbox="selectedUsers" 
+                                    checkbox-value="{{ $user->id }}"
+                                    style="width: 3em"/>
+                                <x-organisms.ui.table.td 
+                                    text="{{ $user->name }}"
+                                    avatar="{{ $this->storage($user->avatar) }}"/>
+                                <x-organisms.ui.table.td 
+                                    style="width:10em"
+                                    text="{{ $user->role->role }}"/>
+                                <x-organisms.ui.table.td 
+                                    style="width:15em"
+                                    text="{{ $user->email }}"/>
+                                <x-organisms.ui.table.td 
+                                    style="width:10em"
+                                    text="{{ $this->date($user->created_at) }}"/>
+                                <x-organisms.ui.table.td-more style="width:3em;">
+                                    <x-atom.more.option
+                                        wire-click="showModal('update', {{ $user->id }})"
+                                        option-name="Edit"/>
+                                    <x-atom.more.option 
+                                        wire-click="deleteUser({{ $user->id }})"
+                                        option-name="Delete"/>
+                                </x-organisms.ui.table.td>
+                            </tr>
+                        @empty
+                            <x-organisms.ui.table.search-no-results colspan="5"/>
+                        @endforelse
+                    </x-slot>
+                </x-organisms.ui.table>
+            @endif
+        @endforeach
     @endsection
 
 </x-layout.page-content>

@@ -55,9 +55,9 @@
                     <div class="flex gap_1 flex_y_center">
                         <div>
                             @if ($previewAvatar)
-                                <x-atoms.ui.avatar src="{{ $previewAvatar->temporaryUrl() }}" size="4em"/>
+                                <x-atoms.ui.avatar src="{{ $previewAvatar->temporaryUrl() }}" size="5em"/>
                             @else
-                                <x-atom.profile-photo size="4em" path="{{ $this->storage($pt['avatar']) }}" />
+                                <x-atom.profile-photo size="5em" path="{{ $this->storage($pt['avatar']) }}" />
                             @endif
                         </div>
                         <div>
@@ -136,10 +136,10 @@
                 <div class="flex flex_x_between flex_y_center gap_1" 
                     style="{{ $editExamHistory ? 'display:none': ''; }}"> <!-  hide div when editing from exam history of the patient --!>
                     <div class="flex gap_1">
-                        <div>
-                            <button wire:click.prevent="exam_purchase_tab('patient', {{ $pt['id'] }})" class="ui grey small tertiary button {{ $modal['exam_purchase_tab'] == 3 ? 'active' : ''; }}">Patient</button>
-                            <button wire:click.prevent="exam_purchase_tab('exam', {{ $pt['id'] }})" class="ui grey small tertiary button {{ $modal['exam_purchase_tab'] == 1 ? 'active' : ''; }}">Exam</button>
-                            <button wire:click.prevent="exam_purchase_tab('purchase', {{ $pt['id'] }})" class="ui grey small tertiary button {{ $modal['exam_purchase_tab'] == 2 ? 'active' : ''; }}">Purchase</button>
+                        <div class="ui menu compact tiny">
+                            <div wire:click.prevent="exam_purchase_tab('patient', {{ $pt['id'] }})" class="item link {{ $modal['exam_purchase_tab'] == 3 ? 'active' : ''; }}">Patient</div>
+                            <div wire:click.prevent="exam_purchase_tab('exam', {{ $pt['id'] }})" class="item link {{ $modal['exam_purchase_tab'] == 1 ? 'active' : ''; }}">Exam</div>
+                            <div wire:click.prevent="exam_purchase_tab('purchase', {{ $pt['id'] }})" class="item link {{ $modal['exam_purchase_tab'] == 2 ? 'active' : ''; }}">Purchase</div>
                         </div>
                     </div>
                     <div>
@@ -186,11 +186,11 @@
                 @case (2)
                     @if (! empty($latestPurchase))
                         <div>
-                            <div class="mb_14">
+                            {{-- <div class="mb_14">
                                 <p>
                                     <small class="dark_200">Created at: {{ $this->purchaseDate($latest_purchase['date']) }}</small>
                                 </p>
-                            </div>
+                            </div> --}}
                             {{-- <div>
                                 <div class="">
                                     <div class="relative">    
@@ -231,11 +231,11 @@
 
 
 
-                            <div class="field">
+                            {{-- <div class="field">
                                 <div class="x-flex x-flex-xend">
-                                    <div class="ui dropdown labeled icon button blue" x-init="$('.ui.dropdown').dropdown()" style="z-index: 400">
-                                        <i class="add icon"></i>
-                                        <span class="">Add Item</span>
+                                    <div class="ui dropdown floating labeled icon button blue" x-init="$('.ui.dropdown').dropdown()" style="z-index: 400">
+                                        <i class="dropdown icon"></i>
+                                        <span class="">Select Item</span>
                                         <div class="menu fluid left">
                                             <div class="ui icon search input">
                                                 <i class="search icon"></i>
@@ -254,7 +254,11 @@
                                                                     <i class="fa-solid fa-peso-sign"></i> {{ $item->item_price }} • {{ $item->item_desc }}
                                                                 </small>
                                                             </div>
-                                                            <div><button class="ui button mini" wire:click.prevent="addItem('{{ $latest_purchase['id'] }}', {{ $item->id }}, {{ $item->item_price }})">+</button></div>
+                                                            <div>
+                                                                <button class="ui circular icon button tiny" wire:click.prevent="addItem('{{ $latest_purchase['id'] }}', {{ $item->id }}, {{ $item->item_price }})">
+                                                                    <i class="icon add"></i>
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 @endforeach
@@ -263,18 +267,100 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
 
                         </div>
                         {{-- <ul class="hoverable my_15" style="line-height: 1rem"> --}}
-                        <br>
+
                         <div class="field">
                             <div class="ui relaxed celled list">
 
-                                @forelse ($selectedItems as $selectedItem)    
                                 
-                                    <div class="item">
+                                    <x-organisms.ui.table class="unstackable">
+                                        <x-slot name="thead"></x-slot>
+                                        <x-slot name="tbody">
+                                            <tr>
+                                                <td class="right aligned" colspan="3">
+                                                    <div class="ui dropdown floating labeled icon button blue tiny" x-init="$('.ui.dropdown').dropdown()" style="z-index: 400">
+                                                        <i class="dropdown icon"></i>
+                                                        <span class="">Select Item</span>
+                                                        <div class="menu fluid left">
+                                                            <div class="ui icon search input">
+                                                                <i class="search icon"></i>
+                                                                <input type="text" placeholder="Search Items...">
+                                                            </div>
+                                                            <div class="divider"></div>
+                                                            <div class="scrolling menu">
+                                                                @foreach (App\Models\Item::all() as $item)
+                                                                    <div class="item">
+                                                                        <div class="x-flex x-flex-xbetween x-gap-1">
+                                                                            <div>
+                                                                                <div>
+                                                                                    {{ $item->item_name }}
+                                                                                </div>
+                                                                                <small>
+                                                                                    <i class="fa-solid fa-peso-sign"></i> {{ $item->item_price }} • {{ $item->item_desc }}
+                                                                                </small>
+                                                                            </div>
+                                                                            <div>
+                                                                                <button class="ui circular icon button tiny" wire:click.prevent="addItem('{{ $latest_purchase['id'] }}', {{ $item->id }}, {{ $item->item_price }})">
+                                                                                    <i class="icon add"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                        
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            @forelse ($selectedItems as $selectedItem)  
+
+                                            <tr>
+                                                <td style="width:7em">
+                                                    <div class="x-flex x-flex-ycenter">
+                                                        <button wire:click.prevent="inc_dec_item('dec', {{ $selectedItem->id }})" class="ui button blue tertiary mini icon {{ $selectedItem->qty == 1 ? 'disabled' : ''  }}"><i class="minus icon"></i></button>
+                                                        <div class="px_6">{{ $selectedItem->qty }}</div>
+                                                        <button wire:click.prevent="inc_dec_item('inc', {{ $selectedItem->id }})" class="ui button blue tertiary mini icon" {{ ($selectedItem->qty == 20) || ($this->checkItemQty($selectedItem->item_id) == 0) ? 'disabled' : ''  }}><i class="add icon"></i></button>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div data-tooltip="{{ $this->remainingItems($selectedItem->item_id) }}" data-position="top left" data-inverted="" data-variation="mini">
+                                                        {{ $selectedItem->item->item_name }}
+                                                    </div>
+                                                    <small>
+                                                        <i class="fa-solid fa-peso-sign"></i> 
+                                                        {{ $selectedItem->item->item_price }} • {{ $selectedItem->item->item_desc }}
+                                                    </small>
+                                                </td>
+                                                <td class="right aligned" style="width: 3em">
+                                                    <button wire:click.prevent="removeItem({{ $selectedItem->id }})" class="ui button mini icon red tertiary"  data-inverted="" data-tooltip="Remove Item" data-position="top right" data-variation="mini"><i class="close icon"></i></button>
+                                                </td>
+                                            </tr>
+
+                                            @empty
+                                                <tr>
+                                                    <td colspan="3">
+                                                        <i class="fa-solid fa-circle-exclamation mr_3"></i> Empty.
+                                                        <span wire:click.prevent="deletePurchase({{ $latest_purchase['id'] }})" class="mr_5 red pointer"> 
+                                                            Click remove empty purchase.
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            {{-- <p class="text_center py_7">
+                                                <i class="fa-solid fa-circle-exclamation mr_3"></i> Empty.
+                                                <span wire:click.prevent="deletePurchase({{ $latest_purchase['id'] }})" class="mr_5 red pointer"> 
+                                                    Click remove empty purchase.
+                                                </span>
+                                            </p>  --}}
+                                        @endforelse
+                                        </x-slot>
+                                    </x-organisms.ui.table>
+                                
+                                    {{-- <div class="item">
                                         <div class="x-flex x-flex-xbetween x-flex-ycenter x-gap-1 py_3">
                                             <div class="x-flex x-gap-1">
                                                 <div class="x-flex x-flex-ycenter">
@@ -295,22 +381,16 @@
                                                 <button wire:click.prevent="removeItem({{ $selectedItem->id }})" class="ui button mini icon red tertiary"  data-inverted="" data-tooltip="Remove Item" data-position="top right" data-variation="mini"><i class="close icon"></i></button>
                                             </div>
                                         </div> 
-                                    </div>
+                                    </div> --}}
 
-                                @empty
-                                    <p class="text_center py_7"><i class="fa-solid fa-circle-exclamation mr_3"></i> Empty.
-                                        <span wire:click.prevent="deletePurchase({{ $latest_purchase['id'] }})" class="mr_5 red pointer"> 
-                                            Click remove empty purchase.
-                                        </span>
-                                    </p> 
-                                @endforelse
+                             
                             </div>
                         </div>
                         <br>
 
                         @if (count($selectedItems) > 0)
 
-                            <div class="pt_10 x-dashed-top-2">
+                            <div class="pt_10">
                                 <select name="" id="">
                                     <option value="" selected hidden>Payment Type</option>
                                     <option value="">On Hand</option>

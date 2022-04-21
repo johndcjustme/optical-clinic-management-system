@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Storage;
 class PageForum extends Component
 {
 
-    public $postContent = '';
+     $postContent = '';
 
     public $commentContent = '';
 
@@ -55,7 +55,7 @@ class PageForum extends Component
         return view('livewire.pages.page-forum', [
             'posts' => Post::with('user')->latest()->get(),
             'comments' => Comment::with('user')->latest()->get(),
-            'commentcomments' => Commentcomment::with('user')->latest()->get(),
+         public   'commentcomments' => Commentcomment::with('user')->latest()->get(),
             'chatrooms' => Chatroom::with('user')->latest('updated_at')->limit(50)->get(),
         ])
             ->extends('layouts.app')

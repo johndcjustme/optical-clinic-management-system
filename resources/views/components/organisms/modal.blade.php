@@ -3,7 +3,7 @@
     {{-- <div class="modal_content animate_top" style="margin-bottom: 50px;"> --}}
         {{-- <div id="form-modal" class="modal full_w" style="padding: 1.2em;z-index:500;"> --}}
 
-        <div class="mymodal full_w"
+        <div id="mymodal" class="mymodal full_w animate_opacity_fast"
             style="
                 padding: 1.2em; 
                 position:fixed; 
@@ -13,8 +13,8 @@
                 height:100vh;
                 background:rgba(0, 0, 0, 0.767);  
                 z-index:700; 
-                overflow-y:auto;">
-            <div
+                overflow-y:scroll;">
+            <div class="animate_bottom"
                 @click.away="$wire.closeModal()"
                 style="
                     max-width:{{ $maxWidth }};

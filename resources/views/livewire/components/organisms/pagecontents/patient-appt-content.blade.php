@@ -35,9 +35,44 @@
     @endsection
 
     @section('section-heading-right')
+        @if ($step == 3)
+            <div class="x-flex x-flex-ycenter x-gap-1">
+                <div class="ui horizontal divided list">
+                    <div class="item">
+                        <div class="content">
+                             <a wire:click.prevent="$set('filter', 'all')" class="ui text grey"><b>{{ $this->countAppts('all') }}</b> All</a>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="content">
+                             <a wire:click.prevent="$set('filter', 2)" class="ui text grey"><b>{{ $this->countAppts(2) }}</b> Ongoing</a>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="content">
+                             <a wire:click.prevent="$set('filter', 1)" class="ui text grey"><b>{{ $this->countAppts(1) }}</b> For Approval</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui icon top right pointing dropdown button basic tiny" style="z-index:1">
+                    <i class="filter icon"></i>
+                    <div class="menu inverted">
+                        <div class="header">Filter</div>
+                        <div wire:click.prevent="$set('filter', 'all')" class="item">All ({{ $this->countAppts('all') }})</div>
+                        <div wire:click.prevent="$set('filter', 1)" class="item">For Approval ({{ $this->countAppts(1) }})</div>
+                        <div wire:click.prevent="$set('filter', 2)" class="item">Ongoing ({{ $this->countAppts(2) }})</div>
+                        <div wire:click.prevent="$set('filter', 3)" class="item">Rescheduled ({{ $this->countAppts(5) }})</div>
+                        <div wire:click.prevent="$set('filter', 4)" class="item">Missed ({{ $this->countAppts(4) }})</div>
+                        <div wire:click.prevent="$set('filter', 5)" class="item">Fulfilled ({{ $this->countAppts(5) }})</div>
+                        <div wire:click.prevent="$set('filter', 6)" class="item">Cancelled ({{ $this->countAppts(6) }})</div>
+                    </div>
+                </div>
+            </div>            
+        @endif
     @endsection
 
     @section('section-main')
+
         @switch($step)
             @case(1)
                 <form wire:submit.prevent="newPatient" class="ui form"
@@ -49,12 +84,12 @@
                     <div>
                         <div class="two fields">
                             <div class="field">
-                                <x-atoms.ui.label for="" class="">First name @error('pt.fname')
+                                <x-atoms.ui.label for="" class="">First name <x-atoms.ui.required/> @error('pt.fname')
                                         <span class="ui text red"> • {{ $message }}</span>
                                     @enderror
                                 </x-atoms.ui.label>
                                 <x-atoms.ui.input wire-model="pt.fname" type="text" class="mb_7" />
-                                <x-atoms.ui.label for="" class="">Last name @error('pt.lname')
+                                <x-atoms.ui.label for="" class="">Last name <x-atoms.ui.required/>@error('pt.lname')
                                         <span class="ui text red"> • {{ $message }}</span>
                                     @enderror
                                 </x-atoms.ui.label>
@@ -74,7 +109,7 @@
                                     <option value="m">Male</option>
                                     <option value="f">Female</option>
                                 </x-atoms.ui.select>
-                                <x-atoms.ui.label for="" class="">Address @error('pt.addr')
+                                <x-atoms.ui.label for="" class="">Address <x-atoms.ui.required/>@error('pt.addr')
                                         <span class="ui text red"> • {{ $message }}</span>
                                     @enderror
                                 </x-atoms.ui.label>
@@ -90,7 +125,7 @@
                         <br>
                         <div class="two fields">
                             <div class="field">
-                                <x-atoms.ui.label for="" class="">Phone no @error('pt.mobile')
+                                <x-atoms.ui.label for="" class="">Phone no <x-atoms.ui.required/>@error('pt.mobile')
                                         <span class="ui text red"> • {{ $message }}</span>
                                     @enderror
                                 </x-atoms.ui.label>
@@ -108,237 +143,212 @@
             @break
 
             @case(2)
-    
                 @if (App\Models\Setting::where('code', 11)->first()->status)
 
-                    <div style="width:100%;">
-
-                        <div style="" style="max-width:400px;">
-
-                                <div class="ui styled fluid accordion" x-init="$('.ui.accordion').accordion();"
-                                    style="margin-left:auto; margin-right:auto; max-width:400px;">
-                                    <div class="title">
-                                        <i class="dropdown icon"></i>
-                                        What is a dog?
-                                    </div>
-                                    <div class="content">
-                                        <p class="transition hidden">A dog is a type of domesticated animal. Known for its loyalty and
-                                            faithfulness, it can be found as a welcome guest in many households across the world.</p>
-                                    </div>
-                                    <div class="title">
-                                        <i class="dropdown icon"></i>
-                                        What kinds of dogs are there?
-                                    </div>
-                                    <div class="content">
-                                        <p>There are many breeds of dogs. Each breed varies in size and temperament. Owners often select a
-                                            breed of dog that they find to be compatible with their own lifestyle and desires from a
-                                            companion.</p>
-                                    </div>
-                                    <div class="title">
-                                        <i class="dropdown icon"></i>
-                                        How do you acquire a dog?
-                                    </div>
-                                    <div class="content">
-                                        <p>Three common ways for a prospective owner to acquire a dog is from pet shops, private owners, or
-                                            shelters.</p>
-                                        <p>A pet shop may be the most convenient way to buy a dog. Buying a dog from a private owner allows
-                                            you to assess the pedigree and upbringing of your dog before choosing to take it home. Lastly,
-                                            finding your dog from a shelter, helps give a good home to a dog who may not find one so
-                                            readily.</p>
-                                    </div>
+                    <div class="ui centered grid">
+                        <div class="column" style="max-width:400px;">
+                            <div class="ui styled fluid accordion" x-init="$('.ui.accordion').accordion();"
+                                style="margin-left:auto; margin-right:auto; max-width:400px;">
+                                <div class="title">
+                                    <i class="dropdown icon"></i>
+                                    Welcome!
                                 </div>
+                                <div class="content">
+                                    <p class="transition hidden">A dog is a type of domesticated animal. Known for its loyalty and
+                                        faithfulness, it can be found as a welcome guest in many households across the world.</p>
+                                </div>
+                                <div class="title">
+                                    <i class="dropdown icon"></i>
+                                    Important notice
+                                </div>
+                                <div class="content">
+                                    <p>There are many breeds of dogs. Each breed varies in size and temperament. Owners often select
+                                        a
+                                        breed of dog that they find to be compatible with their own lifestyle and desires from a
+                                        companion.</p>
+                                </div>
+                            </div>
+
+                            
+                            <form wire:submit.prevent="confirmNewAppt" class="ui card fluid">
+                         
+                                <div class="content">
+                                    <div class="header">Pick a date</div>
+                                    {{-- <div class="meta">Friend</div> --}}
+                                    <div class="description">
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, eligendi.
+                                    </div>
 
 
-                                <form wire:submit.prevent="newAppt" class="ui card fluid"
-                                    style="margin-left:auto; margin-right:auto; max-width:400px">
-                                    {{-- <div class="ui card"> --}}
-
-
-                                    <div class="content">
-                                        <div class="header">Pick a schedule</div>
-                                        {{-- <div class="meta">Friend</div> --}}
-                                        <div class="description">
-                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, eligendi.
-                                        </div>
-
-
-{{-- 
-                                        <h3><span class="ui text blue">Pick a schedule</span>
+                                    {{-- <h3><span class="ui text blue">Pick a schedule</span>
                                             @error('appt.date')
                                                 <span class="ui text red"> {{ $message }}</span>
                                             @enderror
                                         </h3> --}}
-                                        <x-organisms.ui.table class="very basic">
-                                            <x-slot name="thead"></x-slot>
-                                            <x-slot name="tbody">
-                                                <tr>
-                                                    <td style="width:6em;">
-                                                        <div><label>Month
+                                    <x-organisms.ui.table class="very basic unstackable">
+                                        <x-slot name="thead"></x-slot>
+                                        <x-slot name="tbody">
+                                            <tr>
+                                                <td style="min-width:3em; width:6em;">
+                                                    <div><label>Month
                                                             <x-atoms.ui.required />
                                                         </label></div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="ui selection dropdown">
-                                                            <i class="dropdown icon"></i>
-                                                            <div class="text">
-                                                                {{ date('F', mktime(0, 0, 0, $month, $day, $year)) }}
-                                                            </div>
-                                                            <div class="menu">
-                                                                @php
-                                                                    $n = 0;
-                                                                @endphp
-                                                                @for ($n = 1; $n <= 12; $n++)
-                                                                    <div wire:click.prevent="$set('month', {{ $n }})"
-                                                                        class="item">
-                                                                        {{ date('F', mktime(0, 0, 0, $n, 1, $year)) }}
+                                                </td>
+                                                <td>
+                                                    <div class="ui selection dropdown">
+                                                        <i class="dropdown icon"></i>
+                                                        <div class="text">
+                                                            {{ date('F', mktime(0, 0, 0, $month, $day, $year)) }}
+                                                        </div>
+                                                        <div class="menu">
+                                                            @php
+                                                                $n = 0;
+                                                            @endphp
+                                                            @for ($n = 1; $n <= 12; $n++)
+                                                                <div wire:click.prevent="$set('month', {{ $n }})"
+                                                                    class="item">
+                                                                    {{ date('F', mktime(0, 0, 0, $n, 1, $year)) }}
+                                                                </div>
+                                                            @endfor
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div><label>Day
+                                                            <x-atoms.ui.required />
+                                                        </label></div>
+                                                </td>
+                                                <td>
+                                                    <div class="ui selection dropdown" x-init="$('.ui.selection').dropdown()">
+                                                        <i class="dropdown icon"></i>
+                                                        <div class="text">
+                                                            {{ $day . ', ' . date('l', mktime(0, 0, 0, $month, $day, $year)) }}
+                                                        </div>
+                                                        <div class="menu">
+                                                            @for ($n = 1; $n <= date('t', mktime(0, 0, 0, $month, 1, $year)); $n++)
+                                                                @if (date('l', mktime(0, 0, 0, $month, $n, $year)) != $this->findDay(date('l', mktime(0, 0, 0, $month, $n, $year))))
+                                                                    <div wire:click.prevent="$set('day', {{ $n }})"
+                                                                        class="item">{{ $n }} <span
+                                                                            class="description">{{ date('D', mktime(0, 0, 0, $month, $n, $year)) }}</span>
                                                                     </div>
-                                                                @endfor
-                                                            </div>
+                                                                @endif
+                                                            @endfor
                                                         </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div><label>Day
-                                                                <x-atoms.ui.required />
-                                                            </label></div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="ui selection dropdown" x-init="$('.ui.selection').dropdown()">
-                                                            <i class="dropdown icon"></i>
-                                                            <div class="text">
-                                                                {{ $day . ', ' . date('l', mktime(0, 0, 0, $month, $day, $year)) }}</div>
-                                                            <div class="menu">
-                                                                @for ($n = 1; $n <= date('t', mktime(0, 0, 0, $month, 1, $year)); $n++)
-                                                                    @if (date('l', mktime(0, 0, 0, $month, $n, $year)) != $this->findDay(date('l', mktime(0, 0, 0, $month, $n, $year))))
-                                                                        <div wire:click.prevent="$set('day', {{ $n }})"
-                                                                            class="item">{{ $n }} <span
-                                                                                class="description">{{ date('D', mktime(0, 0, 0, $month, $n, $year)) }}</span>
-                                                                        </div>
-                                                                    @endif
-                                                                @endfor
-                                                            </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div><label>Year
+                                                            <x-atoms.ui.required />
+                                                        </label></div>
+                                                </td>
+                                                <td>
+                                                    <div class="ui selection dropdown" x-init="$('.ui.selection').dropdown()">
+                                                        <i class="dropdown icon"></i>
+                                                        <div class="text">{{ $year }}</div>
+                                                        <div class="menu">
+                                                            @foreach (App\Models\Year::orderBy('year')->get() as $year)
+                                                                <div wire:click.prevent="$set('year', {{ $year->year }})"
+                                                                    class="item">{{ $year->year }}</span></div>
+                                                            @endforeach
                                                         </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div><label>Year
-                                                                <x-atoms.ui.required />
-                                                            </label></div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="ui selection dropdown" x-init="$('.ui.selection').dropdown()">
-                                                            <i class="dropdown icon"></i>
-                                                            <div class="text">{{ $year }}</div>
-                                                            <div class="menu">
-                                                                @foreach (App\Models\Year::orderBy('year')->get() as $year)
-                                                                    <div wire:click.prevent="$set('year', {{ $year->year }})"
-                                                                        class="item">{{ $year->year }}</span></div>
-                                                                @endforeach
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div><label>Time
+                                                            <x-atoms.ui.required />
+                                                        </label></div>
+                                                </td>
+                                                <td>
+                                                    <div class="ui selection dropdown" x-init="$('.ui.selection').dropdown()">
+                                                        <i class="dropdown icon"></i>
+                                                        <div class="text">{{ $this->time($appt['time']) }}</div>
+                                                        <div class="menu">
+                                                            <div class="header">
+                                                                <i class="time icon"></i>
+                                                                AM
                                                             </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div><label>Time
-                                                                <x-atoms.ui.required />
-                                                            </label></div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="ui selection dropdown" x-init="$('.ui.selection').dropdown()">
-                                                            <i class="dropdown icon"></i>
-                                                            <div class="text">{{ $this->time($appt['time']) }}</div>
-                                                            <div class="menu">
-                                                                <div class="header">
-                                                                    <i class="time icon"></i>
-                                                                    AM
-                                                                </div>
-                                                                @foreach (App\Models\Time::orderBy('time')->get() as $time)
-                                                                    @if (Str::of($this->time($time->time))->lower()->contains('am'))
-                                                                        <div wire:click.prevent="$set('appt.time', {{ $time->time }})"
-                                                                            class="item">{{ $this->time($time->time) }}</span>
-                                                                        </div>
-                                                                    @endif
-                                                                @endforeach
-                                                                <div class="header">
-                                                                    <i class="time icon"></i>
-                                                                    PM
-                                                                </div>
-                                                                @foreach (App\Models\Time::orderBy('time')->get() as $time)
-                                                                    @if (Str::of($this->time($time->time))->lower()->contains('pm'))
-                                                                        <div wire:click.prevent="$set('appt.time', {{ $time->time }})"
-                                                                            class="item">{{ $this->time($time->time) }}</span>
-                                                                        </div>
-                                                                    @endif
-                                                                @endforeach
+                                                            @foreach (App\Models\Time::orderBy('time')->get() as $time)
+                                                                @if (Str::of($this->time($time->time))->lower()->contains('am'))
+                                                                    <div wire:click.prevent="$set('appt.time', {{ $time->time }})"
+                                                                        class="item">
+                                                                        {{ $this->time($time->time) }}</span>
+                                                                    </div>
+                                                                @endif
+                                                            @endforeach
+                                                            <div class="header">
+                                                                <i class="time icon"></i>
+                                                                PM
                                                             </div>
+                                                            @foreach (App\Models\Time::orderBy('time')->get() as $time)
+                                                                @if (Str::of($this->time($time->time))->lower()->contains('pm'))
+                                                                    <div wire:click.prevent="$set('appt.time', {{ $time->time }})"
+                                                                        class="item">
+                                                                        {{ $this->time($time->time) }}</span>
+                                                                    </div>
+                                                                @endif
+                                                            @endforeach
                                                         </div>
-                                                    </td>
-                                                </tr>
-                                            </x-slot>
-                                        </x-organisms.ui.table>
-                                    </div>
-                                    <button type="submit" class="ui bottom attached primary button">
-                                        Book Now
-                                        <i class="arrow right icon"></i>
-                                    </button>
-                                </form>
-                        
-
-
-                            
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </x-slot>
+                                    </x-organisms.ui.table>
+                                </div>
+                                <button type="submit" class="ui bottom attached primary button">
+                                    Book Now
+                                    <i class="arrow right icon"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
+
                 @else
                     <div class="ui blue message">Sorry... Booking is not available for now.</div>
                 @endif
             @break
 
             @case(3)
+                <div>
+                    <div class="ui centered grid">
+                        @forelse ($my_appts as $appt)
+                            <div class="four wide computer eight wide tablet sixteen wide mobile column">
+                                <div class="ui raised link fluid card">
+                                    <div class="content">
+                                        <div class="right floated">
+                                            <x-atom.more>
+                                                <x-atom.more.option wire-click="apptShowModal('isUpdate', {{ $appt->id }})"
+                                                    option-name="Edit" />
+                                                <x-atom.more.option wire-click="cancelingAppt({{ $appt->id }})" option-name="Cancel" />
+                                            </x-atom.more>
+                                        </div>
+                                        <div class="header">{{ $this->date($appt->appt_date) }}</div>
+                                        <div class="meta">{{ $this->day($appt->appt_date) }} {{ !empty($appt->appt_time) ? ' • ' . $this->time($appt->appt_time) : '' }}</div>
+                                        {{-- <br> --}}
+                                    </div>
+                                    <div class="ui inverted segment secondary {{ $this->statusColor($appt->appt_status) }}">
+                                        <div class="x-flex x-flex-xbetween x-flex-ycenter">
+                                            <span style="" data-inverted="" data-tooltip="Created at: {{ $this->date($appt->created_at) . ' @ ' . $this->time($appt->created_at) }}" data-position="top left" data-variation="small">
+                                                <i class="info icon"></i>
+                                                {{ $this->apptStatus($appt->appt_status) }}
+                                            </span>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                <div class="mb_20">
+                        @empty
+                            <x-organisms.ui.table.search-no-results colspan="4" message="No appointment yet." />
+                        @endforelse
 
-                    <x-organisms.ui.table class="selectable">
-                        <x-slot name="thead">
-                            {{-- <x-organisms.ui.table.th-checkbox/> --}}
-                            <x-organisms.ui.table.th label="Appointments" />
-                            <x-organisms.ui.table.th label="Status" style="width:25%" />
-                            <x-organisms.ui.table.th label="Contact Number" style="width:25%" />
-                            <x-organisms.ui.table.th label="Date Created" style="width:25%" />
-                            <x-organisms.ui.table.th-more />
-                        </x-slot>
-                        <x-slot name="tbody">
-                            @forelse ($my_appts as $appt)
-                                <tr>
-                                    <x-organisms.ui.table.td text="{{ $this->date($appt->appt_date) }}"
-                                        desc="{{ $this->day($appt->appt_date) }} {{ !empty($appt->appt_time) ? ' • ' . $this->time($appt->appt_time) : '' }}" />
-                                    <x-organisms.ui.table.td>
-                                        <p style="color:{{ $this->statusColor($appt->appt_status) }}">
-                                            {{ $this->apptStatus($appt->appt_status) }}
-                                        </p>
-                                    </x-organisms.ui.table.td>
-                                    <x-organisms.ui.table.td text="{{ $appt->patient->patient_mobile }}"
-                                        desc="{{ $appt->patient->patient_email }}" text-icon="fa-square-phone" />
-                                    <x-organisms.ui.table.td
-                                        desc="{{ $this->date($appt->created_at) . ' @ ' . $this->time($appt->created_at) }}" />
-                                    <x-organisms.ui.table.td-more style="width: 1em">
-                                        <x-atom.more.option wire-click="apptShowModal('isUpdate', {{ $appt->id }})"
-                                            option-name="Edit" />
-                                        <x-atom.more.option wire-click="cancelingAppt({{ $appt->id }})" option-name="Cancel" />
-                                        </x-organisms.ui.table.td>
-                                </tr>
-                            @empty
-                                <x-organisms.ui.table.search-no-results colspan="4" message="No appointment yet." />
-                            @endforelse
-
-                        </x-slot>
-                    </x-organisms.ui.table>
-
-
-
-
+                        
+                    </div>
                 </div>
             @break
 

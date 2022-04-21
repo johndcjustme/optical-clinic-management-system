@@ -1,6 +1,6 @@
 
 
-<tr>
+<tr class="{{ $appt->appt_status == 4 ? 'negative' : ''; }}">
     <x-organisms.ui.table.td
         checkbox="selectedAppts" 
         checkbox-value="{{ $appt->id }}"/>
@@ -9,6 +9,9 @@
         desc="{{ $this->day($appt->appt_date) }} {{ !empty($appt->appt_time) ? ' • ' . $this->time($appt->appt_time) : '' }}"/>
     <x-organisms.ui.table.td>
         <p style="color:{{ $this->statusColor($appt->appt_status) }}">
+            @if ($appt->appt_status == 4)
+                <i class="attention icon"></i>
+            @endif
             {{ $this->apptStatus($appt->appt_status) }}
         </p>
     </x-organisms.ui.table.td>

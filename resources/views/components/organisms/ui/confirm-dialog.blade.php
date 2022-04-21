@@ -46,7 +46,7 @@
 
 
 
- <div id="fade" class="modal" style="max-width: 300px; z-index:100">
+ <div id="fade" class="modal" style="max-width: 300px; z-index:1000">
     <div class="text red py_10">
         {{ $content }}
     </div>

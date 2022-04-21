@@ -15,13 +15,15 @@ class Message extends Component
     public $header;
     public $message;
     public $icon;
+    public $close;
 
 
-    public function __construct($header = null, $message = null, $icon = null)
+    public function __construct($header = null, $message = null, $icon = null, $close = null)
     {
         $this->header = $header;
         $this->message = $message;
         $this->icon = $icon;
+        $this->close = $close;
     }
 
     /**
