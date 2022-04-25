@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Tab;
 use App\Models\Patient;
+use App\Models\In_out_of_item;
 // use App\Models\Lense;
 // use App\Models\Frame;
 // use App\Models\Accessory;
@@ -40,6 +41,7 @@ class PageInventory extends Component
         'inItem'        => false,
         'edit_in_inItem'   => false,
         'category'   => false,
+        'displayItem'   => false,
     ];
 
     public $item = [
@@ -196,7 +198,7 @@ class PageInventory extends Component
                 // break;
 
             case 3:
-                $data = ['suppliers' => Supplier::all()];
+                $data = ['in_out_items' => In_out_of_item::with('item')->paginate($this->pageNumber)];
                 break;
             case 4:
                 $data = [];
@@ -511,7 +513,27 @@ class PageInventory extends Component
     {
         $this->validate(['item.in' => 'required|integer']);
 
-        dd($this->item['id'] .' ' . $this->item['in']);
+        $lastBalance = 0;
+        $newBalance = $this->item['in'];
+
+        foreach (In_out_of_item::where('item_id', $this->item['id'])->where('status', true)->get() as $in_out) {
+            $lastBalance += $in_out->qty;
+        }
+
+        $newBalance += $lastBalance;
+
+        $in_out = In_out_of_item::create([
+            'item_id' => $this->item['id'],
+            'status' => true,
+            'qty' => $this->item['in'],
+            'balance' => $newBalance,
+        ]);
+
+        Item::find($this->item['id'])->update([
+            'item_qty' => $newBalance,
+        ]);
+
+        // dd($this->item['id'] .' ' . $this->item['in']);
     }
 
 
@@ -520,6 +542,7 @@ class PageInventory extends Component
     {
         $item = Item::findOrFail($itemId);
         $this->getItem($item);
+        $this->modal['displayItem'] = true;
     }
 
 
@@ -652,17 +675,45 @@ class PageInventory extends Component
 
     public function confirm_dialog_modal_close() { $this->dispatchBrowserEvent('confirm-dialog-close'); }
 
-    public function storage($disk, $url) 
+
+    public function stocks($itemId) 
     {
-        if (!empty($url) || ($url != null)) {
-            return Storage::disk($disk)->url($url); } 
-        else {
-            if ($disk == 'avatars') {
-                return Storage::disk($disk)->url('default-user-avatar.png'); } 
-            elseif ($disk == 'items') { 
-                return Storage::disk($disk)->url('default-item-image.jpg'); }
+
+        $stocks = 0;
+
+        $in_out_items = In_out_of_item::where('item_id', $itemId)->where('status',true)->get();
+
+        foreach ($in_out_items as $in_out) {
+            $stocks += $in_out->qty;
+        }
+        
+        return $stocks;
+    }
+
+    public function lowStocks($itemId)
+    {
+        $item = Item::find($itemId);
+        $buffer = $item->item_buffer;
+        $stocks = $this->stocks($itemId);
+
+        if ($stocks <= $buffer) {
+            return true;
+        } else {
+            return false;
         }
     }
+
+    // public function storage($disk, $url) 
+    // {
+    //     if (!empty($url) || ($url != null)) {
+    //         return Storage::disk($disk)->url($url); } 
+    //     else {
+    //         if ($disk == 'avatars') {
+    //             return Storage::disk($disk)->url('default-user-avatar.png'); } 
+    //         elseif ($disk == 'items') { 
+    //             return Storage::disk($disk)->url('default-item-image.jpg'); }
+    //     }
+    // }
 }
 
 

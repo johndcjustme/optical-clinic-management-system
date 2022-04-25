@@ -16,10 +16,16 @@ class Appointment extends Model
         'appt_resched',
         'appt_status',
         'appt_confirmed',
+        'appointment_category_id',
     ];
     
     public function patient()
     {
         return $this->belongsTo(Patient::class);
+    }
+
+    public function appointment_category()
+    {
+        return $this->belongsTo(Appointment_category::class);
     }
 }

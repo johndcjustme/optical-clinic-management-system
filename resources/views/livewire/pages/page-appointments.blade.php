@@ -19,10 +19,7 @@
 
         <x-alert type="error" message="{{ session('message') }}" />
 
-        <x-organisms.ui.confirm-dialog 
-            wire-confirm="confirm"
-            content="{{ $confirmationMessage }}"
-        />
+        <x-organisms.ui.confirm-dialog wire-confirm="confirmed"/>
     
     </div>
 

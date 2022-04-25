@@ -24,6 +24,8 @@
     @endsection
 
     @section('section-main')
+    {{  humanReadableDate('2022-04-20 03:37:27') }}
+        <button wire:click.prevent="pdf">pdf</button>
         <div style="display:flex; flex-direction:column; gap:1em;">
 
             <div class="ui grid">
@@ -165,6 +167,96 @@
             </div>
 
 
+
+            
+            <div class="ui grid">
+                <div class="four wide computer eight wide tablet column">
+                    <div class="ui fluid raised link card">
+                        <div class="content">
+                            <div class="header">
+                                <span class="ui text blue">• Patient's Total</span>
+                            </div>
+                            <div class="ui horizontal statistic blue">
+                                <div class="value">
+                                    {{ $this->totalOfPatients('all') }}
+                                </div>
+                                <div class="label">Patients</div>
+                            </div>
+                        </div>
+                        <div class="ui bottom attached button blue">
+                            <i class="add icon"></i>
+                            Add Friend
+                        </div>
+                    </div>
+                </div>
+                <div class="four wide computer eight wide tablet column">
+                    <div class="ui fluid raised link card">
+                        <div class="content">
+                            <div class="header">
+                                <span class="ui text green">
+                                    • Today
+                                </span>
+                            </div>
+                            <div class="ui horizontal statistic">
+                                <div class="value">
+                                    {{ $this->totalOfPatients('today') }}
+                                </div>
+                                <div class="label">
+                                    Patients
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui bottom attached button green">
+                            View
+                            <i class="arrow right icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="four wide computer eight wide tablet column">
+                    <div class="ui fluid raised link card">
+                        <div class="content">
+                            <div class="header">
+                                <span class="ui text teal">
+                                    • Yesterday
+                                </span>
+                            </div>
+                            <div class="ui horizontal statistic">
+                                <div class="value">
+                                    {{ $this->totalOfPatients('yesterday') }}
+                                </div>
+                                <div class="label">
+                                    Patients
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui bottom attached button teal">
+                            View
+                            <i class="arrow right icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="four wide computer eight wide tablet column">
+                    <div class="ui fluid raised link card">
+                        <div class="content">
+                            <div class="header">
+                                <span class="ui text orange">• This Week</span>
+                            </div>
+                            <div class="ui horizontal statistic">
+                                <div class="value">
+                                    {{ $this->totalOfPatients('thisWeek') }}
+                                </div>
+                                <div class="label">
+                                    Patients
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui bottom attached button orange">
+                            View
+                            <i class="arrow right icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
 {{-- 

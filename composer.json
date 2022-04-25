@@ -12,6 +12,7 @@
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.75",
+        "laravel/nexmo-notification-channel": "^2.5",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.8"
@@ -30,7 +31,16 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/_Functions/dates.php",
+            "app/_Functions/storage.php",
+            "app/_Functions/sendSMS.php",
+            "app/_Functions/colors.php",
+            "app/_Functions/confirm_dialog.php",
+            "app/_Functions/toast.php"
+        ]
+
     },
     "autoload-dev": {
         "psr-4": {
@@ -60,7 +70,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

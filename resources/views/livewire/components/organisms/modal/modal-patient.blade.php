@@ -35,7 +35,11 @@
 <x-organisms.modal>
 
     @section('modal_title')
-        <div></div>
+        <div>
+            @if ($modal['isAddPatient'] || $modal['isUpdatePatient'])
+                <label for="patient_avatar" class="ui button tiny icon"><i class="icon add"></i> Add photo</label>        
+            @endif
+        </div>
         <div>
             <a wire:click.prevent="closeModal" class="ui button tiny basic" rel="modal:close">Close</a>
             @if ($modal['isAddPatient'] || $modal['isUpdatePatient'])
@@ -52,38 +56,34 @@
                 <input wire:model.defer="pt.id" type="hidden" name="">
                 
                 <div>
-                    <div class="flex gap_1 flex_y_center">
+                    <div class="flex gap_1 flex_center mt_10">
                         <div>
                             @if ($previewAvatar)
                                 <x-atoms.ui.avatar src="{{ $previewAvatar->temporaryUrl() }}" size="5em"/>
                             @else
                                 <x-atom.profile-photo size="5em" path="{{ $this->storage($pt['avatar']) }}" />
                             @endif
-                        </div>
-                        <div>
-                            <label class="ui blue tertiary button" for="patient_avatar">Choose File</label>
-                            <input wire:model="previewAvatar" type="file" name="" id="patient_avatar" hidden>     
+                            <input wire:model="previewAvatar" type="file" name="" id="patient_avatar" style="opacity:0;" hidden>     
                         </div>
                     </div>
                     @error('pt.avatar') <span class="ui text error">{{ $message }}</span> @enderror
                 </div>
 
                 <br>
-                <p class="dark_100 my_10">Personal Information</p>
                 <div class="ui form">
                     <div class="two fields">
                         <div class="field">
-                            <x-atoms.ui.label>First name @error('pt.fname') <span class="ui text red"> • {{ $message }}</span> @enderror </x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="pt.fname" type="text" class="mb_7"/>
+                            <x-atoms.ui.label>First name <x-atoms.ui.required/> @error('pt.fname') <span class="ui text red"> • {{ $message }}</span> @enderror </x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="pt.fname" type="text" class="mb_7" placeholder="Enter First Name..."/>
     
-                            <x-atoms.ui.label>Last name @error('pt.lname') <span class="ui text red"> • {{ $message }}</span> @enderror </x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="pt.lname" type="text" class="mb_7"/>
+                            <x-atoms.ui.label>Last name <x-atoms.ui.required/> @error('pt.lname') <span class="ui text red"> • {{ $message }}</span> @enderror </x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="pt.lname" type="text" class="mb_7" placeholder="Enter Last Name..."/>
     
                             <x-atoms.ui.label>M.I.</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="pt.mname" type="text" class="mb_7"/>
+                            <x-atoms.ui.input wire-model="pt.mname" type="text" class="mb_7" placeholder="Enter Middle Name..."/>
 
-                            <x-atoms.ui.label>Age @error('pt.age') <span class="ui text red"> • {{ $message }}</span> @enderror</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="pt.age" type="number" class="mb_7"/>
+                            <x-atoms.ui.label>Age <x-atoms.ui.required/> @error('pt.age') <span class="ui text red"> • {{ $message }}</span> @enderror</x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="pt.age" type="number" class="mb_7" placeholder="Enter Age..."/>
                         </div>
                         <div class="field">
                             <x-atoms.ui.label>Gender</x-atoms.ui.label>    
@@ -93,23 +93,28 @@
                                 <option class="item" value="f">Female</option>
                             </x-atoms.ui.select>
                             <x-atoms.ui.label>Occupation</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="pt.occ" type="text" class="mb_7"/>
+                            <x-atoms.ui.input wire-model="pt.occ" type="text" class="mb_7" placeholder="Enter Occupation..."/>
     
                             <x-atoms.ui.label>Address</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="pt.addr" type="text" class="mb_7"/>
+                            <x-atoms.ui.input wire-model="pt.addr" type="text" class="mb_7" placeholder="Enter Address..."/>
                         </div>
                     </div>
                 </div>
-                <p class="dark_100 my_10">Contact Details</p>
                 <div class="ui form">
                     <div class="two fields">
                         <div class="field">
                             <x-atoms.ui.label>Contact number @error('pt.no') <span class="ui text red"> • {{ $message }}</span> @enderror </x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="pt.no" type="text" class="mb_7"/>
+                            <div class="ui labeled input">
+                                <div class="ui label">
+                                  +63
+                                </div>
+                                <input type="text" placeholder="e.g 9512558699">
+                            </div>
+                            {{-- <x-atoms.ui.input wire-model="pt.no" type="text" class="mb_7"/> --}}
                         </div>
                         <div class="field">
                             <x-atoms.ui.label>Email address @error('pt.email') <span class="ui text red"> • {{ $message }}</span> @enderror </x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="pt.email" type="email" class="mb_7"/>
+                            <x-atoms.ui.input wire-model="pt.email" type="email" class="mb_7" placeholder="example.gmail.com"/>
                         </div>
                     </div>
                 </div>
@@ -127,17 +132,23 @@
         @endif
 
         @if ($modal['isExamPurchase'])
-            <div>
-                <strong>{{ $pt['fullname'] }}</strong><br>
-                <small>{{ $pt['age'] }} • {{ $pt['addr'] }}</small>
+            <br>
+            <div class="x-flex x-flex-ycenter x-gap-1">
+                <div>
+                    <x-atom.profile-photo size="3em" path="{{ $this->storage($pt['avatar']) }}"/>
+                </div>
+                <div>
+                    <strong>{{ $pt['fullname'] }}</strong><br>
+                    <small>{{ $pt['age'] }} • {{ $pt['addr'] }}</small>
+                </div>
             </div>
-            
-            <div class="mt_15 mb_20">
+            <div class="ui divider"></div>
+            <div class="mb_20">
                 <div class="flex flex_x_between flex_y_center gap_1" 
                     style="{{ $editExamHistory ? 'display:none': ''; }}"> <!-  hide div when editing from exam history of the patient --!>
                     <div class="flex gap_1">
                         <div class="ui menu compact tiny">
-                            <div wire:click.prevent="exam_purchase_tab('patient', {{ $pt['id'] }})" class="item link {{ $modal['exam_purchase_tab'] == 3 ? 'active' : ''; }}">Patient</div>
+                            <div wire:click.prevent="exam_purchase_tab('patient', {{ $pt['id'] }})" class="item link {{ $modal['exam_purchase_tab'] == 3 ? 'active' : ''; }}">About</div>
                             <div wire:click.prevent="exam_purchase_tab('exam', {{ $pt['id'] }})" class="item link {{ $modal['exam_purchase_tab'] == 1 ? 'active' : ''; }}">Exam</div>
                             <div wire:click.prevent="exam_purchase_tab('purchase', {{ $pt['id'] }})" class="item link {{ $modal['exam_purchase_tab'] == 2 ? 'active' : ''; }}">Purchase</div>
                         </div>
@@ -273,6 +284,42 @@
                         </div>
                         {{-- <ul class="hoverable my_15" style="line-height: 1rem"> --}}
 
+                        <div class="field x-flex x-flex-xend">
+                            <div class="ui dropdown floating labeled icon button blue tiny" x-init="$('.ui.dropdown').dropdown()" style="z-index: 400">
+                                <i class="dropdown icon"></i>
+                                <span class="">Select Item</span>
+                                <div class="menu fluid left">
+                                    <div class="ui icon search input">
+                                        <i class="search icon"></i>
+                                        <input type="text" placeholder="Search Items...">
+                                    </div>
+                                    <div class="divider"></div>
+                                    <div class="scrolling menu">
+                                        @foreach (App\Models\Item::all() as $item)
+                                            <div class="item">
+                                                <div class="x-flex x-flex-xbetween x-gap-1">
+                                                    <div>
+                                                        <div>
+                                                            {{ $item->item_name }}
+                                                        </div>
+                                                        <small>
+                                                            <i class="fa-solid fa-peso-sign"></i> {{ $item->item_price }} • {{ $item->item_desc }}
+                                                        </small>
+                                                    </div>
+                                                    <div>
+                                                        <button class="ui circular icon button tiny" wire:click.prevent="addItem('{{ $latest_purchase['id'] }}', {{ $item->id }}, {{ $item->item_price }})">
+                                                            <i class="icon add"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
                         <div class="field">
                             <div class="ui relaxed celled list">
 
@@ -280,43 +327,6 @@
                                     <x-organisms.ui.table class="unstackable">
                                         <x-slot name="thead"></x-slot>
                                         <x-slot name="tbody">
-                                            <tr>
-                                                <td class="right aligned" colspan="3">
-                                                    <div class="ui dropdown floating labeled icon button blue tiny" x-init="$('.ui.dropdown').dropdown()" style="z-index: 400">
-                                                        <i class="dropdown icon"></i>
-                                                        <span class="">Select Item</span>
-                                                        <div class="menu fluid left">
-                                                            <div class="ui icon search input">
-                                                                <i class="search icon"></i>
-                                                                <input type="text" placeholder="Search Items...">
-                                                            </div>
-                                                            <div class="divider"></div>
-                                                            <div class="scrolling menu">
-                                                                @foreach (App\Models\Item::all() as $item)
-                                                                    <div class="item">
-                                                                        <div class="x-flex x-flex-xbetween x-gap-1">
-                                                                            <div>
-                                                                                <div>
-                                                                                    {{ $item->item_name }}
-                                                                                </div>
-                                                                                <small>
-                                                                                    <i class="fa-solid fa-peso-sign"></i> {{ $item->item_price }} • {{ $item->item_desc }}
-                                                                                </small>
-                                                                            </div>
-                                                                            <div>
-                                                                                <button class="ui circular icon button tiny" wire:click.prevent="addItem('{{ $latest_purchase['id'] }}', {{ $item->id }}, {{ $item->item_price }})">
-                                                                                    <i class="icon add"></i>
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                @endforeach
-                                        
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
                                             @forelse ($selectedItems as $selectedItem)  
 
                                             <tr>

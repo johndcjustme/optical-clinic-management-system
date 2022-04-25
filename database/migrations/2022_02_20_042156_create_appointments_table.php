@@ -16,6 +16,7 @@ class CreateAppointmentsTable extends Migration
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('patient_id');
+            $table->unsignedBigInteger('appointment_category_id')->nullable();
             $table->string('appt_date')->nullable();
             $table->string('appt_time')->nullable();
             $table->string('appt_resched')->nullable();
@@ -28,6 +29,11 @@ class CreateAppointmentsTable extends Migration
                 ->references('id')
                 ->on('patients')
                 ->onDelete('cascade');
+
+            $table->foreign('appointment_category_id')
+                ->references('id')
+                ->on('appointment_categories')
+                ->nullOnDelete();
         });
     }
 

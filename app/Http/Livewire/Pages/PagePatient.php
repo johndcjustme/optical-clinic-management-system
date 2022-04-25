@@ -11,12 +11,15 @@ use App\Models\Lense;
 use App\Models\Item;
 use App\Models\Purchase;
 use App\Models\Appointment;
+use App\Models\In_out_of_item;
 use App\Models\Purchased_item;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+
+use PDF;
 
 
 
@@ -396,12 +399,35 @@ class PagePatient extends Component
 
     public function addItem($purchaseId, $itemId, $itemPrice)
     {
+
+        $lastBalance = 0;
+        $newBalance = 0;
+
+        $in_out_items = In_out_of_item::where('item_id', $itemId)->where('status', true)->get();
+
+        foreach ($in_out_items as $in_out) {
+            $lastBalance += $in_out->qty;
+        }
+
+        $newBalance = $lastBalance - 3;
+
+        
+        In_out_of_item::create([
+            'item_id' => $itemId,
+            'status' => false,
+            'qty' => 1,
+            'balance' => $newBalance,
+        ]);
+
         Purchased_item::create([
             'purchase_id'  => $purchaseId, 
             'item_id'      => $itemId,
             'item_price'   => $itemPrice,
             'qty'          => '1',
-        ]);
+        ]);    
+    
+
+
         $this->decrementItem($itemId, 1);
 
         $this->searchItem = '';
@@ -467,7 +493,7 @@ class PagePatient extends Component
             return 'Low stock remaining: ' . $item->item_qty;
     }
 
-    public function checkItemQty($itemId) { return Item::find($itemId)->item_qty; }
+    public function checkItemQty($itemId) { return Item::findOrFail($itemId)->item_qty; }
 
 
 

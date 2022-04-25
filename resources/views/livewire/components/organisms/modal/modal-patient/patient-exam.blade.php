@@ -1,6 +1,6 @@
 <form wire:submit.prevent="updateExam({{ $this->exam['id'] }})" id="saveExam">
     <div style="overflow-y: auto; padding-bottom:1em">
-        <table class="full_w noformat" style="min-width: 400px;">
+        <table class="full_w noformat" style="min-width: 300px; width:100%;">
             <thead>
                 <tr>
                     <td>RX</td>
@@ -57,11 +57,15 @@
                     <td></td>
                     <td class="mt_12" colspan="8">
                         <div class="mt_15">
-                            <label for="">Remarks ...</label>
-                            <div class="ui fluid icon input">
-                                <x-atoms.ui.input wire-model="exam.exam_remarks" placeholder="Enter remarks..." type="text" style="width: 100%"/>
-                                <i class="check icon"></i>
+                            <label>Remarks ...</label>
+
+                            {{-- <div class="ui fluid icon input"> --}}
+                            <div class="ui input fluid">
+                                <textarea wire-model="exam.exam_remarks" placeholder="Enter remarks..." rows="2" style="width: 100%"></textarea>
                             </div>
+                                {{-- <x-atoms.ui.input wire-model="exam.exam_remarks" placeholder="Enter remarks..." type="text" style="width: 100%"/>
+                                <i class="check icon"></i> --}}
+                            {{-- </div> --}}
                         </div>
                     </td>
                 </tr>

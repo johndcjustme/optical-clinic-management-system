@@ -11,13 +11,14 @@ class ConfirmDialog extends Component
      *
      * @return void
      */
-    public $wireConfirm, $wireCancel, $content;
+    public $wireConfirm, $wireCancel, $content, $title;
 
-    public function __construct($wireConfirm = null, $wireCancel = null, $content = null)
+    public function __construct($wireConfirm = null, $wireCancel = null, $content = null, $title = null)
     {
         $this->wireCancel = $wireCancel;
         $this->wireConfirm = $wireConfirm;
         $this->content = $content;
+        $this->title = $title;
     }
 
     /**

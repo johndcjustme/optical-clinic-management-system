@@ -8,6 +8,13 @@ use Illuminate\Support\Facades\Storage;
 class Sidenav extends Component
 {
 
+    public $page;
+
+    protected $queryString = [
+        'page' => ['except' => ''],
+    ];
+
+
     public function storage($url) 
     {
         if (!empty($url) || ($url != NULL)) 

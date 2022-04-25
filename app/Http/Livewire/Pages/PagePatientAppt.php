@@ -111,9 +111,9 @@ class PagePatientAppt extends Component
 
         if (!empty($patient->id)) {
             if ($this->filter == 'all') {
-                $myAppts = Appointment::with('patient')->orderByDesc('created_at')->where('patient_id', $patient->id)->get();
+                $myAppts = Appointment::with('patient')->with('appointment_category')->orderByDesc('created_at')->where('patient_id', $patient->id)->get();
             } else {
-                $myAppts = Appointment::with('patient')->orderByDesc('created_at')->where('patient_id', $patient->id)->where('appt_status', $this->filter)->get();
+                $myAppts = Appointment::with('patient')->with('appointment_category')->orderByDesc('created_at')->where('patient_id', $patient->id)->where('appt_status', $this->filter)->get();
             }
             return view('livewire.pages.page-patient-appt', [
                 'my_appts' => $myAppts,
@@ -180,30 +180,30 @@ class PagePatientAppt extends Component
         }
     }
 
-    public function statusColor($status)
-    {
-        switch ($status) {
-            case 1: return 'blue'; break;
-            case 2: return 'green'; break;
-            case 3: return 'teal'; break;
-            case 4: return 'red'; break;
-            case 6: return 'orange'; break;
-            default:
-        }
-    }
+    // public function statusColor($status)
+    // {
+    //     switch ($status) {
+    //         case 1: return 'blue'; break;
+    //         case 2: return 'green'; break;
+    //         case 3: return 'teal'; break;
+    //         case 4: return 'red'; break;
+    //         case 6: return 'orange'; break;
+    //         default:
+    //     }
+    // }
 
-    public function apptStatus($status)
-    {
-        switch ($status) {
-            case 1: return $this->apptStatus[1]; break;
-            case 2: return $this->apptStatus[2]; break;
-            case 3: return $this->apptStatus[3]; break;
-            case 4: return $this->apptStatus[4]; break;
-            case 5: return $this->apptStatus[5]; break;
-            case 6: return $this->apptStatus[6]; break;
-            default:
-        }
-    }
+    // public function apptStatus($status)
+    // {
+    //     switch ($status) {
+    //         case 1: return $this->apptStatus[1]; break;
+    //         case 2: return $this->apptStatus[2]; break;
+    //         case 3: return $this->apptStatus[3]; break;
+    //         case 4: return $this->apptStatus[4]; break;
+    //         case 5: return $this->apptStatus[5]; break;
+    //         case 6: return $this->apptStatus[6]; break;
+    //         default:
+    //     }
+    // }
 
 
 

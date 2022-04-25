@@ -85,9 +85,45 @@
 
         @section('section-heading-right')
             @switch($subPage)
-                @case(1) <div> <x-atoms.ui.search wire-model="searchItem" placeholder="Search..."/> </div> @break
+                @case(1) 
+                    <div> 
+                        <x-atoms.ui.search wire-model="searchItem" placeholder="Search..."/> 
+                    </div> 
+                    <x-atoms.ui.header-dropdown-menu class="right pointing tiny">
+                        <x-slot name="menu"> 
+                            <div class="item">
+                                <x-molecules.ui.dropdown.icon/>
+                                <span class="text">Filter</span>
+                                <x-molecules.ui.dropdown.menu>
+                                    <div wire:click.prevent="" class="item">Low Stock</div>
+                                    <div class="item">sd</div>
+                                    <div class="item">sd</div>
+                                </x-molecules.ui.dropdown.menu>
+                            </div>
+                            <div class="item">
+                                <x-molecules.ui.dropdown.icon/>
+                                <span class="text">Showing {{ $pageNumber }} Entries</span>
+                                <x-molecules.ui.dropdown.menu>
+                                    <x-organisms.ui.paginator-number/>
+                                </x-molecules.ui.dropdown.menu>
+                            </div>
+                        </x-slot>
+                    </x-atoms.ui.header-dropdown-menu>
+                    @break
                 {{-- @case(2) <div> <x-atoms.ui.search wire-model="searchSupplier" placeholder="Search..."/> </div> @break --}}
-                @case(3) <div> <x-atoms.ui.search wire-model="search_in_out_of_item" placeholder="Search..."/> </div> @break
+                @case(3)  
+                    <x-atoms.ui.header-dropdown-menu class="right pointing tiny">
+                        <x-slot name="menu"> 
+                            <div class="item">
+                                <x-molecules.ui.dropdown.icon/>
+                                <span class="text">Showing {{ $pageNumber }} Entries</span>
+                                <x-molecules.ui.dropdown.menu>
+                                    <x-organisms.ui.paginator-number/>
+                                </x-molecules.ui.dropdown.menu>
+                            </div>
+                        </x-slot>
+                    </x-atoms.ui.header-dropdown-menu>
+                    @break
                 @default
             @endswitch
         @endsection
@@ -97,7 +133,7 @@
         @section('section-main')
             @switch($subPage)
                 @case(1)
-                    <x-organisms.ui.table class="selectable">
+                    <x-organisms.ui.table class="selectable unstackable">
                         <x-slot name="thead">
                             <x-organisms.ui.table.th-checkbox/>
                             <x-organisms.ui.table.th label="Name" order-by="item_name" />
@@ -105,53 +141,22 @@
                             <x-organisms.ui.table.th label="Supplier" />
                             <x-organisms.ui.table.th label="Stocks" order-by="item_qty" />
                             <x-organisms.ui.table.th label="Price" order-by="item_price" />
+                            <x-organisms.ui.table.th style="width:1em" />
                             <x-organisms.ui.table.th-more/>
                         </x-slot>
                         <x-slot name="tbody">
-                            @forelse ($items as $item)
-                                <tr>
-                                    <x-organisms.ui.table.td 
-                                        checkbox="selectedItems" 
-                                        checkbox-value="{{ $item->id }}"/>
-                                    <x-organisms.ui.table.td 
-                                        text="{{ $item->item_name }}"
-                                        desc="{{ $item->item_size ? $item->item_size . ' • ' : '' }} {{ $item->item_desc }}" />
-                                    <x-organisms.ui.table.td>
-                                        <div>
-                                            <div class="ui top left pointing dropdown table-inventory-dropdown-image">
-                                                <div x-init="$('.ui.dropdown').dropdown();" style="color: {{ $this->itemColor($item->item_type) }}">{{ $item->category->name ?? '' }}</div>
-                                                <div class="menu">
-                                                    <div class="item massive" style="width:7em; height:7em; background:url('{{ $this->storage('items', $item->item_image) }}') no-repeat center; background-size:7em 7em"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </x-organisms.ui.table.td>
-                                    <x-organisms.ui.table.td 
-                                        text="{{ $item->supplier->supplier_name ?? '' }}"
-                                        desc="{{ $item->supplier->supplier_address ?? '' }}"
-                                        desc-icon="{{ isset($item->supplier->supplier_address) ? 'fa-location-dot' : '' }}" /> 
-                                    <x-organisms.ui.table.td 
-                                        text="{{ $this->itemQty($item->id) }}" 
-                                        desc="{{ isset($item->item_buffer) ? 'Low Stock: ' . $item->item_buffer : ''; }}"/>
-                                    <x-organisms.ui.table.td 
-                                        text="{{ number_format($item->item_price) }}" 
-                                        desc="{{ isset($item->item_cost) ? 'Cost: ' . $item->item_cost : ''; }}"
-                                        text-icon="fa-peso-sign" />
-                                    <x-organisms.ui.table.td-more>
-                                        <x-atom.more.option
-                                            wire-click="showModal('update', {{ $item->id }})"
-                                            option-name="Edit" />
-                                        <x-atom.more.option 
-                                            wire-click="deletingItem({{ $item->id }})"
-                                            option-name="Delete" />
-                                    </x-organisms.ui.table.td>
-                                </tr>
-                            @empty
-                                <x-organisms.ui.table.search-no-results colspan="7"/>
-                            @endforelse
+                            @foreach ($items as $item)
+                                @if ($item->item_qty <= $item->item_buffer)
+                                    @include('livewire.components.organisms.modal.moda-inventory.table-items')
+                                @endif
+                            @endforeach
+                            @foreach ($items as $item)
+                                @if ($item->item_qty > $item->item_buffer)
+                                    @include('livewire.components.organisms.modal.moda-inventory.table-items')
+                                @endif
+                            @endforeach
                         </x-slot>
                     </x-organisms.ui.table>
-
                     {{ $items->links('livewire.components.paginator') }}
                 @break
 
@@ -201,35 +206,40 @@
                 @case(3)
                     <x-organisms.ui.table class="selectable">
                         <x-slot name="thead">
-                            <x-organisms.ui.table.th label="Date" order-by="item_name"/>
-                            <x-organisms.ui.table.th label="Owned by" order-by="item_type" />
-                            <x-organisms.ui.table.th label="In" />
-                            <x-organisms.ui.table.th label="Out" />
+                            <x-organisms.ui.table.th label="Item" order-by="item_type" />
+                            <x-organisms.ui.table.th label="Status" />
+                            <x-organisms.ui.table.th label="Qty" />
+                            {{-- <x-organisms.ui.table.th label="Out" /> --}}
                             <x-organisms.ui.table.th label="Balance" />
+                            <x-organisms.ui.table.th label="Date" order-by="item_name" style="width:15em"/>
                             <x-organisms.ui.table.th-more/>
                         </x-slot>
                         <x-slot name="tbody">
-                            {{-- @forelse ($suppliers as $su) --}}
+                            @forelse ($in_out_items as $in_out)
                                 <tr>
-                                    <x-organisms.ui.table.td desc="Jan 15, 2021"/>
-                                    <x-organisms.ui.table.td text="John Doe" avatar="{{  $this->storage('avatars', '') }}"/>
-                                    <x-organisms.ui.table.td text="5"/>
-                                    <x-organisms.ui.table.td text="8"/>
-                                    <x-organisms.ui.table.td text="10"/>
+                                    <x-organisms.ui.table.td text="{{ $in_out->item->item_name }}" desc="{{ $in_out->item->item_desc }}"/>
+                                    <x-organisms.ui.table.td text="{{ $in_out->status ? 'IN' : 'OUT' }}"/>
+                                        <x-organisms.ui.table.td text="{{ $in_out->qty }}"/>
+                                    {{-- <x-organisms.ui.table.td text="8"/> --}}
+                                    <x-organisms.ui.table.td text="{{ $in_out->balance }}"/>
+                                    <x-organisms.ui.table.td text="{{ humanReadableDate($in_out->created_at) }}" desc="{{ humanReadableTime($in_out->created_at) }}"/>
+
                                     <x-organisms.ui.table.td-more>
                                         <x-atom.more.option
                                             wire-click="showModal('update', 'supplier', 'ID HERE')"
-                                            option-name="Edit" />
-                                        <x-atom.more.option 
+                                            option-name="View" />
+                                        {{-- <x-atom.more.option 
                                             wire-click="deletingSupplier('ID HERE')"
-                                            option-name="Delete" />
+                                            option-name="Delete" /> --}}
                                     </x-organisms.ui.table.td>
                                 </tr>
-                            {{-- @empty
+                            @empty
                                 <x-organisms.ui.table.search-no-results colspan="7"/>
-                            @endforelse --}}
+                            @endforelse
                         </x-slot>
                     </x-organisms.ui.table>
+                    {{ $in_out_items->links('livewire.components.paginator') }}
+
                     @break
                 @case(4)
                     

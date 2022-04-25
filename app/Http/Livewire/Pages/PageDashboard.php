@@ -9,15 +9,15 @@ use App\Models\Item;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
 use Carbon\Carbon;
 
-
 use Asantibanez\LivewireCharts\Models\ColumnChartModel;
 use Asantibanez\LivewireCharts\Models\LineChartModel;
 use Asantibanez\LivewireCharts\Models\PieChartModel;
 use Asantibanez\LivewireCharts\Models\AreaChartModel;
 use Asantibanez\LivewireCharts\Models\RadarChartModel;
 use Asantibanez\LivewireCharts\Models\TreeMapChartModel;
+use Dompdf\Dompdf;
 
-
+use PDF;
 
 class PageDashboard extends Component
 {
@@ -64,7 +64,6 @@ class PageDashboard extends Component
 
 
 
-
     
     public function mount()
     {
@@ -75,6 +74,8 @@ class PageDashboard extends Component
     
     public function render()
     {
+
+        // $mydate = new Dates();
 
         // if ($this->lineChartModel['isMultiLine']) {
         //     return view('livewire-charts::livewire-multi-line-chart');
@@ -112,16 +113,19 @@ class PageDashboard extends Component
 
         // $this->mar = Patient::whereYear('created_at', $this->year)->whereMonth('created_at', 3)->count();
         
-            
         
            
         return view('livewire.pages.page-dashboard', [
                 'columnChartModel' => $columnChartModel,
                 'pieChartModel' => $pieChartModel,
                 'areaChartModel' => $areaChartModel,
+                'patients' => Patient::all(),
             ])
             ->extends('layouts.app')
             ->section('content');
+
+
+         
     }
 
 
@@ -186,4 +190,79 @@ class PageDashboard extends Component
             default:
         }
     }
+
+
+
+    public function topdf()
+    {
+        $pdfContent = PDF::loadView('view', ['patients' => Patient::all()])->output();
+            return response()->streamDownload(
+                fn () => print($pdfContent),
+                "filename.pdf"
+            );
+    }
+
+
+
+
+    public function pdf()
+    {
+
+        return response()->streamDownload(function () {
+            $pdf = \App::make('dompdf.wrapper');
+            $pdf->loadHTML($this->convert_customer_data_to_html());
+            echo $pdf->stream();
+        }, 'test.pdf');
+
+
+
+
+    //  return $pdf->stream();
+    }
+
+
+
+
+    
+    function convert_customer_data_to_html()
+    {
+        $patients = Patient::all();
+        $output = '
+        <h3 align="center">Customer Data</h3>
+        <table width="100%" style="border-collapse: collapse; border: 0px;">
+            <tr>
+                <th style="border: 1px solid; padding:12px;" width="20%">Name</th>
+                <th style="border: 1px solid; padding:12px;" width="30%">Address</th>
+                <th style="border: 1px solid; padding:12px;" width="15%">City</th>
+                <th style="border: 1px solid; padding:12px;" width="15%">Postal Code</th>
+                <th style="border: 1px solid; padding:12px;" width="20%">Country</th>
+            </tr>
+        ';  
+        foreach($patients as $patient)
+        {
+            $output .= '
+            <tr>
+                <td style="border: 1px solid; padding:12px;">'.$patient->patient_fname.'</td>
+                <td style="border: 1px solid; padding:12px;">'.$patient->patient_lname.'</td>
+                <td style="border: 1px solid; padding:12px;">'.$patient->patient_address.'</td>
+                <td style="border: 1px solid; padding:12px;">'.$patient->patient_age.'</td>
+                <td style="border: 1px solid; padding:12px;">'.$patient->patient_mname.'</td>
+            </tr>
+            ';
+        }
+        $output .= '</table>';
+        return $output;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }

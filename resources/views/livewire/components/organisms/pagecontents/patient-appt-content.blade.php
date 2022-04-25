@@ -217,7 +217,7 @@
                                             <tr>
                                                 <td>
                                                     <div><label>Day
-                                                            <x-atoms.ui.required />
+                                                               <x-atoms.ui.required />
                                                         </label></div>
                                                 </td>
                                                 <td>
@@ -316,6 +316,7 @@
             @case(3)
                 <div>
                     <div class="ui centered grid">
+                        
                         @forelse ($my_appts as $appt)
                             <div class="four wide computer eight wide tablet sixteen wide mobile column">
                                 <div class="ui raised link fluid card">
@@ -329,13 +330,12 @@
                                         </div>
                                         <div class="header">{{ $this->date($appt->appt_date) }}</div>
                                         <div class="meta">{{ $this->day($appt->appt_date) }} {{ !empty($appt->appt_time) ? ' • ' . $this->time($appt->appt_time) : '' }}</div>
-                                        {{-- <br> --}}
                                     </div>
-                                    <div class="ui inverted segment secondary {{ $this->statusColor($appt->appt_status) }}">
+                                    <div class="ui inverted segment secondary {{ $appt->appointment_category->cname }}">
                                         <div class="x-flex x-flex-xbetween x-flex-ycenter">
                                             <span style="" data-inverted="" data-tooltip="Created at: {{ $this->date($appt->created_at) . ' @ ' . $this->time($appt->created_at) }}" data-position="top left" data-variation="small">
                                                 <i class="info icon"></i>
-                                                {{ $this->apptStatus($appt->appt_status) }}
+                                                {{ $appt->appointment_category->title }}
                                             </span>
                                             <span></span>
                                         </div>

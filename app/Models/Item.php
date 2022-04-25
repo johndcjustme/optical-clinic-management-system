@@ -46,4 +46,9 @@ class Item extends Model
     {
         return $this->belongsTo(Category::class, 'category_id', 'id');
     }
+
+    public function in_out()
+    {
+        return $this->hasMany(In_out_of_item::class);
+    }
 }

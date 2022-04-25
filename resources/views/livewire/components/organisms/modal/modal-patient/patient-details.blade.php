@@ -1,38 +1,38 @@
-<x-atom.profile-photo size="3em" path="{{ $this->storage($pt['avatar']) }}"/>
-<div style="display: grid; grid-template-columns:8em auto; gap:1em; margin-top:1em">
-    <div style="opacity:0.7">Name</div>
-        <div>
-            <span style="margin-right:1em">:</span>
-            {{ $pt['fullname'] }}
-        </div>
-    <div style="opacity:0.7">Age</div>
-        <div>
-            <span style="margin-right:1em">:</span>
-            {{ $pt['age'] }}
-        </div>
-    <div style="opacity:0.7">Address</div>
-        <div>
-            <span style="margin-right:1em">:</span>
-            {{ $pt['addr'] }}
-        </div>
-    <div style="opacity:0.7">Occupation</div>
-        <div>
-            <span style="margin-right:1em">:</span>
-            {{ $pt['occ'] }}
-        </div>
-    <div style="opacity:0.7">Gender</div>
-        <div>
-            <span style="margin-right:1em">:</span>
-            {{ $pt['gender'] }}
-        </div>
-    <div class="mt_10" style="opacity:0.7">Contact Number</div>
-        <div class="mt_10">
-            <span style="margin-right:1em">:</span>
-            {{ $pt['no'] }}
-        </div>
-    <div style="opacity:0.7">Email Address</div>
-        <div>
-            <span style="margin-right:1em">:</span>
-            {{ $pt['email'] }}
-        </div>
-</div>
+
+    <x-organisms.ui.table class="unstackable very basic">
+        <x-slot name="thead"></x-slot>
+        <x-slot name="tbody">
+            <tr>
+                <x-organisms.ui.table.td text="Name" style="width:10em"/>
+                <x-organisms.ui.table.td text="{{ $pt['fullname'] }}" />
+            </tr>
+            <tr>
+                <x-organisms.ui.table.td text="Age" />
+                <x-organisms.ui.table.td text="{{ $pt['age'] }}" />
+            </tr>
+            <tr>
+                <x-organisms.ui.table.td text="Address" />
+                <x-organisms.ui.table.td text="{{ $pt['addr'] }}" />
+            </tr>
+            <tr>
+                <x-organisms.ui.table.td text="Name" />
+                <x-organisms.ui.table.td text="{{ $pt['addr'] }}" />
+            </tr>
+            <tr>
+                <x-organisms.ui.table.td text="Occupation" />
+                <x-organisms.ui.table.td text="{{ $pt['occ'] }}" />
+            </tr>
+            <tr>
+                <x-organisms.ui.table.td text="Gender" />
+                <x-organisms.ui.table.td text="{{ $pt['gender'] }}" />
+            </tr>
+            <tr>
+                <x-organisms.ui.table.td text="Contact Number" />
+                <x-organisms.ui.table.td text="{{ $pt['no'] }}" />
+            </tr>
+            <tr>
+                <x-organisms.ui.table.td text="Email Address" />
+                <x-organisms.ui.table.td text="{{ $pt['email'] }}" />
+            </tr>
+        </x-slot>
+    </x-organisms.ui.table>

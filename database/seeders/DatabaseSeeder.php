@@ -6,6 +6,8 @@ use Illuminate\Database\Seeder;
 use App\Models\Patient;
 use App\Models\Exam;
 use App\Models\Tab;
+use App\Models\Day;
+use App\Models\Setting;
 use Illuminate\Support\Str;
 use Faker;
 
@@ -20,25 +22,49 @@ class DatabaseSeeder extends Seeder
     {
         $faker = Faker\Factory::create();
 
-        $patient = Patient::create([
-            'patient_fname' => Str::random(4),
-            'patient_lname' => Str::random(5),
-            'patient_mname' => Str::random(4), 
-            'patient_address' => Str::random(5) . 'address',
-            'patient_age' => 23,
-            'patient_occupation' => Str::random(7),
-            'patient_mobile' => 12344567678,
-            'patient_email' => Str::random(4) . '@test.com',
-            'patient_gender' => 'male',
+        Day::create([
+            'day' => 'Monday',
+            'status' => false,
         ]);
 
-        $exam = Exam::create([
-            'patient_id' => $patient->id,
+        Day::create([
+            'day' => 'Monday',
+            'status' => false,
+        ]);
+        Day::create([
+            'day' => 'Monday',
+            'status' => false,
+        ]);
+        Day::create([
+            'day' => 'Tuesday',
+            'status' => false,
+        ]);
+        Day::create([
+            'day' => 'Wednesday',
+            'status' => false,
+        ]);
+        Day::create([
+            'day' => 'Thursday',
+            'status' => false,
+        ]);
+        Day::create([
+            'day' => 'Friday',
+            'status' => false,
+        ]);
+        Day::create([
+            'day' => 'Saturday',
+            'status' => false,
+        ]);
+        Day::create([
+            'day' => 'Sunday',
+            'status' => false,
         ]);
 
-        $tab = Tab::create([
-            'user_id' => 1,
-            'inventory_active_tab' => 1,
+
+        Setting::create([
+            'code' => 11,
+            'title' => 'Scheduling',
+            'status' => false,
         ]);
     }
 }

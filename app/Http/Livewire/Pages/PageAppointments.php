@@ -9,8 +9,10 @@ use App\Models\Patient;
 use App\Models\Setting;
 use App\Models\Day;
 use App\Models\Year;
+use App\Models\Appointment_category as Ac;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use Illuminate\Support\Str;
+use Nexmo\Laravel\Facade\Nexmo;
 
 
 
@@ -29,8 +31,9 @@ class PageAppointments extends Component
 
     public Patient $pt;
 
+    // public $confirmDialogTitle = 'Confirm?';
 
-    public $confirmationMessage = 'Confirm Delete?';
+    // public $confirmDialogMessage = 'Confirm Delete?';
     
     public $name, $checked1;
 
@@ -42,20 +45,54 @@ class PageAppointments extends Component
 
     public $apptSettingsTabs = 1;
 
-    public $apptCreatedBy;
+    public $createAppt;
 
     public $selectedAppts = [];
 
     public $searchPatient, $isFillSearch = false, $searchPatientId;
 
-    protected $listeners = ['mount'];
-
     public $searchAppt;
 
     public $pageNumber = 10;
 
-    public $category = 0;
+    public $deletingApptCat = false;
 
+    public $apptCatColor;
+
+    public $activeMenu = 'all';
+
+    public $confirmStatusUpdate = false, $apptId, $statusId;
+
+    public $day = false;
+
+    public $timeSched, $yearSched;
+
+    public 
+        $isUpdate = false, 
+        $isAdd = false, 
+        $addAppt = false;
+
+    public $colName = 'appt_status', $direction = 'asc';
+
+    public 
+        $setAll_am, 
+        $setAll_pm,
+        
+        $amStart,
+        $pmEnd;
+
+
+
+
+    protected $listeners = ['mount'];
+
+    public $apptCat = [
+        'status' => false,
+        'title' => '',
+        'desc' => '',
+        'message' => '',
+        'color' => '',
+    ];
 
     public $appt = [
         'id'          => '',
@@ -75,36 +112,10 @@ class PageAppointments extends Component
         'update'    => false,
         'settings'  => false,
         'settings2' => false,
-
+        'settings3' => false,
+        'notification_settings' => false,
     ];
 
-    public 
-        $isUpdate = false, 
-        $isAdd = false, 
-        $addAppt = false;
-
-    // public $editTime = false, $editTimeId = '';
-
-    public $colName = 'appt_status', $direction = 'asc';
-
-    public 
-        $setAll_am, 
-        $setAll_pm,
-        
-        $amStart,
-        $pmEnd;
-
-
-    public $day = false;
-
-
-    // public $time = [
-    //     'active'    => false,
-    //     'am_from'   => '',
-    //     'am_to'     => '',
-    //     'pm_from'   => '',
-    //     'pm_to'     => '',
-    // ];
 
     public $apptStatus = [
         1 => "For Approval",
@@ -123,11 +134,8 @@ class PageAppointments extends Component
     ];
 
     protected $queryString = [
-        'category',
+        'activeMenu'
     ];
-
-
-    public $timeSched, $yearSched;
 
     public function myTab($value)
     {
@@ -141,7 +149,6 @@ class PageAppointments extends Component
             ? $this->apptSettings = false 
             : $this->apptSettings = true;
 
-
         $searchPatient = $this->searchPatient . '%';
         $pt = Patient::where('patient_fname' , 'like', $searchPatient)
                         ->orWhere('patient_lname', 'like', $searchPatient)
@@ -150,23 +157,16 @@ class PageAppointments extends Component
 
         $searchAppt = $this->searchAppt . '%';
 
-        $appts = Appointment::with('patient');
-
-        if ($this->category > 0) 
-            $appts = Appointment::with('patient')->where('appt_status', $this->category)->orderBy($this->colName, $this->direction)->paginate($this->pageNumber);
+        if ($this->activeMenu != 'all') 
+            $appts = Appointment::with('patient')->with('appointment_category')->where('appointment_category_id', $this->activeMenu)->orderBy($this->colName, $this->direction)->paginate($this->pageNumber);
         else
-            $appts = Appointment::with('patient')->orderBy($this->colName, $this->direction)->paginate($this->pageNumber);
+            $appts = Appointment::with('patient')->with('appointment_category')->orderBy($this->colName, $this->direction)->paginate($this->pageNumber);
 
-
-        // $appts = Search::new()
-        //     ->add(Appointment::class, 'appt_date')
-        //     ->add(Patient::class, 'patient_lname')
-        //     ->beginWithWildcard()
-        //     ->search('new');
 
         return view('livewire.pages.page-appointments', 
             [
                 'schedsettings' => Schedsetting::all(), 
+                'categories' => Ac::all(),
                 'appts' => $appts,
                 'patients' => $pt,
             ])
@@ -176,31 +176,15 @@ class PageAppointments extends Component
 
     public function mount()
     {
-        // $schedsetting = Schedsetting::find(2);
-        // $this->amStart = $schedsetting->schedset_am;
-        // $this->pmEnd = $schedsetting->schedset_pm;
-
-        $updateStatus;
-        
-
-        // if overdue update status to missed
-        Appointment::where('appt_date', '<', date('Y-m-d'))->where('appt_status', '!=', 5)->where('appt_status', '!=', 6)->update(['appt_status' => 4]);
-    
-        $appts = Appointment::all();
-        $appts_duedate = $appts->where('appt_date', date('Y-m-d'))
-                    ->where('appt_status', '!=', 1)
-                    ->where('appt_status', '!=', 4)
-                    ->where('appt_status', '!=', 5)
-                    ->where('appt_status', '!=', 6);
-
-
-        foreach ($appts_duedate as $duedate) {
-            $duedate->appt_date == date('Y-m-d')
-                ? $updateStatus = ['patient_queue' => true, 'patient_exam_status' => true]
-                : $updateStatus = ['patient_queue' => false, 'patient_exam_status' => false];
-
-            Patient::where('id', $duedate->patient_id)->update($updateStatus);
-        }
+        // $appts = Appointment::with('patient')->where('appt_date', tomorrow())->get();
+        // if ($appts->count() > 0) {
+        //     foreach ($appts as $appt) {
+        //         sendSMS(
+        //             $number = $appt->patient->patient_mobile,
+        //             $message = 'Hello ' . $appt->patient->patient_fname . ', you have an appointment tommorow ' . humanReadableDate($appt->appt_date) . ' at ' . humanReadableTime($appt->appt_time) . '. See you tomorrow and have a Great Day!'
+        //         );
+        //     }
+        // }
     }
 
     public function updatedCategory()
@@ -238,32 +222,27 @@ class PageAppointments extends Component
     }
 
 
-    public function category($value)
+    public function categoryName($id)
     {
-        switch ($value) {
-            case 0: return 'All';           break;
-            case 1: return 'For Approval';  break;
-            case 2: return 'Ongoing';       break;
-            case 3: return 'Rescheduled';   break;
-            case 4: return 'Missed';        break;
-            case 5: return 'Fulfilled';     break;
-            case 6: return 'Cancelled';     break;
-            default:
-        }
+        if ($id == 'all') return 'All';
+        else return Ac::find($id)->title;
     }
+
+
     public function categoryDesc($value)
     {
-        $appt = Appointment::all();
-        switch ($value) {
-            case 0: return $appt->count();                           break;
-            case 1: return $appt->where('appt_status', 1)->count();  break;
-            case 2: return $appt->where('appt_status', 2)->count();  break;
-            case 3: return $appt->where('appt_status', 3)->count();  break;
-            case 4: return $appt->where('appt_status', 4)->count();  break;
-            case 5: return $appt->where('appt_status', 5)->count();  break;
-            case 6: return $appt->where('appt_status', 6)->count();  break;
-            default:
-        }
+        if ($value == 'all') 
+            return Appointment::count();
+        else 
+            return Appointment::where('appointment_category_id', $value)->count();
+    }
+
+    public function categoryCount($value)
+    {
+        if ($value == 'all') 
+            return Appointment::count();
+        else 
+            return Appointment::where('appointment_category_id', $value)->count();
     }
 
 
@@ -286,41 +265,17 @@ class PageAppointments extends Component
 
     public function countFulfilledAppts() { return Appointment::where('appt_status', 'fu')->count(); }
 
-    public function date($date) { return \Carbon\Carbon::parse($date)->isoFormat('MMM D, YYYY'); }
+    // public function date($date) { return \Carbon\Carbon::parse($date)->isoFormat('MMM D, YYYY'); }
 
-    public function day($day) { return \Carbon\Carbon::parse($day)->format('l'); }
+    // public function day($day) { return \Carbon\Carbon::parse($day)->format('l'); }
 
     public function time($time) { return isset($time) ? \Carbon\Carbon::parse($time)->format('g:i A') : ''; }
 
     public function orderBy($colName, $direction)
     {
-        // $this->resetPage();
-
         $this->colName = $colName;
         $this->direction = $direction;
     }
-
-    // public function statusColor($status)
-    // {
-    //     switch ($status) {
-    //         case 'fa':
-    //             return '#0275d8';
-    //             break;
-    //         case 'on':
-    //             return '#5cb85c';
-    //             break;
-    //         case 're':
-    //             return '#5bc0de';
-    //             break;
-    //         case 'fu':
-    //             return '#292b2c';
-    //             break;
-    //         case 'mi':
-    //             return '#d9534f';
-    //             break;
-    //     }
-    // }
-
 
     public function statusColor($status)
     {
@@ -383,16 +338,52 @@ class PageAppointments extends Component
     }
 
 
-
-
-
-  
-
-
-
-    public function createAppt()
+    public function setColor($acId, $cvalue, $cname)
     {
-        $findPt = Patient::findOrFail($this->searchPatient);
+        Ac::find($acId)->update(['color' => $cvalue, 'cname' => $cname]);
+    }
+
+
+
+    public function updateStatus($statusId, $apptId)
+    {
+        $this->confirmStatusUpdate = true;
+        $this->statusId = $statusId;
+        $this->apptId = $apptId;
+        $title = Ac::find($statusId)->title;
+        // $this->confirmDialogMessage= 'Status will be changed as ' . $title . '. Do you want to proceed?';
+        $this->dispatchBrowserEvent('confirm-dialog',[
+            'title' => 'Are you sure?',
+            'content' => 'Status will be changed as "' . $title . '". Do you want to proceed?'
+        ]); 
+    }
+
+    public function updatedStatus() 
+    {
+        $this->dispatchBrowserEvent('confirm-dialog-close');
+        $appt = Appointment::find($this->apptId);
+        $appt->update(['appointment_category_id' => $this->statusId]);
+        if ($appt) {
+            $this->notify($appt->patient_id, $appt->appointment_category_id);
+            $this->dispatchBrowserEvent('toast',[
+                'title' => null,
+                'class' => 'success',
+                'message' => 'Status has changed succesfully.',
+            ]);
+        } else {
+            $this->dispatchBrowserEvent('toast',[
+                'title' => null,
+                'class' => 'error',
+                'message' => 'Unable to make changes. Please try again.',
+            ]);
+        }
+    }    
+
+
+
+    public function createAppt($patientId)
+    {
+        $findPt = Patient::findOrFail($patientId);
         $this->appt['pt_name'] = $findPt->patient_lname . ', ' . $findPt->patient_fname . ' ' . $findPt->patient_mname;
         $this->appt['pt_phone'] = $findPt->patient_mobile;
         $this->appt['pt_addr'] = $findPt->patient_address;
@@ -401,7 +392,7 @@ class PageAppointments extends Component
         $this->appt['id'] = $findPt->id;
 
         $this->appt['pt_status'] = $this->apptStatus[2];
-        $this->apptCreatedBy = 'dc';
+        $this->createAppt = 'toCreate';
 
         $this->modal['add'] = false;
         $this->modal['update'] = true;
@@ -410,70 +401,123 @@ class PageAppointments extends Component
             'isFillSearch',
             'searchPatient',
         ]);
-
-        $this->dispatchBrowserEvent('form-modal');
     }
 
     public function updateAppt()
     {
-        // dd($this->appt['id'] . ' ' . $this->apptCreatedBy);
+
         $this->validate([
             'appt.pt_date'   => 'required',
             'appt.pt_status' => 'required|integer',
         ]);
 
-
-        switch ($this->apptCreatedBy) {
-            case 'dc':
-                Appointment::create([
+        switch ($this->createAppt) {
+            case 'toCreate':
+                $appt = Appointment::create([
                     'patient_id' => $this->appt['id'],
                     'appt_date' => $this->appt['pt_date'],
                     'appt_time' => $this->appt['pt_time'],
-                    'appt_status' => $this->appt['pt_status'],
+                    'appointment_category_id' => $this->appt['pt_status'],
                 ]);
-                break;
 
-            case 'pt':
-                Appointment::where('id', $this->appt['id'])
-                    ->update([
-                        'appt_date' => $this->appt['pt_date'],
-                        'appt_time' => $this->appt['pt_time'],
-                        'appt_status' => $this->appt['pt_status']
+                if ($this->appt['pt_date'] < date('Y-m-d')) {
+                    $this->dispatchBrowserEvent('toast',[
+                        'title' => null,
+                        'class' => 'error',
+                        'message' => 'Over Due',
                     ]);
-                break;
-        }
+                } else {
+                    $this->notify($appt->patient_id, $this->appt['pt_status']);
+                    $this->dispatchBrowserEvent('toast',[
+                        'title' => null,
+                        'class' => 'success',
+                        'message' => 'Added Succesfully',
+                    ]);
+                }
 
+                break;
+
+            case 'updateCreated':
+                $appt = Appointment::find($this->appt['id']);
+                $appt->update([
+                    'appt_date' => $this->appt['pt_date'],
+                    'appt_time' => $this->appt['pt_time'],
+                    'appt_status' => $this->appt['pt_status']
+                ]);
+
+                if ($this->appt['pt_date'] < date('Y-m-d')) {
+                    $this->dispatchBrowserEvent('toast',[
+                        'title' => null,
+                        'class' => 'error',
+                        'message' => 'Over Due',
+                    ]);
+                } else {
+                    $this->notify($appt->patient_id, $this->appt['pt_status']);
+                    $this->dispatchBrowserEvent('toast',[
+                        'title' => null,
+                        'class' => 'success',
+                        'message' => 'Updated Succesfully',
+                    ]);
+                }
+                break;
+            }
+            
         $this->closeModal();
         $this->resetErrorBag();
-        $this->dispatchBrowserEvent('toast',[
-            'title' => null,
-            'class' => 'success',
-            'message' => 'Updated Succesfully',
-        ]);
+      
+    }
+
+    public function notify($patientId, $apptStatusId)
+    {
+        // get text message
+        $notify = Ac::find($apptStatusId);
+        //find [date] string and replace by the actual date
+        $text = Str::replace('[date]', humanReadableDate($this->appt['pt_date']), $notify->notify);
+        //get patient number
+        $pt_mobile = Patient::find($patientId)->patient_mobile;
+        //send message
+
+        try {
+            return sendSMS($pt_mobile, $text);
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('toast',[
+                'title' => null,
+                'class' => 'error',
+                'message' => 'Sorry, unable to send a message. Please try to check phone number.',
+            ]);
+        }
     }
 
 
     public function deletingAppt($apptId)
     {
         $this->confirm['appt'] = true;
-
         $this->appt['id'] = $apptId;
 
-        $this->dispatchBrowserEvent('confirm-dialog'); 
+
+        $appt = Appointment::find($apptId)->with('patient')->first();
+        $pt = Str::title($appt->patient->patient_lname . ', ' . $appt->patient->patient_fname . ' ' . $appt->patient->patient_mname);
+        $apptDate = humanReadableDate($appt->appt_date);
+
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Delete Appointment', 
+            'content' => 'Appointment will be deleted. Do you want to proceed?',
+        ]); 
     }
 
     public function deletingAppts()
     {
         $this->confirm['appts'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog');
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Delete Appointments',
+            'content' => 'Are you sure you want to delete this appointments?'
+        ]);
     }
 
     public function deleteAppt()
     {
         Appointment::destroy($this->appt['id']);
-
-        $this->confirm_dialog_modal_close();
-
+        $this->dispatchBrowserEvent('confirm-dialog-close');
         $this->dispatchBrowserEvent('toast',[
             'title' => null,
             'class' => 'success',
@@ -486,9 +530,8 @@ class PageAppointments extends Component
         Appointment::destroy($this->selectedAppts);
 
         $this->selectedAppts = [];
-
+        $this->resetPage();
         $this->confirm_dialog_modal_close();
-
         $this->dispatchBrowserEvent('toast',[
             'title' => 'Deleted',
             'class' => 'success',
@@ -501,46 +544,46 @@ class PageAppointments extends Component
     public function approvingAppt($apptId) {
         $this->appt['id'] = $apptId;
         $this->confirm['approve'] = true;
-        $this->confirmationMessage = 'Approve Appointment?';
+        $this->confirmDialogMessage = 'Approve Appointment?';
         $this->dispatchBrowserEvent('confirm-dialog');
     }
 
-    public function approveAppt()
-    {
-        $appt = Appointment::findOrFail($this->appt['id'])->first();
+    // public function approveAppt()
+    // {
+    //     $appt = Appointment::findOrFail($this->appt['id'])->first();
 
-        if ($appt->appt_status == 1) {
+    //     if ($appt->appt_status == 1) {
 
-            $appt->update(['appt_status' => 2]);
+    //         $appt->update(['appt_status' => 2]);
 
-            $this->confirm_dialog_modal_close();
-            $this->dispatchBrowserEvent('toast',[
-                'title'   => 'Ongoing',
-                'class'   => 'success',
-                'message' => 'Appointment Ongoing.']);
+    //         $this->confirm_dialog_modal_close();
+    //         $this->dispatchBrowserEvent('toast',[
+    //             'title'   => 'Ongoing',
+    //             'class'   => 'success',
+    //             'message' => 'Appointment Ongoing.']);
 
-        } elseif ($appt->appt_status == 2) {
-            $this->confirm_dialog_modal_close();
-            $this->dispatchBrowserEvent('toast',[
-                'title'   => 'Approved',
-                'class'   => 'success',
-                'message' => 'This appointment has already been approved.']);
+    //     } elseif ($appt->appt_status == 2) {
+    //         $this->confirm_dialog_modal_close();
+    //         $this->dispatchBrowserEvent('toast',[
+    //             'title'   => 'Approved',
+    //             'class'   => 'success',
+    //             'message' => 'This appointment has already been approved.']);
 
-        } else {
-            $this->confirm_dialog_modal_close();
-            $this->dispatchBrowserEvent('toast',[
-                'title'   => null,
-                'class'   => 'error',
-                'message' => 'Unable to make changes.']);
-        }
-        $this->reset(['confirm', 'appt']);
-    }
+    //     } else {
+    //         $this->confirm_dialog_modal_close();
+    //         $this->dispatchBrowserEvent('toast',[
+    //             'title'   => null,
+    //             'class'   => 'error',
+    //             'message' => 'Unable to make changes.']);
+    //     }
+    //     $this->reset(['confirm', 'appt']);
+    // }
 
     public function cancelingAppt($apptId)
     {
         $this->confirm['cancel'] = true;
         $this->appt['id'] = $apptId;
-        $this->confirmationMessage = 'Do you want to Cancel this Appointment?';
+        $this->confirmDialogMessage = 'Do you want to Cancel this Appointment?';
         $this->dispatchBrowserEvent('confirm-dialog');
     }
 
@@ -608,43 +651,50 @@ class PageAppointments extends Component
         $this->reset(['modal', 'appt']);
 
         switch ($data) {
-            case 'isAdd':
-                $this->modal['add'] = true;
-                break;
+            // case 'isAdd':
+            //     $this->modal['add'] = true;
+            //     break;
 
             case 'isUpdate':
-                $apptId = Appointment::findOrFail($id);
-                $findPt = Patient::findOrFail($apptId->patient_id);
-                
-                $this->appt['pt_name']      = $findPt->patient_lname . ', ' . $findPt->patient_fname . ' ' . $findPt->patient_mname;
-                $this->appt['pt_phone']     = $findPt->patient_mobile;
-                $this->appt['pt_addr']      = $findPt->patient_address;
-                $this->appt['pt_occ']       = $findPt->patient_occupation;
-                $this->appt['pt_avatar']    = $findPt->patient_avatar;
+                if ($id == null) {
+                    $this->modal['update'] = true;
+                } else {
+                    $apptId = Appointment::findOrFail($id);
+                    $findPt = Patient::findOrFail($apptId->patient_id);
+                    
+                    $this->appt['pt_name']      = $findPt->patient_lname . ', ' . $findPt->patient_fname . ' ' . $findPt->patient_mname;
+                    $this->appt['pt_phone']     = $findPt->patient_mobile;
+                    $this->appt['pt_addr']      = $findPt->patient_address;
+                    $this->appt['pt_occ']       = $findPt->patient_occupation;
+                    $this->appt['pt_avatar']    = $findPt->patient_avatar;
+    
+                    $this->appt['id']           = $apptId->id ?? '';
+                    $this->appt['pt_date']      = $apptId->appt_date ?? '';
+                    $this->appt['pt_time']      = $apptId->appt_time ?? '';
+                    $this->appt['pt_status']    = $apptId->appointment_category_id;
+    
+                    $this->modal['update'] = true;
+                    $this->createAppt = 'updateCreated';
 
-                $this->appt['id'] = $apptId->id;
-                $this->appt['pt_date']      = $apptId->appt_date;
-                $this->appt['pt_time']      = $apptId->appt_time;
-                $this->appt['pt_status']    = $apptId->appt_status;
-
-                $this->modal['update'] = true;
-                $this->apptCreatedBy = 'pt';
+                }
                 break;
-            case 'settings':
-                $this->modal['settings'] = true;
+            case 'settings':  
+                $this->modal['settings'] = true; 
+                break;
+            case 'settings3': 
+                $this->modal['settings3'] = true; 
                 break;
             default:
         }
         $this->modal['show'] = true;
-        $this->dispatchBrowserEvent('form-modal'); 
+        // $this->dispatchBrowserEvent('form-modal'); 
     }
 
     public function closeModal()
     {
-        $this->reset(['modal', 'appt', 'apptSettings', 'apptSettings2']);
-
+        $this->reset(['modal', 'appt', 'apptSettings', 'apptSettings2', 'deletingApptCat']);
+        $this->resetErrorBag();
         $this->clearSearch(); 
-
         $this->dispatchBrowserEvent('confirm-dialog-close');
     }
 
@@ -681,7 +731,6 @@ class PageAppointments extends Component
 
     public function selectedDay($dayId)
     {
-        // dd($dayId);
         $day = Day::find($dayId);
 
         $day->status 
@@ -689,6 +738,39 @@ class PageAppointments extends Component
             : $day->update(['status' => true]);
     }
 
+    public function selectedApptCategory($apptCategoryId)
+    {
+        $apptCategory = Ac::find($apptCategoryId);
+
+        $apptCategory->status
+            ? $apptCategory->update(['status' => false])
+            : $apptCategory->update(['status' => true]); 
+    }
+
+    
+    public function addApptColor($id)
+    {
+        Ac::find($id)->update(['color' => $this->apptCat['color']]);
+        $this->apptCat['color'] = '';
+    }
+
+
+    public function addApptCategory()
+    {
+        $this->validate([
+            'apptCat.title' => 'required|max:20|unique:appointment_categories,title',
+        ]);
+
+        Ac::create([
+            'status' => true,
+            'title' => $this->apptCat['title'],
+        ]);
+
+        $this->reset(['apptCat']);
+        $this->resetErrorBag();
+    }
+
+    public function deleteApptCategory($id) { Ac::destroy($id); }
 
     public function addTime()
     {
@@ -698,22 +780,14 @@ class PageAppointments extends Component
         );
 
         Time::create(['time' => $this->timeSched]);        
-
         $this->timeSched = '';
-        
         $this->resetErrorBag();
-
     }
 
-    public function deleteTime($id)
-    {
-        Time::destroy($id);
-    }
+    public function deleteTime($id) { Time::destroy($id); }
 
-    public function deleteYear($id)
-    {
-        Year::destroy($id);
-    }
+    public function deleteYear($id) { Year::destroy($id); }
+
 
     public function enableScheduling()
     {
@@ -727,10 +801,8 @@ class PageAppointments extends Component
     public function enableSchedulingStatus($code)
     {
         $setting = Setting::where('code', $code)->first();
-        if ($setting->status)
-            return true;
-        else 
-            return false;
+        if ($setting->status) return true;
+        else return false;
     }
 
 
@@ -741,11 +813,7 @@ class PageAppointments extends Component
         $status == 1 
             ? $schedsetting->update(['schedset_checked' => true])
             : $schedsetting->update(['schedset_checked' => false]);
-
-            // $this->reset(['editTime', 'editTimeId']);
     }
-
-
 
 
 
@@ -796,7 +864,7 @@ class PageAppointments extends Component
 
 
 
-    public function confirm()
+    public function confirmed()
     {
         $this->confirm['appt']
             ? $this->deleteAppt()
@@ -804,11 +872,14 @@ class PageAppointments extends Component
         $this->confirm['appts']
             ? $this->deleteAppts()
             : NULL;
-        $this->confirm['approve']
-            ? $this->approveAppt()
-            : NULL;
+        // $this->confirm['approve']
+        //     ? $this->approveAppt()
+        //     : NULL;
         $this->confirm['cancel']
             ? $this->cancelAppt()
             : NULL;
-    }
+        $this->confirmStatusUpdate
+            ? $this->updatedStatus()
+            : NULL;
+    } 
 }

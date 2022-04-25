@@ -25,7 +25,6 @@ class ItemsSeeder extends Seeder
         $item = Item::create([
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
-            'item_qty' => '15',
             'item_size' => '234x453',
             'item_type' => 'le',
             'item_price' => '1500',
@@ -35,7 +34,6 @@ class ItemsSeeder extends Seeder
         $item = Item::create([
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
-            'item_qty' => '15',
             'item_size' => '234x453',
             'item_type' => 'le',
             'item_price' => '1500',
@@ -45,7 +43,6 @@ class ItemsSeeder extends Seeder
         $item = Item::create([
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
-            'item_qty' => '15',
             'item_size' => '234x453',
             'item_type' => 'le',
             'item_price' => '1500',
@@ -55,7 +52,6 @@ class ItemsSeeder extends Seeder
         $item = Item::create([
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
-            'item_qty' => '15',
             'item_size' => '234x453',
             'item_type' => 'fr',
             'item_price' => '1500',
@@ -65,7 +61,6 @@ class ItemsSeeder extends Seeder
         $item = Item::create([
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
-            'item_qty' => '15',
             'item_size' => '234x453',
             'item_type' => 'fr',
             'item_price' => '1500',
@@ -75,7 +70,6 @@ class ItemsSeeder extends Seeder
         $item = Item::create([
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
-            'item_qty' => '15',
             'item_size' => '234x453',
             'item_type' => 'fr',
             'item_price' => '1500',
@@ -85,7 +79,6 @@ class ItemsSeeder extends Seeder
         $item = Item::create([
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
-            'item_qty' => '15',
             'item_size' => '234x453',
             'item_type' => 'ac',
             'item_price' => '1500',
@@ -95,7 +88,6 @@ class ItemsSeeder extends Seeder
         $item = Item::create([
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
-            'item_qty' => '15',
             'item_size' => '234x453',
             'item_type' => 'ac',
             'item_price' => '1500',
@@ -105,7 +97,6 @@ class ItemsSeeder extends Seeder
         $item = Item::create([
             'item_name' => Str::random(10),
             'item_desc' => 'Item description and description',
-            'item_qty' => '15',
             'item_size' => '234x453',
             'item_type' => 'ac',
             'item_price' => '1500',

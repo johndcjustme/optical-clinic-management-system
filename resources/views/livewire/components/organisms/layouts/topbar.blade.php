@@ -8,13 +8,9 @@
      
     </div>
     <div>
-        {{-- <div class="ui calendar" id="standard_calendar" x-init="$('#standard_calendar').calendar();"> --}}
-            <div class="ui input transparent tiny left">
-              {{-- <i class="calendar icon"></i> --}}
-              {{ date('M d')}}
-              {{-- <input wire:model="today" type="date" placeholder="Date/Time"> --}}
-            </div>
-          {{-- </div> --}}
+        <span class="ui text blue">
+            {{ date('d') . ', ' . date('F') }}
+        </span>
     </div>
     <div class="flex gap_1 flex_y_center">
         <div wire:click="showPanelSettings('forum_isOpen')" class="relative">

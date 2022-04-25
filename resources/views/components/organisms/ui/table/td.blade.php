@@ -1,4 +1,4 @@
-<td {{ $attributes->merge(['style'=>'']) }}>
+<td {{ $attributes->merge(['style'=>''])->merge(['class' => '']) }}>
     <div class="flex flex_y_center">
         <div>
             @if (!empty($checkbox))

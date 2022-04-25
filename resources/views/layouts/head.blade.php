@@ -196,8 +196,14 @@
 
 
         window.addEventListener('confirm-dialog', event => {
+            var title = document.getElementById('modal-title');
+            var content = document.getElementById('modal-content');
+
+            title.innerHTML = event.detail.title;
+            content.innerHTML = event.detail.content;
+
             $("#fade").modal({
-                fadeDuration: 75,
+                fadeDuration: 100,
                 showClose: false
             });
         })
