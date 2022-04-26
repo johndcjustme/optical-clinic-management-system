@@ -12,7 +12,7 @@
     <x-organisms.ui.table.td>
         <div class="ui dropdown">
             <div class="ui {{ $appt->appointment_category->cname }} empty circular label" style="margin-right: 0.5em"></div>
-            {{ $appt->appointment_category->title }}
+            <small>{{ $appt->appointment_category->title }}</small>
             <div class="menu">
                 <div class="scrolling menu">
                     <div class="header">
@@ -42,7 +42,7 @@
         text="{{ $appt->patient->patient_mobile }}"
         text-icon=" {{ !empty($appt->patient->patient_mobile) ? 'fa-square-phone' : ''; }}"/>
     <x-organisms.ui.table.td
-        desc="{{ humanReadableDate($appt->created_at) . ' @ ' . humanReadableTime($appt->created_at) }}"/>
+        desc="{{ humanReadableDate($appt->created_at) }}"/>
     <x-organisms.ui.table.td-more style="width: 1em">
         <x-atom.more.option 
             wire-click="apptShowModal('isUpdate', {{ $appt->id }})" 

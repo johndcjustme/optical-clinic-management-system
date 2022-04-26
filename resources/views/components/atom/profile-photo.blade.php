@@ -2,11 +2,11 @@
     style="
         height:{{ $size }}; 
         width:{{ $size }}; 
-        border-radius: 0.7em;
+        border-radius: 0.5em;
         background: url('{{ $path }}') no-repeat center;
         background-size: cover;
         background-position: center top;
-        border: 2px solid #0E6EB8;
+        border: 1px solid lightgray;
         overflow: hidden;
     ">
 

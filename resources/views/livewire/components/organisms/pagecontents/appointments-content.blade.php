@@ -108,7 +108,6 @@
     @section('section-main')
         @if ($this->myTab == 1)
             @if (count($appts) > 0)
-
                 <x-organisms.ui.table class="selectable unstackable">
                     <x-slot name="thead">
                         <x-organisms.ui.table.th-checkbox />
@@ -117,7 +116,7 @@
                         <x-organisms.ui.table.th label="Appointment" order-by="appt_date" style="width:12em" />
                         <x-organisms.ui.table.th label="Patient Name" order-by="patient_name" />
                         <x-organisms.ui.table.th label="Phone Number" style="width:14em" />
-                        <x-organisms.ui.table.th label="Date Created" order-by="created_at" style="width:14em" />
+                        <x-organisms.ui.table.th label="Date Created" order-by="created_at" style="width:10em" />
                         <x-organisms.ui.table.th-more />
                     </x-slot>
                     <x-slot name="tbody">

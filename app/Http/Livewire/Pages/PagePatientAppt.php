@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Time;
 use App\Models\Day;
 use App\Models\Year;
+use App\Models\Appointment_category as Ac;
 
 
 
@@ -21,6 +22,8 @@ class PagePatientAppt extends Component
     public $day;
 
     public $year;
+
+    public $time;
 
     public $filter = 'all';
 
@@ -111,9 +114,9 @@ class PagePatientAppt extends Component
 
         if (!empty($patient->id)) {
             if ($this->filter == 'all') {
-                $myAppts = Appointment::with('patient')->with('appointment_category')->orderByDesc('created_at')->where('patient_id', $patient->id)->get();
+                $myAppts = Appointment::with('patient')->with('appointment_category')->orderByDesc('created_at')->where('patient_id', Auth::user()->id)->get();
             } else {
-                $myAppts = Appointment::with('patient')->with('appointment_category')->orderByDesc('created_at')->where('patient_id', $patient->id)->where('appt_status', $this->filter)->get();
+                $myAppts = Appointment::with('patient')->with('appointment_category')->orderByDesc('created_at')->where('patient_id', Auth::user()->id)->where('appointment_category_id', $this->filter)->get();
             }
             return view('livewire.pages.page-patient-appt', [
                 'my_appts' => $myAppts,
@@ -134,6 +137,7 @@ class PagePatientAppt extends Component
         $this->month = date('m');
         $this->day = date('d');
         $this->year = date('Y');
+        $this->time = date("h:i:s");
     }
 
 
@@ -211,17 +215,6 @@ class PagePatientAppt extends Component
     {
         $this->validate();
 
-        // dd(
-        //     $this->pt['fname'] . ' ' .
-        //     $this->pt['lname'] . ' ' .
-        //     $this->pt['mname'] . ' ' .
-        //     $this->pt['gender'] . ' ' .
-        //     $this->pt['addr'] . ' ' .
-        //     $this->pt['occ'] . ' ' .
-        //     $this->pt['age'] . ' ' .
-        //     $this->pt['mobile'] . ' ' . 
-        //     $this->pt['email'] . ' ' 
-        // );
         $myId = Auth::user()->id;
 
         Patient::updateOrCreate(
@@ -242,57 +235,42 @@ class PagePatientAppt extends Component
         );
 
         $this->resetErrorBag();
-
         $this->step = 2;
-
         $this->dispatchBrowserEvent('toast',[
             'title' => null,
             'class' => 'success',
             'message' => 'Your information saved.',
         ]);   
-
-
-
     }
 
     public function confirmNewAppt()
     {
         $this->confirm['newAppt'] = true;
-        $this->confirm['message'] = 'Confirm Appointment?';
-        $this->dispatchBrowserEvent('confirm-dialog');
+        $date = $this->year . '-' . $this->month . '-' . $this->day;
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Confirm', 
+            'content' => 'Your appointment is on ' . humanReadableDate($date) . ' ' . humanReadableTime($this->time) . '. Do you want to proceed?'
+        ]);
     }
-
 
     public function newAppt()
     {
-        // $this->validate(
-        //     [   
-        //         'appt.date' => 'Required',
-        //         'appt.time' => 'Required',
-        //     ],
-        //     [
-        //         'appt.date.required' => 'Required',
-        //         'appt.time.required' => 'Required',   
-        //     ],
-        // );
+        // $patient = Patient::where('user_id', Auth::user()->id)->first();
+        $apptStatus = Ac::where('status', true)->first()->id;
 
+        $date = $this->year . '-' . $this->month . '-' . $this->day;
 
-        $patient = Patient::where('user_id', Auth::user()->id)->first();
-
-        if ($patient) {
-            Appointment::create([
-                'patient_id' => $patient->id,
-                'appt_date' => $this->appt['date'],
-                'appt_time' => $this->appt['time'],
-                'appt_status' => 1,
-            ]);
+        $appt = Appointment::create([
+            'patient_id'  => Auth::user()->id,
+            'appt_date'   => $date,
+            'appt_time'   => $this->time,
+            'appointment_category_id' => $apptStatus,
+        ]);
     
+        if ($appt) {
             $this->step = 3;
-
             $this->reset(['confirm', 'appt']);
-
             $this->dispatchBrowserEvent('confirm-dialog-close');
-    
             $this->dispatchBrowserEvent('toast',[
                 'title' => null,
                 'class' => 'success',
@@ -311,9 +289,7 @@ class PagePatientAppt extends Component
     public function cancelingAppt($id)
     {
         $this->appt['id'] = $id;
-
         $this->cancelAppt = true;
-
         $this->dispatchBrowserEvent('confirm-dialog');
     }
 
@@ -324,7 +300,7 @@ class PagePatientAppt extends Component
         ]);
         $this->dispatchBrowserEvent('confirm-dialog-close');
 
-        $this->dispatchBrowserEvent('toast',[
+        $this->dispatchBrowserEvent('toast', [
             'title' => null,
             'class' => 'success',
             'message' => 'Cancelled',
@@ -350,11 +326,11 @@ class PagePatientAppt extends Component
     
     public function countAppts($status)
     {
-        $this->pt['id'] = Patient::where('user_id', Auth::user()->id)->first()->id;
+        // $this->pt['id'] = Patient::where('user_id', Auth::user()->id)->first()->id;
         if ($status == 'all')
-            return Appointment::where('patient_id', $this->pt['id'])->count();
+            return Appointment::where('patient_id', Auth::user()->id)->count();
         else 
-            return Appointment::where('patient_id', $this->pt['id'])->where('appt_status', $status)->count();
+            return Appointment::where('patient_id', Auth::user()->id)->where('appointment_category_id', $status)->count();
 
         // switch ($status) {
         //     case 1:

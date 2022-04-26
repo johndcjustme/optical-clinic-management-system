@@ -406,10 +406,17 @@ class PageAppointments extends Component
     public function updateAppt()
     {
 
-        $this->validate([
-            'appt.pt_date'   => 'required',
-            'appt.pt_status' => 'required|integer',
-        ]);
+        $this->validate(
+            [
+                'appt.pt_date'   => 'required',
+                'appt.pt_status' => 'required|integer',
+            ],
+            [
+                'appt.pt_date.required' => 'Required',
+                'appt.pt_status.required' => 'Required',
+                'appt.pt_status.integer' => 'Required',
+            ]
+        );
 
         switch ($this->createAppt) {
             case 'toCreate':

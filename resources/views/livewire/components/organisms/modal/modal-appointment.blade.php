@@ -287,7 +287,7 @@
                         @if (!empty($appt['pt_name']))
                             <h3>{{ Str::title($appt['pt_name']) }}</h3>
                         @else
-                            <div class="ui message tiny fluid warning" style="width: 100%">
+                            <div class="ui message tiny fluid error" style="width: 100%">
                                 <div class="header">
                                     Select a patient first
                                 </div>
@@ -316,12 +316,12 @@
                         </div><br><br>
 
                         <div class="ui field">
-                            <x-atoms.ui.label for="">Appointment Date <x-atoms.ui.required/></x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="appt.pt_date" type="date" class="fluid"/>
+                            <x-atoms.ui.label for="">Appointment Date <x-atoms.ui.required/> @error('appt.pt_date') <span class="ui text error">{{ $message }}</span>@enderror</x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="appt.pt_date" type="date" class="fluid" required/>
                             <x-atoms.ui.label>Time</x-atoms.ui.label>
                             <x-atoms.ui.input wire-model="appt.pt_time" type="time" class="fluid"/>
-                            <x-atoms.ui.label>Status <x-atoms.ui.required/> </x-atoms.ui.label>
-                            <x-atoms.ui.select wire:model.defer="appt.pt_status" class="mb_7 fluid">
+                            <x-atoms.ui.label>Status <x-atoms.ui.required/>@error('appt.pt_status') <span class="ui text error">{{ $message }}</span>@enderror</x-atoms.ui.label>
+                            <x-atoms.ui.select wire:model.defer="appt.pt_status" class="mb_7 fluid" required>
                                 <option class="item" value="" selected hidden>Select</option>
                                 @foreach (App\Models\Appointment_category::all() as $ac)
                                     <option class="item" value="{{ $ac->id }}">{{ $ac->title }}</option>

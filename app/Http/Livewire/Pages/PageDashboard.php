@@ -6,6 +6,8 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Patient;
 use App\Models\Item;
+use App\Models\Category;
+use App\Models\Appointment_category as Ac;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
 use Carbon\Carbon;
 
@@ -15,13 +17,14 @@ use Asantibanez\LivewireCharts\Models\PieChartModel;
 use Asantibanez\LivewireCharts\Models\AreaChartModel;
 use Asantibanez\LivewireCharts\Models\RadarChartModel;
 use Asantibanez\LivewireCharts\Models\TreeMapChartModel;
+use Livewire\WithPagination;
 use Dompdf\Dompdf;
 
 use PDF;
 
 class PageDashboard extends Component
 {
-
+    use WithPagination;
     // public $mysession;
     // public $mysessionid;
     public $patient;
@@ -35,10 +38,14 @@ class PageDashboard extends Component
 
     public $recentSubscribers = 556;
 
+    public $pageNumber = 7;
+
 
     public $count = 0;
 
     public $mar;
+
+    public $stat = 'patients';
 
     public $months = [
         'JAN',
@@ -60,7 +67,9 @@ class PageDashboard extends Component
     public $monthValues;
 
 
-
+    protected $queryString = [
+        'stat' => ['except' => 'empty'],
+    ];
 
 
 
@@ -82,13 +91,14 @@ class PageDashboard extends Component
         // }
         $this->getMonth(4);
 
-        $columnChartModel = 
-            (new ColumnChartModel())
-                // ->setTitle('Expenses by Type')
-                ->addColumn('Lense', $this->totalOfItems('le'), '#f6ad55')
-                ->addColumn('Frame', $this->totalOfItems('fr'), '#fc8181')
-                ->addColumn('Accessory', $this->totalOfItems('ac'), '#90cdf4')
-            ;
+        $columnChartModel = (new ColumnChartModel());
+            foreach (Category::all() as $category) {
+                $columnChartModel->addColumn($category->name, $this->totalOfItems($category->id), '#f6ad55');
+            }
+            // $columnChartModel->addColumn('Frame', $this->totalOfItems('fr'), '#fc8181');
+            // $columnChartModel->addColumn('Accessory', $this->totalOfItems('ac'), '#90cdf4');
+
+
 
         $pieChartModel = 
             (new PieChartModel())
@@ -103,23 +113,14 @@ class PageDashboard extends Component
                 $areaChartModel->addPoint(date('M', mktime(0, 0, 0, $i, 1, $this->year)), $this->getMonth($i));
 
            
-              
-
-        // foreach ($this->months as $month) {
-        //     // echo $this->value++;
-        //     // echo $month;
-        //    $this->monthValues .= Patient::whereYear('created_at', $this->year)->whereMonth('created_at', $this->value++)->count() . ", ";
-        // }
-
-        // $this->mar = Patient::whereYear('created_at', $this->year)->whereMonth('created_at', 3)->count();
-        
-        
+            
            
         return view('livewire.pages.page-dashboard', [
                 'columnChartModel' => $columnChartModel,
                 'pieChartModel' => $pieChartModel,
                 'areaChartModel' => $areaChartModel,
                 'patients' => Patient::all(),
+                'items' => Item::with('category')->paginate($this->pageNumber),
             ])
             ->extends('layouts.app')
             ->section('content');
@@ -156,7 +157,6 @@ class PageDashboard extends Component
 
     public function totalOfPatients($kind)
     {
-        $patient = Patient::all();
         switch ($kind) {
             case 'all':
                 return Patient::count();
@@ -174,21 +174,14 @@ class PageDashboard extends Component
         }
     }
 
-    public function totalOfItems($category)
+    public function yearlyPatients($year)
     {
-        $item = Item::all();
-        switch ($category) {
-            case 'le':
-                return $item->where('item_type', 'le')->count();
-                break;
-            case 'fr':
-                return $item->where('item_type', 'fr')->count();
-                break;
-            case 'ac':
-                return $item->where('item_type', 'ac')->count();
-                break;
-            default:
-        }
+        return Patient::whereYear('created_at', $year)->count();
+    }
+
+    public function totalOfItems($categoryId)
+    {
+        return Item::where('category_id', $categoryId)->count();
     }
 
 
