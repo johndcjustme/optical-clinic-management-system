@@ -12,14 +12,9 @@
 <x-layout.page-content>
 
     @section('section-page-title')
-        <div class="">
-            <div>
-                <x-atoms.ui.header title="Appointments" />
-            </div>
-            <div>
-                <small>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla, similique.</small>
-            </div>
-        </div>
+        <x-atoms.ui.header 
+            title="Appointments"
+            desc="Lorem Ipsum dolor sit amet."/>        
     @endsection
 
     @section('section-links')

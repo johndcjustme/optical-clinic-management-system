@@ -1,14 +1,9 @@
 <x-layout.page-content>
 
     @section('section-page-title')
-        <div class="">
-            <div>
-                <x-atoms.ui.header title="Inventory"/>
-            </div>
-            <div>
-                <p>Lorem, ipsum dolor.</p>
-            </div>
-        </div>
+        <x-atoms.ui.header 
+            title="Inventory"
+            desc="Lorem Ipsum dolor sit amet."/>
     @endsection
 
     @section('section-links')
@@ -65,6 +60,7 @@
                         </x-atoms.ui.header-dropdown-menu>
                     @else
                         <x-atoms.ui.header-add-btn label="Add Item" wire-click="showModal('add', null)"/>
+                        <x-atoms.ui.header-add-btn icon="right arrow" label="In Item" wire-click="showModal('inItem', null)"/>
                     @endif
                     @break
                     
@@ -72,7 +68,7 @@
                     @break
 
                 @case(3)
-                    <x-atoms.ui.header-add-btn label="In Item" wire-click="showModal('inItem', null)"/>
+                    {{-- <x-atoms.ui.header-add-btn label="In Item" wire-click="showModal('inItem', null)"/> --}}
                     @break
                 @case(5)
                     <x-atoms.ui.header-add-btn label="Add Category" wire-click="showModal('addCategory', null)"/>
@@ -136,6 +132,7 @@
                     <x-organisms.ui.table class="selectable unstackable">
                         <x-slot name="thead">
                             <x-organisms.ui.table.th-checkbox/>
+                            <x-organisms.ui.table.th label="" style="width:1em" />
                             <x-organisms.ui.table.th label="Name" order-by="item_name" />
                             <x-organisms.ui.table.th label="Category" order-by="item_type" />
                             <x-organisms.ui.table.th label="Supplier" />
@@ -209,7 +206,6 @@
                             <x-organisms.ui.table.th label="Item" order-by="item_type" />
                             <x-organisms.ui.table.th label="Status" />
                             <x-organisms.ui.table.th label="Qty" />
-                            {{-- <x-organisms.ui.table.th label="Out" /> --}}
                             <x-organisms.ui.table.th label="Balance" />
                             <x-organisms.ui.table.th label="Date" order-by="item_name" style="width:15em"/>
                             <x-organisms.ui.table.th-more/>
@@ -217,20 +213,17 @@
                         <x-slot name="tbody">
                             @forelse ($in_out_items as $in_out)
                                 <tr>
-                                    <x-organisms.ui.table.td text="{{ $in_out->item->item_name }}" desc="{{ $in_out->item->item_desc }}"/>
+                                    <x-organisms.ui.table.td 
+                                        text="{{ $in_out->item->item_name }}" 
+                                        desc="{{ $in_out->item->item_desc }}"/>
                                     <x-organisms.ui.table.td text="{{ $in_out->status ? 'IN' : 'OUT' }}"/>
-                                        <x-organisms.ui.table.td text="{{ $in_out->qty }}"/>
-                                    {{-- <x-organisms.ui.table.td text="8"/> --}}
+                                    <x-organisms.ui.table.td text="{{ $in_out->qty }}"/>
                                     <x-organisms.ui.table.td text="{{ $in_out->balance }}"/>
                                     <x-organisms.ui.table.td text="{{ humanReadableDate($in_out->created_at) }}" desc="{{ humanReadableTime($in_out->created_at) }}"/>
-
                                     <x-organisms.ui.table.td-more>
                                         <x-atom.more.option
                                             wire-click="showModal('update', 'supplier', 'ID HERE')"
                                             option-name="View" />
-                                        {{-- <x-atom.more.option 
-                                            wire-click="deletingSupplier('ID HERE')"
-                                            option-name="Delete" /> --}}
                                     </x-organisms.ui.table.td>
                                 </tr>
                             @empty
@@ -239,8 +232,8 @@
                         </x-slot>
                     </x-organisms.ui.table>
                     {{ $in_out_items->links('livewire.components.paginator') }}
-
                     @break
+
                 @case(4)
                     
                     <x-organisms.ui.table class="selectable">
@@ -253,25 +246,21 @@
                             <x-organisms.ui.table.th-more/>
                         </x-slot>
                         <x-slot name="tbody">
-                            {{-- @forelse ($suppliers as $su) --}}
-                                <tr>
-                                    <x-organisms.ui.table.td desc="Jan 15, 2021"/>
-                                    <x-organisms.ui.table.td text="jerjehrjher"/>
-                                    <x-organisms.ui.table.td text="Lense"/>
-                                    <x-organisms.ui.table.td text="2"/>
-                                    <x-organisms.ui.table.td text="8"/>
-                                    <x-organisms.ui.table.td-more>
-                                        <x-atom.more.option
-                                            wire-click="showModal('update', 'supplier', 'ID HERE')"
-                                            option-name="Edit" />
-                                        <x-atom.more.option 
-                                            wire-click="deletingSupplier('ID HERE')"
-                                            option-name="Delete" />
-                                    </x-organisms.ui.table.td>
-                                </tr>
-                            {{-- @empty
-                                <x-organisms.ui.table.search-no-results colspan="7"/>
-                            @endforelse --}}
+                            <tr>
+                                <x-organisms.ui.table.td desc="Jan 15, 2021"/>
+                                <x-organisms.ui.table.td text="jerjehrjher"/>
+                                <x-organisms.ui.table.td text="Lense"/>
+                                <x-organisms.ui.table.td text="2"/>
+                                <x-organisms.ui.table.td text="8"/>
+                                <x-organisms.ui.table.td-more>
+                                    <x-atom.more.option
+                                        wire-click="showModal('update', 'supplier', 'ID HERE')"
+                                        option-name="Edit" />
+                                    <x-atom.more.option 
+                                        wire-click="deletingSupplier('ID HERE')"
+                                        option-name="Delete" />
+                                </x-organisms.ui.table.td>
+                            </tr>
                         </x-slot>
                     </x-organisms.ui.table>
 
@@ -280,7 +269,7 @@
                     @if (count($categories) > 0)
                         <x-organisms.ui.table class="selectable">
                             <x-slot name="thead">
-                                <x-organisms.ui.table.th-checkbox/>
+                                <x-organisms.ui.table.th label="Indicator" style="width:10em"/>
                                 <x-organisms.ui.table.th label="Name" />
                                 <x-organisms.ui.table.th label="Description" />
                                 <x-organisms.ui.table.th-more/>
@@ -288,18 +277,38 @@
                             <x-slot name="tbody">
                                 @foreach ($categories as $category)
                                     <tr>
+                                        <x-organisms.ui.table.td>
+                                            <div class="ui dropdown">
+                                                <div class="ui {{ $category->cname }} empty circular label" style="margin-right: 0.5em"></div>
+                                                <span style="color:{{ $category->cvalue }}">{{ $category->cname }}</span>
+                                                <div class="menu">
+                                                    <div class="scrolling menu">
+                                                        <div class="header">
+                                                            <i class="pen icon"></i>
+                                                            Choose Color
+                                                        </div>
+                                                        <div class="ui divider"></div>
+                                                        @foreach (colors() as $color)
+                                                            <div wire:click.prevent="setColor('{{ $category->id }}', '{{ $color['value'] }}', '{{ $color['name'] }}')" class="item">
+                                                                <div class="ui {{ $color['name'] }} empty circular label"></div>
+                                                                {{ Str::title($color['name']) }}
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </x-organisms.ui.table.td>
                                         <x-organisms.ui.table.td 
-                                            checkbox="selectedItems" 
-                                            checkbox-value="{{ $category->id }}"/>
-                                        <x-organisms.ui.table.td text="{{ $category->name }}"/>
-                                        <x-organisms.ui.table.td text="{{ !empty($category->desc) ? $category->desc : '-' }}"/>
+                                            text="{{ $category->name }}"/>
+                                        <x-organisms.ui.table.td 
+                                            text="{{ !empty($category->desc) ? $category->desc : '-' }}"/>
                                         <x-organisms.ui.table.td-more>
                                             <x-atom.more.option
                                                 wire-click="showModal('updateCategory', {{ $category->id}})"
                                                 option-name="Edit" />
                                             <x-atom.more.option 
-                                                wire-click="deletingCategory({{ $category->id }})"
-                                                option-name="Delete" />
+                                                wire-click="deletingCategory({{ $category->id }}, '{{ $category->name }}')"
+                                                option-name="Delete"/>
                                         </x-organisms.ui.table.td>
                                     </tr>
                                 @endforeach

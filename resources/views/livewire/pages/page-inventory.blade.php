@@ -17,15 +17,16 @@
         </div>
 
         @if ($modal['show'])
-            @includeIf('livewire.components.organisms.modal.modal-inventory')
+            @include('livewire.components.organisms.modal.modal-inventory')
+        @endif
+
+        @if ($modal['show_image'])
+            @include('livewire.components.organisms.modal.modal-inventory-image')
         @endif
 
         <x-alert type="error" message="{{ session('message') }}" />
 
-        <x-organisms.ui.confirm-dialog 
-            wire-confirm="delete"
-            content="Confirm Delete?"
-        />
+        <x-organisms.ui.confirm-dialog wire-confirm="confirm"/>
     </div>
 
 </x-layout.main-page>

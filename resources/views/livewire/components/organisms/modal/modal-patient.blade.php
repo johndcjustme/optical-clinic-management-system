@@ -23,7 +23,7 @@
     }
     if($modal['exam_purchase_tab'] == 1) {
         $examPurchase_newBtnWireclick = 'newExam(' . $pt['id'] . ')';
-        $examPurchase_newBtnLabel = '+ new';
+        $examPurchase_newBtnLabel = '+ New';
     }
     if ($modal['exam_purchase_tab'] == 2) {
         $examPurchase_newBtnWireclick = 'purchaseNewItem(' . $pt['id'] . ')';
@@ -37,11 +37,22 @@
     @section('modal_title')
         <div>
             @if ($modal['isAddPatient'] || $modal['isUpdatePatient'])
-                <label for="patient_avatar" class="ui button tiny icon"><i class="icon add"></i> Add photo</label>        
+                <label for="patient_avatar" class="ui button tiny icon"><i class="icon add"></i> {{ !empty($previewAvatar) || !empty($pt['avatar']) ? 'Change Avatar' : 'Add Avatar' }}</label>        
+            @elseif ($modal['exam_purchase_tab'] == 1)
+                <button class="ui button circular icon tiny" wire:click.prevent="downloadPrescription" data-tooltip="Download PDF" data-position="top left" data-inverted="" data-variation="mini"><i class="icon download"></i></button>
             @endif
         </div>
         <div>
-            <a wire:click.prevent="closeModal" class="ui button tiny basic" rel="modal:close">Close</a>
+            <h5>
+                @if ($modal['isAddPatient'])
+                    ADD PATIENT
+                @elseif ($modal['isUpdatePatient'])
+                    EDIT PATIENT
+                @endif
+            </h5>
+        </div>
+        <div>
+            <a wire:click.prevent="closeModal" class="ui button tiny" rel="modal:close">Close</a>
             @if ($modal['isAddPatient'] || $modal['isUpdatePatient'])
                 <x-atoms.ui.button class="secondary tiny" form="{{ $formId }}" type="submit">Save</i></x-atoms.ui.button>
             @endif
@@ -51,7 +62,7 @@
     @section('modal_body')
 
         @if ($modal['isAddPatient'] || $modal['isUpdatePatient'])
-            
+            <br>
             <form wire:submit.prevent="{{ $wireSubmitTo }}" id="{{ $formId }}">
                 <input wire:model.defer="pt.id" type="hidden" name="">
                 
@@ -79,7 +90,7 @@
                             <x-atoms.ui.label>Last name <x-atoms.ui.required/> @error('pt.lname') <span class="ui text red"> • {{ $message }}</span> @enderror </x-atoms.ui.label>
                             <x-atoms.ui.input wire-model="pt.lname" type="text" class="mb_7" placeholder="Enter Last Name..."/>
     
-                            <x-atoms.ui.label>M.I.</x-atoms.ui.label>
+                            <x-atoms.ui.label>Middle initial</x-atoms.ui.label>
                             <x-atoms.ui.input wire-model="pt.mname" type="text" class="mb_7" placeholder="Enter Middle Name..."/>
 
                             <x-atoms.ui.label>Age <x-atoms.ui.required/> @error('pt.age') <span class="ui text red"> • {{ $message }}</span> @enderror</x-atoms.ui.label>
@@ -171,11 +182,11 @@
                         <div class="mt_6">
                             <div class="flex flex_x_between flex_y_center">
                                 <div>
-                                    <p>
+                                    {{-- <p>
                                         <small>
                                             Exams : {{ $exam['history'] }}
                                         </small>
-                                    </p>
+                                    </p> --}}
                                 </div>
                                 <div>
                                     <button wire:click.prevent="deleteExam({{ $exam['id'] }})"  class="ui tertiary button tiny red">

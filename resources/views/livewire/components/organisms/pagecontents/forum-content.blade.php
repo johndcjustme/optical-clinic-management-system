@@ -1,14 +1,9 @@
 <x-layout.page-content>
 
     @section('section-page-title')
-        <div class="">
-            <div>
-                <x-atoms.ui.header title="Forum"/>
-            </div>
-            <div>
-                <small></small>
-            </div>
-        </div>
+        <x-atoms.ui.header 
+            title="Furom"
+            desc="Lorem ipsum dolor sit amet"/>
     @endsection
 
     @section('section-links')
@@ -60,11 +55,6 @@
 
         @switch($subPage)
             @case(1)
-
-            
-
-               
-                
             
                 <div class="flex flex_x_center" style="position: relative">
                     <div class="flex flex_column" style="max-width:400px; width:100%;">
@@ -89,6 +79,13 @@
                                         </button>
                                     </div>
                                 </div>
+                            </form>
+                            <form wire:submit.prevent="uploadPhotos" action="">
+                                {{-- @if ($photos)
+                                    <img src="{{ $this->photos->temporaryUrl() }}" alt="">
+                                @endif --}}
+                                <input wire:model="photos" type="file" name="" id="" placeholder="Add Photo" multiple>
+                                <input type="submit" value="Submit">
                             </form>
                         @else
 

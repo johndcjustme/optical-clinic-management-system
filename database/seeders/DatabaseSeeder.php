@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
     {
         $faker = Faker\Factory::create();
 
+        $this->call(LaratrustSeeder::class);
+
         Day::create([
             'day' => 'Monday',
             'status' => false,

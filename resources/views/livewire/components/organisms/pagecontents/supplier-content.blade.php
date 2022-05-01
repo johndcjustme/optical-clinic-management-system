@@ -2,16 +2,9 @@
 
 
     @section('section-page-title')
-        <div class="">
-            <div>
-                <x-atoms.ui.header title="Suppliers"/>
-            </div>
-            <div>
-                @if ($this->emptySupplier())
-                    <small>A Total of {{ App\Models\Supplier::count() }} Suppliers</small>
-                @endif
-            </div>
-        </div>
+        <x-atoms.ui.header 
+            title="Supplier"
+            desc="{{ $this->emptySupplier() ? ' Total of ' . App\Models\Supplier::count() . ' Suppliers' : ''}}"/>
     @endsection
 
     @section('section-links')
@@ -83,7 +76,7 @@
                                     wire-click="showModal('update', {{ $su->id }})"
                                     option-name="Edit" />
                                 <x-atom.more.option 
-                                    wire-click="deletingSupplier({{ $su->id }})"
+                                    wire-click="deletingSupplier({{ $su->id }}, '{{ $su->supplier_name }}')"
                                     option-name="Delete" />
                             </x-organisms.ui.table.td>
                         </tr>

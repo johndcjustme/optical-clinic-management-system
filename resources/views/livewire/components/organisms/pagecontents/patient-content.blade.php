@@ -1,28 +1,13 @@
 <x-layout.page-content>
 
     @section('section-page-title')
-        <div class="">
-            <div>
-                <x-atoms.ui.header title="Patients" link="/patients"/>
-            </div>
-            <div>
-                <p>All Patients • {{ $this->patientTotal() }}</p>
-            </div>
-        </div>
+        <x-atoms.ui.header 
+            title="Patients"
+            desc="All Patients • {{ $this->patientTotal() }}"/>
     @endsection
 
     @section('section-links')
         @if ($subPage != 3)
-            {{-- <x-molecules.ui.group-buttons>
-                <x-molecules.ui.group-buttons.button 
-                    wire-click="subPage(1)" 
-                    active="{{ $subPage == 1 }}"
-                    label="Exam List" />
-                <x-molecules.ui.group-buttons.button wire-click="subPage(4)" active="{{ $subPage == 4 }}"
-                    label="Patient List" />
-                <x-molecules.ui.group-buttons.button wire-click="subPage(2)" active="{{ $subPage == 2 }}"
-                    label="Purchase" />
-            </x-molecules.ui.group-buttons.button> --}}
             <div class="ui compact tiny menu">
                 <div wire:click.prevent="subPage(1)" class="link item @if($subPage == 1) active @endif">Exam List</div>
                 <div wire:click.prevent="subPage(4)" class="link item @if($subPage == 4) active @endif">Patient List</div>
@@ -35,7 +20,6 @@
     @section('section-heading-left')
         @if ($subPage != 3)
             @if (count($selectedPatients) > 0)
-
                 <x-atoms.ui.header-dropdown-menu wire-close="$set('selectedPatients', [])" class="left pointing tiny">
                     <x-slot name="label">
                         {{ count($selectedPatients) }} Selected 
@@ -71,17 +55,12 @@
 
         @switch($subPage)
             @case(1)
-                <div>
-                    <x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/>
-                </div>
+                <div><x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/></div>
                 @break
             @case(2)
-                <div>
-                    <x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/>
-                </div>
-                <x-molecules.ui.dropdown>
-                    <x-molecules.ui.dropdown.icon/>
-                    <x-molecules.ui.dropdown.menu>
+                <div><x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/></div>
+                <x-atoms.ui.header-dropdown-menu class="right pointing tiny">
+                    <x-slot name="menu"> 
                         <div class="item">
                             <x-molecules.ui.dropdown.icon/>
                             <span class="text">Filter</span>
@@ -107,21 +86,8 @@
                                 </div>
                             </x-molecules.ui.dropdown.menu>
                         </div>
-                        <div class="item">
-                            <x-molecules.ui.dropdown.icon/>
-                            <span class="text">Showing {{ $pageNumber }} Entries</span>
-                            <x-molecules.ui.dropdown.menu>
-                                <x-organisms.ui.paginator-number/>
-                            </x-molecules.ui.dropdown.menu>
-                        </div>
-                        <div class="item">
-                            kjdfkjdf
-                        </div>
-                        <div class="item">
-                            hello there
-                        </div>
-                    </x-molecules.ui.dropdown.menu>
-                </x-molecules.ui.dropdown>
+                    </x-slot>
+                </x-atoms.ui.header-dropdown-menu>
                 @break
             @case(3)
                 @break
@@ -145,11 +111,11 @@
                                 </div>
                                 <input wire:model="date_to" type="date">
                             </div>
+
                             <button wire:click.prevent="$set('filter', '')" class="ui tertiary tiny icon button">
                                 <i class="close icon"></i>
                             </button>
                         </div>
-
                         @break
 
                     @case('DATE_SINGLE')
@@ -165,15 +131,11 @@
                         @break
 
                     @default
-                        <div>
-                            <x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/>
-                        </div>
+                        <div><x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/></div>
                 @endswitch
-
                 <div>
-                    <x-molecules.ui.dropdown>
-                        <x-molecules.ui.dropdown.icon/>
-                        <x-molecules.ui.dropdown.menu>
+                    <x-atoms.ui.header-dropdown-menu class="right pointing tiny">
+                        <x-slot name="menu"> 
                             <div class="item">
                                 <x-molecules.ui.dropdown.icon/>
                                 <span class="text">Filter</span>
@@ -203,22 +165,12 @@
                                     <x-organisms.ui.paginator-number/>
                                 </x-molecules.ui.dropdown.menu>
                             </div>
-                            <div class="item">
-                                kjdfkjdf
-                            </div>
-                            <div class="item">
-                                hello there
-                            </div>
-                        </x-molecules.ui.dropdown.menu>
-                    </x-molecules.ui.dropdown>
+                        </x-slot>
+                    </x-atoms.ui.header-dropdown-menu>
                 </div>
-
                 @break
-        
             @default
-                
         @endswitch
-
     @endsection
 
     @section('section-main')

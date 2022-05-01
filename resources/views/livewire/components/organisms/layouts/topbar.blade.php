@@ -1,11 +1,432 @@
-<div class="topbar flex flex_x_between flex_y_center">
-    <div class="flex flex_y_center">
-        {{-- <span class="mr_10" style="display: none">
-            <i class="fas fa-bars"></i>
-        </span>
-        <h5 class="uppercase" style="letter-spacing: 0.1rem">
-        </h5> --}}
-     
+<div class="topbar flex flex_x_between flex_y_center" style="position:relative; background-color:transparent;">
+
+
+
+
+
+
+
+    <div style="
+        position: absolute; 
+        top: 0.9em; 
+        right: 1em;
+        background-color: white;
+        padding-top:0.2em;
+        padding-bottom:0.2em;
+        padding-right: 0.1em;
+        padding-left: 1em;
+        border-radius: 50px;
+        display:flex;
+        align-items:center;
+        gap:1em;
+        z-index:2;
+        border:1px solid rgb(226, 226, 226);
+        box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.12);
+    ">
+        <small style="opacity:1">
+            Today: {{ date('d') . ', ' . date('F') }}
+        </small>
+
+
+        <div style="position: relative" x-data="{open:false}">
+            <div @click="open= ! open" class="ui button circular secondary tiny icon" style="position:relative;">
+                <i class="icon bell"></i>
+                <small style="position: absolute; top:-3px; right:-3px; height:15px; width:15px; border-radius:50%; background:red; color:white;" class="x-flex x-flex-center">7</small>
+
+            </div>
+            <div x-show="open" @click.outside="open = false" x-transition class="ui segment inverted" style="width:300px; max-width:300px; position: absolute; right:0; top:2em; overflow-y:auto; max-height:500px;">
+
+
+                
+                <div class="x-flex">
+                    <div>
+                        <div>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis ullam non, molestias similique inventore nihil.
+                        </div>
+                        <p style="opacity:1; padding-top:0.7em;"><span class="ui text grey">2:30pm</span></p>
+                    </div>
+                    <div style="padding-left:0.3em;">
+                        <span><i class="icon inverted red close"></i></span>
+                    </div>
+                </div>
+                <br><br>
+
+                <div class="x-flex">
+                    <div>
+                        <div>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis ullam non, molestias similique inventore nihil.
+                        </div>
+                        <p style="opacity:1; padding-top:0.7em;"><span class="ui text grey">2:30pm</span></p>
+                    </div>
+                    <div style="padding-left:0.3em;">
+                        <span><i class="icon inverted red close"></i></span>
+                    </div>
+                </div>
+                <br><br>
+
+                <div class="x-flex">
+                    <div>
+                        <div>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis ullam non, molestias similique inventore nihil.
+                        </div>
+                        <p style="opacity:1; padding-top:0.7em;"><span class="ui text grey">2:30pm</span></p>
+                    </div>
+                    <div style="padding-left:0.3em;">
+                        <span><i class="icon inverted red close"></i></span>
+                    </div>
+                </div>
+                <br><br>
+
+                <div class="x-flex">
+                    <div>
+                        <div>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis ullam non, molestias similique inventore nihil.
+                        </div>
+                        <p style="opacity:1; padding-top:0.7em;"><span class="ui text grey">2:30pm</span></p>
+                    </div>
+                    <div style="padding-left:0.3em;">
+                        <span><i class="icon inverted red close"></i></span>
+                    </div>
+                </div>
+                <br><br>
+
+                <div class="x-flex">
+                    <div>
+                        <div>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis ullam non, molestias similique inventore nihil.
+                        </div>
+                        <p style="opacity:1; padding-top:0.7em;"><span class="ui text grey">2:30pm</span></p>
+                    </div>
+                    <div style="padding-left:0.3em;">
+                        <span><i class="icon inverted red close"></i></span>
+                    </div>
+                </div>
+                <br><br>
+
+
+
+            </div>
+        </div>
+        
+        
+        
+        {{-- <div>
+            <div class="ui dropdown floating mini circular secondary icon button" style="z-index: 1; position:relative;">
+                <i class="bell icon"></i>
+                <small style="position: absolute; top:-3px; right:-3px; height:15px; width:15px; border-radius:50%; background:red; color:white;" class="x-flex x-flex-center">7</small>
+                <div class="menu inverted"  style="z-index: 1; width:300px; max-width:300px; white-space: normal;">
+                    <div class="header">
+                        <i class="bell icon"></i>
+                        Notifications
+                    </div>
+                    <div class="scrolling menu inverted" style="z-index: 1; white-space:normal;">
+
+                        <div class="item">
+                            <div class="mb_5 x-flex">
+                                <div style="white-space:normal; line-height:1.1rem;">
+                                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Esse ipsum, consequatur perspiciatis atque, culpa modi aliquam impedit consectetur omnis quis, adipisci ullam vero doloremque odit voluptatem reiciendis accusamus aut magni.
+                                </div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div> --}}
+    </div>
+
+
+
+
+
+
+
+
+    
+    {{-- <div style="
+        position: absolute; 
+        top: 0.9em; 
+        right: 1em;
+        background-color: white;
+        padding-top:0.2em;
+        padding-bottom:0.2em;
+        padding-right: 0.1em;
+        padding-left: 1em;
+        border-radius: 50px;
+        display:flex;
+        align-items:center;
+        gap:1em;
+        z-index:2;
+        border:1px solid rgb(226, 226, 226);
+        box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.12);
+    ">
+        <small style="opacity:0.7">
+            Today: {{ date('d') . ', ' . date('F') }}
+        </small>
+        <div>
+            <div class="ui dropdown floating mini circular secondary icon button" style="z-index: 1; position:relative;">
+                <i class="bell icon"></i>
+                <small style="position: absolute; top:-3px; right:-3px; height:15px; width:15px; border-radius:50%; background:red; color:white;" class="x-flex x-flex-center">7</small>
+                <div class="menu inverted"  style="z-index: 1; width:300px; max-width:300px; white-space: normal;">
+                    <div class="header">
+                        <i class="bell icon"></i>
+                        Notifications
+                    </div>
+                    <div class="scrolling menu inverted" style="z-index: 1; white-space:normal;">
+
+                        <div class="item">
+                            <div class="mb_5 x-flex">
+                                <div style="white-space:normal; line-height:1.1rem;">
+                                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Esse ipsum, consequatur perspiciatis atque, culpa modi aliquam impedit consectetur omnis quis, adipisci ullam vero doloremque odit voluptatem reiciendis accusamus aut magni.
+                                </div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+                        <div class="item">
+                            <div class="x-flex x-flex-xbetween mb_5">
+                                <div>Hello this is a notification</div>
+                                <a>
+                                    <i class="icon inverted red close"></i>
+                                </a>
+                            </div>
+                            <span style="opacity: 0.5">2:56 am</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> --}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {{-- <div class="flex flex_y_center">
+            
     </div>
     <div>
         <span class="ui text blue">
@@ -37,13 +458,6 @@
                 ">
             </span>
         </div>
-        {{-- <div class="ml_7">
-            <div class="flex flex_y_center">
-                <div onclick="window.location.assign('/account')">
-                    <x-atom.profile-photo size="30px" path="storage/photos/avatars/{{ session()->get('curr_user_avatar')}}"/>
-                </div>
-            </div>
-        </div> --}}
     </div>
     
     
@@ -108,7 +522,7 @@
                             <x-organisms.panel-settings.forum.forum-post
                                 post-type="post"
                                 id="{{ $post->id }}"
-                                current-user="{{ $adminId === $post->patient_user_id && 'admin' === $post->role ? 'accent_1' : '' }}" {{-- current logged in user--}}
+                                current-user="{{ $adminId === $post->patient_user_id && 'admin' === $post->role ? 'accent_1' : '' }}" 
                                 name="{{ $post->role == 'patient' ? $post->patient->patient_fname . ' ' . $post->patient->patient_mname . ' ' . $post->patient->patient_lname : $post->user->name }}"
                                 posted-on="{{ $post->created_at->diffForHumans() }}"
                                 content="{{ $post->post_content }}"
@@ -140,7 +554,7 @@
                                                 <x-organisms.panel-settings.forum.forum-post
                                                     post-type="comment"
                                                     id="{{ $comment->id }}"
-                                                    current-user="{{ $adminId === $comment->patient_user_id && 'admin' === $comment->role ? 'accent_1' : '' }}" {{-- current logged in user--}}
+                                                    current-user="{{ $adminId === $comment->patient_user_id && 'admin' === $comment->role ? 'accent_1' : '' }}"
                                                     name="{{ $comment->role == 'patient' ? $comment->patient->patient_fname . ' ' . $comment->patient->patient_mname . ' ' . $comment->patient->patient_lname : $comment->user->name }}"
                                                     posted-on="{{ $comment->created_at->diffForHumans() }}"
                                                     content="{{ $comment->comment_content }}"
@@ -185,7 +599,7 @@
             @endif
         </x-organisms.panel-settings>
     
-    @endif
+    @endif --}}
 
 
 </div>

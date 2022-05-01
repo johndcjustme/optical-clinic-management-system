@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="{{ asset('SCSS/main.css') }}">
     <link rel="stylesheet" href="{{ asset('fontawesome-free-6.0.0-web/css/all.css') }}">
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+
+    <link rel="shortcut icon" type="x-icon" href="images/shortcut-icon2.png">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
@@ -63,7 +66,7 @@
 
 
 
-
+<script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
 
 
 
@@ -85,6 +88,10 @@
 
 
 
+
+      .blocker {
+        z-index: 1000;
+      }  
 
       .hidden.menu {
         display: none;
@@ -177,62 +184,58 @@
 
 
 
+  <script>
 
 
-
-            
-    <script>
+      $('.ui.dropdown').dropdown();
 
 
-        $('.ui.dropdown').dropdown();
+      $('.table-inventory-dropdown-image').dropdown();
 
 
-        $('.table-inventory-dropdown-image').dropdown();
-
-
-        $('.select_dropdown_modal').dropdown();
+      $('.select_dropdown_modal').dropdown();
 
 
 
 
-        window.addEventListener('confirm-dialog', event => {
-            var title = document.getElementById('modal-title');
-            var content = document.getElementById('modal-content');
+      window.addEventListener('confirm-dialog', event => {
+          var title = document.getElementById('modal-title');
+          var content = document.getElementById('modal-content');
 
-            title.innerHTML = event.detail.title;
-            content.innerHTML = event.detail.content;
+          title.innerHTML = event.detail.title;
+          content.innerHTML = event.detail.content;
 
-            $("#fade").modal({
-                fadeDuration: 100,
-                showClose: false
-            });
-        })
+          $("#fade").modal({
+              fadeDuration: 100,
+              showClose: false
+          });
+      })
 
-        window.addEventListener('form-modal', event => {
-            $('#form-modal').modal({
-                fadeDuration: 75,
-                showClose: false
-            })
-        })
+      window.addEventListener('form-modal', event => {
+          $('#form-modal').modal({
+              fadeDuration: 75,
+              showClose: false
+          })
+      })
 
-        window.addEventListener('confirm-dialog-close', event => {
-            $.modal.close();
-        })
+      window.addEventListener('confirm-dialog-close', event => {
+          $.modal.close();
+      })
 
 
-        window.addEventListener('toast', event => {
-            $('body')
-            .toast({
-                title: event.detail.title,
-                class: event.detail.class,
-                showIcon: 'check',
-                message: event.detail.message,
-                closeOnClick: true,
-                compact: true,
-                position: 'bottom right',
-                cloneModule: false,
-            });
-        })
+      window.addEventListener('toast', event => {
+          $('body')
+          .toast({
+              title: event.detail.title,
+              class: event.detail.class,
+              showIcon: 'check',
+              message: event.detail.message,
+              closeOnClick: true,
+              compact: true,
+              position: 'bottom right',
+              cloneModule: false,
+          });
+      })
 
 
 
@@ -241,31 +244,32 @@
 
 
 
-    $(document)
+  $(document)
   .ready(function() {
 
-    // fix menu when passed
-    $('.masthead')
-      .visibility({
-        once: false,
-        onBottomPassed: function() {
-          $('.fixed.menu').transition('fade in');
-        },
-        onBottomPassedReverse: function() {
-          $('.fixed.menu').transition('fade out');
-        }
-      })
-    ;
+  // fix menu when passed
+  $('.masthead')
+    .visibility({
+      once: false,
+      onBottomPassed: function() {
+        $('.fixed.menu').transition('fade in');
+      },
+      onBottomPassedReverse: function() {
+        $('.fixed.menu').transition('fade out');
+      }
+    })
+  ;
 
-    // create sidebar and attach to menu open
-    $('.ui.sidebar')
-      .sidebar('attach events', '.toc.item')
-    ;
+  // create sidebar and attach to menu open
+  $('.ui.sidebar')
+    .sidebar('attach events', '.toc.item')
+  ;
 
   })
-;
+  ;
 
-</script>
+  </script>
+            
 
 
 

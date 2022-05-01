@@ -61,6 +61,7 @@ class RegisteredUserController extends Controller
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                 ]);
+                $user->attachRole('3'); // parameter can be a Role object, array, id or the role string name
                 break;
             default:
         }

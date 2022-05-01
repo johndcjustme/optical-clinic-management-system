@@ -61,7 +61,7 @@
 
                             {{-- <div class="ui fluid icon input"> --}}
                             <div class="ui input fluid">
-                                <textarea wire-model="exam.exam_remarks" placeholder="Enter remarks..." rows="2" style="width: 100%"></textarea>
+                                <textarea wire:model.defer="exam.exam_remarks" placeholder="Enter remarks..." rows="2" style="width: 100%"></textarea>
                             </div>
                                 {{-- <x-atoms.ui.input wire-model="exam.exam_remarks" placeholder="Enter remarks..." type="text" style="width: 100%"/>
                                 <i class="check icon"></i> --}}

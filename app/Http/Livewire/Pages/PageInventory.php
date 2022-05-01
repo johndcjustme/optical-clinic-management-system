@@ -33,21 +33,22 @@ class PageInventory extends Component
 
 
     public $modal = [
-        'show'          => false,
-        'add'           => false,
-        'item'          => false,
-        'supplier'      => false,
-        'update'        => false,
-        'inItem'        => false,
-        'edit_in_inItem'   => false,
-        'category'   => false,
-        'displayItem'   => false,
+        'show'           => false,
+        'add'            => false,
+        'item'           => false,
+        'supplier'       => false,
+        'update'         => false,
+        'inItem'         => false,
+        'edit_in_inItem' => false,
+        'category'       => false,
+        'displayItem'    => false,
+        'show_image'     => false,
     ];
 
     public $item = [
         'id'            => '',
         'preview'       => '',
-        'image'         => null,
+        'image'         => '',
         'name'          => '',
         'cat'           => '',
         'desc'          => '',
@@ -86,6 +87,7 @@ class PageInventory extends Component
         'items'     => false,
         'supplier'  => false,
         'suppliers' => false,
+        'category'  => false,
     ];
 
 
@@ -120,7 +122,7 @@ class PageInventory extends Component
 
 
     protected $queryString = [
-        'searchItem' => ['except' => ''], 
+        'searchItem' => ['except' => ''],
         'onDisplayItemType',
         'subPage' => '1',
     ];
@@ -130,7 +132,7 @@ class PageInventory extends Component
 
     protected $rules = [
         'item.name' => 'required',
-        'item.preview' => 'image|max:1024|nullable',
+        'item.preview' => 'image|mimes:jpeg,png,jpg|max:2048|nullable',
         'item.supplier' => 'nullable',
         'item.cat' => 'nullable'
         // 'item.price' => 'required|integer',
@@ -340,6 +342,8 @@ class PageInventory extends Component
             $category = Category::create([
                     'name' => $this->cat['name'],
                     'desc' => $this->cat['desc'],
+                    'cname' => 'black',
+                    'cvalue' => '#000000',
                 ]);
         
             $category 
@@ -448,17 +452,46 @@ class PageInventory extends Component
         }
     }
 
-    public function deletingItem($itemId)
+
+    public function deletingCategory($catId, $catName)
+    {
+        $this->delete['category'] = true;
+        $this->cat['id'] = $catId;
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Confirm',
+            'content' => 'Are you sure you want to delete this category? "' . $catName . '"'
+        ]);
+    }
+
+    public function deleteCategory() 
+    {
+        Category::destroy($this->cat['id']);
+        $this->reset(['cat']);
+        $this->dispatchBrowserEvent('confirm-dialog-close');
+        $this->dispatchBrowserEvent('toast', [
+            'title' => 'Success',
+            'class' => 'success',
+            'message' => 'Category has been deleted successfully.',
+        ]);
+    }
+
+    public function deletingItem($itemId, $itemName)
     {
         $this->item['id'] = $itemId;
         $this->delete['item'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog'); 
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Confirm',
+            'content' => 'Are you sure you want to delete this item? "' . $itemName . '"'
+        ]); 
     }
 
     public function deletingItems()
     {
         $this->delete['items'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog'); 
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Confirm',
+            'content' => 'Are you sure you want to delete this item(s)?'
+        ]); 
     }
 
     public function deleteItem()
@@ -472,13 +505,12 @@ class PageInventory extends Component
         }
 
         $deleteItem->delete();
-
+        $this->reset(['item']);
         $this->confirm_dialog_modal_close();
-
         $this->dispatchBrowserEvent('toast',[
                 'title' => null,
                 'class' => 'success',
-                'message' => 'Item Deleted successfully.',
+                'message' => 'Item has been successfully deleted.',
         ]);
     }
 
@@ -502,7 +534,7 @@ class PageInventory extends Component
         $this->dispatchBrowserEvent('toast', [
             'title' => null,
             'class' => 'success',
-            'message' => 'Item Deleted successfully.',
+            'message' => 'Item(s) has been successfully deleted.',
         ]);
     }
 
@@ -512,6 +544,8 @@ class PageInventory extends Component
     public function inItem()
     {
         $this->validate(['item.in' => 'required|integer']);
+
+
 
         $lastBalance = 0;
         $newBalance = $this->item['in'];
@@ -533,7 +567,11 @@ class PageInventory extends Component
             'item_qty' => $newBalance,
         ]);
 
-        // dd($this->item['id'] .' ' . $this->item['in']);
+        $this->dispatchBrowserEvent('toast', [
+            'title' => 'Success',
+            'class' => 'success',
+            'message'=> $this->item['name'] . ' has in ' . $this->item['in'] . ' pcs.'
+        ]);
     }
 
 
@@ -563,15 +601,20 @@ class PageInventory extends Component
 
 
 
+    
 
 
-
-    public function delete()
+    public function confirm()
     {
-        $this->delete['item']       ? $this->deleteItem()   : '';
-        $this->delete['items']      ? $this->deleteItems()  : '';
-        // $this->delete['supplier']   ? $this->deleteSupplier() : '';
-        // $this->delete['suppliers']   ? $this->deleteSuppliers() : '';
+        $this->delete['item']       
+            ? $this->deleteItem()   
+            : NULL;
+        $this->delete['items']      
+            ? $this->deleteItems()  
+            : NULL;
+        $this->delete['category']
+            ? $this->deleteCategory()
+            : NULL;
 
         $this->reset(['delete']);
     }
@@ -620,6 +663,15 @@ class PageInventory extends Component
         }
     }
 
+
+    public function showImage($imageName, $itemName, $itemCategory)
+    {
+        $this->modal['show_image'] = true;
+        $this->item['image'] = $imageName;
+        $this->item['name'] = $itemName;
+        $this->item['cat'] = $itemCategory;
+    }
+
     public function closeModal()
     {
         $this->resetFields();
@@ -663,6 +715,11 @@ class PageInventory extends Component
         ];
 
         // 'item_type'     => $this->item['type'],
+    }
+
+    public function setColor($catId, $cvalue, $cname)
+    {
+        Category::find($catId)->update(['cvalue' => $cvalue, 'cname' => $cname]);
     }
 
 

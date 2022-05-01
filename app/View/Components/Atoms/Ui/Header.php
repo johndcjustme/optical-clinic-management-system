@@ -11,12 +11,14 @@ class Header extends Component
      *
      * @return void
      */
-    public $title, $link;
+    public $title, $link, $desc, $icon;
 
-    public function __construct($title = null, $link = null)
+    public function __construct($title = null, $link = null, $desc = null, $icon = null)
     {
         $this->title = $title;
         $this->link = $link;
+        $this->desc = $desc;
+        $this->icon = $icon;
     }
 
     /**

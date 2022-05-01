@@ -21,7 +21,7 @@
                     </div>
                     <div class="ui divider"></div>
                     @foreach (App\Models\Appointment_category::all() as $ac)
-                        <div wire:click.prevent="updateStatus('{{ $ac->id }}', '{{ $appt->id }}')" class="item {{ $ac->id == $appt->appointment_category_id ? 'disabled' : '' }}">
+                        <div wire:click.prevent="updateApptStatus('{{ $ac->id }}', '{{ $appt->id }}')" class="item {{ $ac->id == $appt->appointment_category_id ? 'disabled' : '' }}">
                             <div class="ui {{ $ac->cname }} empty circular label"></div>
                             {{ $ac->title }}
                         </div>

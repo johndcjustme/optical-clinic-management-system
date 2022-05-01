@@ -1,5 +1,5 @@
 
-    <div {{ $attributes->merge(['class' => 'ui icon top dropdown button basic'])}} x-init="$('.ui.icon.top.dropdown').dropdown()" style="z-index: 100">
+    <div {{ $attributes->merge(['class' => 'ui icon top dropdown button'])}} x-init="$('.ui.icon.top.dropdown').dropdown()" style="z-index: 1">
         {{ $label ?? null }}
         <i class="dropdown icon"></i>
         <div class="menu inverted tiny">

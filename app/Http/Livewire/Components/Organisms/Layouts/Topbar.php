@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 
 class Topbar extends Component
 {
+
     public 
         $panelSettings_isOpen = false,
             $forum_isOpen = false,

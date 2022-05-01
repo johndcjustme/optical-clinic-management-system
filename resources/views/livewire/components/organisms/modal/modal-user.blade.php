@@ -18,16 +18,16 @@
         <div class="x-flex">
             <div>
                 @if (!$changePassword)
-                    <label wire:click.prevent="$toggle('modalRoleTab')" class="ui tiny button basic circular icon" for="updateItem_from_inItem" data-tooltip="{{ $modalRoleTab ? 'Back' : 'Edit Roles' }}" data-position="bottom left" data-inverted="" data-variation="mini"><i class="icon {{ $modalRoleTab ? 'left arrow' : 'user edit '}}"></i></label>
+                    <label wire:click.prevent="$toggle('modalRoleTab')" class="ui tiny button circular icon" for="updateItem_from_inItem" data-tooltip="{{ $modalRoleTab ? 'Back' : 'Edit Roles' }}" data-position="bottom left" data-inverted="" data-variation="mini"><i class="icon {{ $modalRoleTab ? 'left arrow' : 'user edit '}}"></i></label>
                 @endif
                 @if ($modal['update'] && !$modalRoleTab)
-                    <label wire:click.prevent="$toggle('changePassword', true)" for="" class="ui button tiny">{{ $changePassword ? 'Cancel' : 'Change Password' }}</label>
+                    <label wire:click.prevent="$toggle('changePassword', true)" for="" class="ui button tiny circular icon" data-tooltip="{{ $changePassword ? 'Back' : 'Change Password' }}" data-position="bottom left" data-inverted="" data-variation="mini"><i class="icon {{ $changePassword ? 'left arrow' : 'key' }}"></i></label>
                 @endif
             </div>
 
             <div style="margin-left: 0.5em">
                 @if ($modalRoleTab)
-                    <label wire:click.prevent="$toggle('confirmDeleteRole', true)" class="ui tiny button basic circular icon" for="updateItem_from_inItem" data-tooltip="{{ $confirmDeleteRole ? 'Cancel' : 'Remove roles' }}" data-position="bottom left" data-inverted="" data-variation="mini">
+                    <label wire:click.prevent="$toggle('confirmDeleteRole', true)" class="ui tiny button circular icon" for="updateItem_from_inItem" data-tooltip="{{ $confirmDeleteRole ? 'Cancel' : 'Remove roles' }}" data-position="bottom left" data-inverted="" data-variation="mini">
                         @if ($confirmDeleteRole)
                             <i class="delete icon"></i>
                         @else
@@ -183,8 +183,8 @@
                         <x-atoms.ui.label>Role <x-atoms.ui.required>@error('user.role') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
                         <x-atoms.ui.select wire:model.defer="user.role" class="mb_7">
                             <option value="" selected hidden>Select</option>
-                            @foreach ($allRoles as $role)
-                                <option class="item" value="{{ $role->id }}">{{ $role->role }}</option>
+                            @foreach (App\Models\Role::all() as $role)
+                                <option class="item" value="{{ $role->id }}">{{ $role->display_name }}</option>
                             @endforeach
                         </x-atoms.ui.select>
                     </div>
@@ -243,14 +243,15 @@
                 </form>
 
             @else
-                @if (count($allRoles) > 0)
+                @if (count(App\Models\Role::all()) > 0)
                     <x-organisms.ui.table class="unstackable">
                         <x-slot name="thead"></x-slot>
                         <x-slot name="tbody">
-                            @foreach ($allRoles as $role)
+                            @foreach (App\Models\Role::all() as $role)
                                 <tr>
                                     <x-organisms.ui.table.td 
-                                        text="{{ $role->role }}"/>
+                                        text="{{ $role->display_name }}"
+                                        desc="Description: {{ $role->description }}"/>
                                     <x-organisms.ui.table.td style="width:1em">
                                         @if ($confirmDeleteRole)
                                             <label wire:click.prevent="deleteRole({{ $role->id }})" class="ui mini button basic circular icon red animate_zoom" for="updateItem_from_inItem" data-tooltip="Remove" data-position="bottom left" data-inverted="" data-variation="mini">

@@ -277,30 +277,30 @@ class PageAppointments extends Component
         $this->direction = $direction;
     }
 
-    public function statusColor($status)
-    {
-        switch ($status) {
-            case 1: return '#0275d8'; break;
-            case 2: return '#5cb85c'; break;
-            case 3: return '#5bc0de'; break;
-            case 4: return '#d9534f'; break;
-            case 6: return '#f62681'; break;
-            default:
-        }
-    }
+    // public function statusColor($status)
+    // {
+    //     switch ($status) {
+    //         case 1: return '#0275d8'; break;
+    //         case 2: return '#5cb85c'; break;
+    //         case 3: return '#5bc0de'; break;
+    //         case 4: return '#d9534f'; break;
+    //         case 6: return '#f62681'; break;
+    //         default:
+    //     }
+    // }
 
-    public function apptStatus($status)
-    {
-        switch ($status) {
-            case 1: return $this->apptStatus[1]; break;
-            case 2: return $this->apptStatus[2]; break;
-            case 3: return $this->apptStatus[3]; break;
-            case 4: return $this->apptStatus[4]; break;
-            case 5: return $this->apptStatus[5]; break;
-            case 6: return $this->apptStatus[6]; break;
-            default:
-        }
-    }
+    // public function apptStatus($status)
+    // {
+    //     switch ($status) {
+    //         case 1: return $this->apptStatus[1]; break;
+    //         case 2: return $this->apptStatus[2]; break;
+    //         case 3: return $this->apptStatus[3]; break;
+    //         case 4: return $this->apptStatus[4]; break;
+    //         case 5: return $this->apptStatus[5]; break;
+    //         case 6: return $this->apptStatus[6]; break;
+    //         default:
+    //     }
+    // }
 
     public function moreOption_disableApprove($apptId)
     {
@@ -321,13 +321,13 @@ class PageAppointments extends Component
             return false;
     }
 
-    public function clearSearch()
-    {
-        return $this->reset([
-            'searchPatient',
-            'isFillSearch',
-        ]);
-    }
+    // public function clearSearch()
+    // {
+    //     return $this->reset([
+    //         'searchPatient',
+    //         'isFillSearch',
+    //     ]);
+    // }
 
     public function autoCompleteSearch($id)
     {
@@ -345,7 +345,7 @@ class PageAppointments extends Component
 
 
 
-    public function updateStatus($statusId, $apptId)
+    public function updateApptStatus($statusId, $apptId)
     {
         $this->confirmStatusUpdate = true;
         $this->statusId = $statusId;
@@ -358,7 +358,7 @@ class PageAppointments extends Component
         ]); 
     }
 
-    public function updatedStatus() 
+    public function updateStatus() 
     {
         $this->dispatchBrowserEvent('confirm-dialog-close');
         $appt = Appointment::find($this->apptId);
@@ -524,9 +524,10 @@ class PageAppointments extends Component
     public function deleteAppt()
     {
         Appointment::destroy($this->appt['id']);
+        $this->resetPage();
         $this->dispatchBrowserEvent('confirm-dialog-close');
         $this->dispatchBrowserEvent('toast',[
-            'title' => null,
+            'title' => 'Deleted',
             'class' => 'success',
             'message' => 'Deleted Succesfully',
         ]);
@@ -701,7 +702,7 @@ class PageAppointments extends Component
     {
         $this->reset(['modal', 'appt', 'apptSettings', 'apptSettings2', 'deletingApptCat']);
         $this->resetErrorBag();
-        $this->clearSearch(); 
+        // $this->clearSearch(); 
         $this->dispatchBrowserEvent('confirm-dialog-close');
     }
 
@@ -886,7 +887,7 @@ class PageAppointments extends Component
             ? $this->cancelAppt()
             : NULL;
         $this->confirmStatusUpdate
-            ? $this->updatedStatus()
+            ? $this->updateStatus()
             : NULL;
     } 
 }

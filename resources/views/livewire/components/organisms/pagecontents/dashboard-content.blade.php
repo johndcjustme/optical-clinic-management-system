@@ -1,43 +1,42 @@
 <x-layout.page-content>
 
     @section('section-page-title')
-        <div class="">
-            <div>
-                <x-atoms.ui.header title="Dashboard" />
-            </div>
-            <div>
-                <p style="font-size: 1.3rem;">Hi <b>{{ session()->get('curr_user_name') }}</b>, have a nice day.</p>
-            </div>
-        </div>
+        <x-atoms.ui.header 
+            title="Dashbaord"
+            desc="Hi {{ Auth::user()->name }}, have a nice day."/>
     @endsection
 
     @section('section-links')
+        <button class="ui button secondary tiny circular icon"  onclick="window.print()">
+            <i class="icon print"></i>
+        </button>
     @endsection
 
-    @section('section-heading')
+    @section('section-heading-left')
+  
     @endsection
 
-    @section('section-main')
+    @section('section-main') 
 
         
 
-        <div style="display:flex; flex-direction:column;">
+        <div id="print-me" style="display:flex; flex-direction:column; width:100%;">
             {{-- <h3 class="ui dividing header">Patients</h3> --}}
-
-              
-
 
                 <div class="ui grid">
                     <div class="sixteen wide column">
                         <div class="ui secondary menu">
-                            <a wire:click.prevent="$set('stat', 'patients')" class="item animate_left {{ $stat == 'patients' ? 'active' : '' }}">
-                            Patients
+                            <a wire:click.prevent="$set('stat', 'patients')" class="item animate_left {{ $stat == 'patients' ? 'active' : '' }}" style="position:relative;">
+                                Patients
                             </a>
-                            <a wire:click.prevent="$set('stat', 'orders')" class="item animate_left {{ $stat == 'orders' ? 'active' : '' }}">
-                            Orders
+                            <a wire:click.prevent="$set('stat', 'orders')" class="item animate_left {{ $stat == 'orders' ? 'active' : '' }}" style="position:relative;">
+                                Orders
                             </a>
-                            <a wire:click.prevent="$set('stat', 'appointments')" class="item animate_left {{ $stat == 'appointments' ? 'active' : '' }}">
-                            Appointments
+                            <a wire:click.prevent="$set('stat', 'appointments')" class="item animate_left {{ $stat == 'appointments' ? 'active' : '' }}" style="position:relative;">
+                                Appointments
+                                @if ($this->appointmentStats('today') > 0)
+                                    <small style="position: absolute; top:-3px; right:-3px; height:15px; width:15px; border-radius:50%; background:red; color:white;" class="x-flex x-flex-center">{{ $this->appointmentStats('today') }}</small>
+                                @endif
                             </a>
                         </div>
 
@@ -149,38 +148,17 @@
                                 @break
                             @case('appointments')
                                 <div class="ui horizontal equal width segments">
-                                    <div class="ui centered aligned inverted black segment">
+                                    <div class="ui centered aligned inverted black segment" style="potisiton:relative;">
+                                        @if ($this->appointmentStats('today') > 0)
+                                            <small style="position: absolute; top:1em; right:1em; height:10px; width:10px; border-radius:50%; background:red; color:white;" class="x-flex x-flex-center"></small>
+                                        @endif
                                         <div class="x-flex x-flex-center">
                                             <div class="ui inverted statistic">
-                                                <div class="label">
-                                                    New Appoinments
-                                                </div>
-                                                <div class="value">
-                                                    {{ $this->totalOfPatients('all') }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="ui centered aligned segment">
-                                        <div class="x-flex x-flex-center">
-                                            <div class="ui small statistic">
-                                                <div class="label">
-                                                    For Approval
-                                                </div>
-                                                <div class="value">
-                                                    {{ $this->totalOfPatients('today') }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="ui centered aligned segment">
-                                        <div class="x-flex x-flex-center">
-                                            <div class="ui small statistic">
                                                 <div class="label">
                                                     Today
                                                 </div>
                                                 <div class="value">
-                                                    {{ $this->totalOfPatients('yesterday') }}
+                                                    {{ $this->appointmentStats('today') }}
                                                 </div>
                                             </div>
                                         </div>
@@ -192,7 +170,31 @@
                                                     Tomorrow
                                                 </div>
                                                 <div class="value">
-                                                    {{ $this->totalOfPatients('thisWeek') }}
+                                                    {{ $this->appointmentStats('tomorrow') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ui centered aligned segment">
+                                        <div class="x-flex x-flex-center">
+                                            <div class="ui small statistic">
+                                                <div class="label">
+                                                    on going
+                                                </div>
+                                                <div class="value">
+                                                    {{ $this->appointmentStats('ongoing') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ui centered aligned segment">
+                                        <div class="x-flex x-flex-center">
+                                            <div class="ui small statistic">
+                                                <div class="label">
+                                                    For Approval
+                                                </div>
+                                                <div class="value">
+                                                    {{ $this->appointmentStats('forApproval') }}
                                                 </div>
                                             </div>
                                         </div>
@@ -314,14 +316,16 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div>
-                                    <div class="ui selection compact dropdown" x-init="$('.ui.selection').dropdown()">
-                                        <i class="dropdown icon"></i>
-                                        <div class="text">{{ $year }}</div>
-                                        <div class="menu">
-                                            <div wire:click.prevent="$set('year', 2021)" class="item">2021</span></div>
-                                            <div wire:click.prevent="$set('year', 2022)" class="item">2022</span></div>
-                                            <div wire:click.prevent="$set('year', 2023)" class="item">2023</span></div>
+                                <div class="x-flex x-gap-1">
+                                    <div>
+                                        <div class="ui selection compact tiny dropdown" x-init="$('.ui.selection').dropdown()">
+                                            <i class="dropdown icon"></i>
+                                            <div class="text">{{ $year }}</div>
+                                            <div class="menu">
+                                                <div wire:click.prevent="$set('year', 2021)" class="item">2021</span></div>
+                                                <div wire:click.prevent="$set('year', 2022)" class="item">2022</span></div>
+                                                <div wire:click.prevent="$set('year', 2023)" class="item">2023</span></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -356,11 +360,15 @@
                 <div class="sexteen wide column">
 
                         <div class="ui secondary  menu">
-                            <a class="item active">
-                            Top Products
+                            <a wire:click.prevent="$set('product', 'top')" class="item {{ $product == 'top' ? 'active' : '' }}" style="position:relative;">
+                                Top Products
                             </a>
-                            <a class="item">
-                            Low In demand
+                            <a wire:click.prevent="$set('product', 'low')" class="item {{ $product == 'low' ? 'active' : '' }}" style="position:relative;">
+                                Low In demand
+                            </a>
+                            <a wire:click.prevent="$set('product', 'out_of_stocks')" class="item {{ $product == 'out_of_stocks' ? 'active' : '' }}" style="position:relative;">
+                                Out of Stocks
+                                <small style="position: absolute; top:-3px; right:-3px; height:15px; width:15px; border-radius:50%; background:red; color:white;" class="x-flex x-flex-center">7</small>
                             </a>
                         </div>
 
@@ -405,7 +413,7 @@
 
 
 
-
+{{-- 
 
 @push('js')
     <script>
@@ -514,4 +522,4 @@
             })
         })
     </script>
-@endpush
+@endpush --}}

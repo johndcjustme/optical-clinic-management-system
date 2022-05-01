@@ -1,14 +1,9 @@
 <x-layout.page-content>
 
     @section('section-page-title')
-        <div class="">
-            <div>
-                <x-atoms.ui.header title="Orders"/>
-            </div>
-            <div>
-                <small></small>
-            </div>
-        </div>
+        <x-atoms.ui.header 
+            title="Orders"
+            desc="Lorem Ipsum dolor sit amet."/>        
     @endsection
 
     @section('section-links')

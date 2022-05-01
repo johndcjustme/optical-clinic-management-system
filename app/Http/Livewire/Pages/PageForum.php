@@ -14,7 +14,7 @@ use App\Models\Commentcomment;
 use App\Models\Comment_in_comment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-
+use Livewire\WithFileUploads;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Storage;
 class PageForum extends Component
 {
 
+    use WithFileUploads;
+    
     public $postContent = '';
 
     public $commentContent = '';
@@ -38,6 +40,8 @@ class PageForum extends Component
     public $newPost = false;
 
     public $patient = 0;
+
+    public $photos = [];
 
     public $delete = [
         'post' => false,
@@ -61,6 +65,24 @@ class PageForum extends Component
             ->extends('layouts.app')
             ->section('content');
     }
+
+
+
+
+
+
+
+    public function uploadPhotos()
+    {
+        dd($this->photos);
+    }
+
+
+
+
+
+
+
 
     public function validationInput()
     {
@@ -236,20 +258,22 @@ class PageForum extends Component
     }
 
 
-    public function countPostLikes($postId)                     { return Like::where('post_comment_id', $postId)->where('post_type', 1)->count(); }
+    public function countPostLikes($postId)                     
+    { return Like::where('post_comment_id', $postId)->where('post_type', 1)->count(); }
 
-    public function countCommentLikes($commentId, $postType)    { return Like::where('post_comment_id', $commentId)->where('post_type', $postType)->count(); }
+    public function countCommentLikes($commentId, $postType)    
+    { return Like::where('post_comment_id', $commentId)->where('post_type', $postType)->count(); }
 
-    public function countPostComments($postId)                  { return Comment::where('post_id', $postId)->count(); }
+    public function countPostComments($postId)                  
+    { return Comment::where('post_id', $postId)->count(); }
 
-    public function countCommentComments($commentId)            { return Commentcomment::where('comment_id', $commentId)->count(); }
+    public function countCommentComments($commentId)            
+    { return Commentcomment::where('comment_id', $commentId)->count(); }
 
     public function countPosts()
     {
         $posts = Post::all()->count();
-        return $posts > 1 
-                    ? $posts . ' Posts' 
-                    : $posts . ' Post';
+        return $posts > 1 ? $posts . ' Posts' : $posts . ' Post';
     }
 
     public function countMembers()

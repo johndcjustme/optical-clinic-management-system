@@ -12,11 +12,13 @@ class HeaderAddBtn extends Component
      * @return void
      */
     public $wireClick, $label;
+    public $icon;
 
-    public function __construct($wireClick = null, $label = null)
+    public function __construct($wireClick = null, $label = null, $icon = null)
     {
         $this->wireClick = $wireClick;
         $this->label = $label;
+        $this->icon = $icon;
     }
 
     /**

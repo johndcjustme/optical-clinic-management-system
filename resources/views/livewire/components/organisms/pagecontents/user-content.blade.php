@@ -1,22 +1,17 @@
 <x-layout.page-content>
 
     @section('section-page-title')
-        <div class="">
-            <div>
-                <x-atoms.ui.header title="Users"/>
-            </div>
-            <div>
-                <p>All Users {{ count($users) }}</p>
-            </div>
-        </div>
+        <x-atoms.ui.header 
+            title="Users"
+            desc="Lorem Ipsum dolor set amet."/>
     @endsection
 
     @section('section-links')
         <div class="ui compact tiny menu">
-            <div wire:click.prevent="$set('role', '')" class="link item @if(empty($role)) active @endif">All</div>
-            @foreach ($allRoles as $menu)
+            <div wire:click.prevent="$set('role', '')" class="link item">All</div>
+            {{-- @foreach ($allRoles as $menu)
                 <div wire:click.prevent="$set('role', {{ $menu->id }})" class="link item @if($role == $menu->id) active @endif @if($users->where('role_id', $menu->id)->count() <= 0) disabled @endif">{{ $menu->role }}</div>
-            @endforeach
+            @endforeach --}}
         </div>
     @endsection
 
@@ -78,7 +73,7 @@
     @endsection
 
     @section('section-main')
-        @foreach ($roles as $role)
+        {{-- @foreach ($roles as $role)
             @if ($users->where('role_id', $role->id)->count() > 0)
                 <x-organisms.ui.table class="selectable unstackable">
                     <x-slot name="thead">
@@ -118,7 +113,7 @@
                     </x-slot>
                 </x-organisms.ui.table>
             @endif
-        @endforeach
+        @endforeach --}}
     @endsection
 
 </x-layout.page-content>

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Patient;
 use App\Models\Item;
 use App\Models\Category;
+use App\Models\Appointment;
 use App\Models\Appointment_category as Ac;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
 use Carbon\Carbon;
@@ -47,6 +48,8 @@ class PageDashboard extends Component
 
     public $stat = 'patients';
 
+    public $product = 'top';
+
     public $months = [
         'JAN',
         'FEB',
@@ -69,6 +72,7 @@ class PageDashboard extends Component
 
     protected $queryString = [
         'stat' => ['except' => 'empty'],
+        'product' => ['except' => 'empty'],
     ];
 
 
@@ -83,25 +87,13 @@ class PageDashboard extends Component
     
     public function render()
     {
-
-        // $mydate = new Dates();
-
-        // if ($this->lineChartModel['isMultiLine']) {
-        //     return view('livewire-charts::livewire-multi-line-chart');
-        // }
         $this->getMonth(4);
-
         $columnChartModel = (new ColumnChartModel());
             foreach (Category::all() as $category) {
-                $columnChartModel->addColumn($category->name, $this->totalOfItems($category->id), '#f6ad55');
+                $columnChartModel->addColumn($category->name, $this->totalOfItems($category->id), $category->cvalue);
             }
-            // $columnChartModel->addColumn('Frame', $this->totalOfItems('fr'), '#fc8181');
-            // $columnChartModel->addColumn('Accessory', $this->totalOfItems('ac'), '#90cdf4');
 
-
-
-        $pieChartModel = 
-            (new PieChartModel())
+        $pieChartModel = (new PieChartModel())
             ->setTitle('Inventory Items')
             ->addSlice('Lenses', $this->totalOfItems('le'), '#008080')
             ->addSlice('Frames', $this->totalOfItems('fr'), '#B413EC')
@@ -112,7 +104,6 @@ class PageDashboard extends Component
             for ($i = 1; $i <= 12; $i++)
                 $areaChartModel->addPoint(date('M', mktime(0, 0, 0, $i, 1, $this->year)), $this->getMonth($i));
 
-           
             
            
         return view('livewire.pages.page-dashboard', [
@@ -131,13 +122,14 @@ class PageDashboard extends Component
 
 
 
-    public function fetchData()
-    {
-        // $this->recentSubscribers += 10;
-        $subscribers = array_replace($this->subscribers, [10 => $this->recentSubscribers += 10]);
+    // public function fetchData()
+    // {
+    //     // $this->recentSubscribers += 10;
+    //     $subscribers = array_replace($this->subscribers, [10 => $this->recentSubscribers += 10]);
 
-        $this->emit('refreshChart', ['seriesData' => $subscribers]);
-    }
+    //     $this->emit('refreshChart', ['seriesData' => $subscribers]);
+    // }
+
 
     public function getMonth($monthValue)
     {
@@ -159,16 +151,16 @@ class PageDashboard extends Component
     {
         switch ($kind) {
             case 'all':
-                return Patient::count();
+                return Patient::count() ?? 0;
                 break;
             case 'today':
-                return Patient::whereDate('created_at', date('Y-m-d'))->count();
+                return Patient::whereDate('created_at', date('Y-m-d'))->count() ?? 0;
                 break;
             case 'yesterday':
-                return Patient::whereDate('created_at', date("Y-m-d", strtotime("yesterday")))->count();
+                return Patient::whereDate('created_at', getYesterday())->count() ?? 0;
                 break;
             case 'thisWeek':
-                return Patient::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
+                return Patient::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count() ?? 0;
                 break;
             default:
         }
@@ -182,6 +174,33 @@ class PageDashboard extends Component
     public function totalOfItems($categoryId)
     {
         return Item::where('category_id', $categoryId)->count();
+    }
+
+
+
+
+
+
+    public function appointmentStats($value)
+    {
+
+        switch ($value) {
+            case 'today':
+                return Appointment::whereDate('appt_date', getToday())->count() ?? 0;
+                break;
+            case 'tomorrow':
+                return Appointment::whereDate('appt_date', getTomorrow())->count() ?? 0;
+                break;
+            case 'forApproval':
+                $ac = Ac::where('status', true)->first();
+                return Appointment::where('appointment_category_id', $ac->id)->count() ?? 0;
+                break;
+            case 'ongoing':
+                return 0;
+                break;
+            default;
+        }
+
     }
 
 

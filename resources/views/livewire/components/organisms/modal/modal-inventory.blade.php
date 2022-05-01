@@ -48,7 +48,7 @@
 
         <div class="x-flex x-flex-ycenter x-gap-1">
             @if ($modal['add'] || $modal['update'])
-                <label for="item_image" class="ui button tiny icon"><i class="icon add"></i> {{ !empty($item['image']) || !empty($item['preview']) ? 'Change image' : 'Add image'}}</label>
+                <label for="item_image" class="ui button tiny icon"><i class="icon add"></i> {{ !empty($item['image']) || !empty($item['preview']) ? 'Change Photo' : 'Add Photo'}}</label>
             @endif
             @if ($modal['inItem'])                
                 <div class="ui dropdown floating icon button tiny blue" x-init="$('.ui.dropdown').dropdown()" style="z-index: 400" title="Search item">
@@ -85,7 +85,7 @@
                 </div>
                 <div class="x-flex x-flex-ycenter x-gap-1">
                     @if ($modal['edit_in_inItem'])
-                        <label class="ui tiny button basic circular icon" for="updateItem_from_inItem" title="Confirm">
+                        <label class="ui tiny button circular icon" for="updateItem_from_inItem" title="Confirm">
                             <i class="icon check"></i>
                         </label>
                         <label wire:click.prevent="$set('modal.edit_in_inItem', false)" class="ui tiny button circular icon ml_5" title="Cancel">
@@ -105,9 +105,9 @@
                 @if ($modal['inItem'])                
                     IN ITEM
                 @elseif ($modal['add'])
-                    NEW ITEM
+                    ADD ITEM
                 @elseif ($modal['update'])
-                    UPDATE ITEM   
+                    EDIT ITEM   
                 @endif
             </h5>
         </div>
@@ -146,7 +146,6 @@
                             </div>
                         </div>
                     </div>
-                
                     <div class="field">
                         <x-atoms.ui.label>Category @error('item.type') <span class="ui text error">{{ $message }}</span> @enderror</x-atoms.ui.label>
                         <x-atoms.ui.select wire:model.defer="item.cat" class="">
@@ -190,7 +189,7 @@
                     <div class="field">
                         <x-atoms.ui.label>Item Description</x-atoms.ui.label>
                         <div class="ui input">
-                            <textarea name="" id="" rows="2"></textarea>
+                            <textarea wire:model.defer="item.desc" name="" id="" rows="2"></textarea>
                         </div>
                         {{-- <x-atoms.ui.input wire-model="item.desc" type="text" class="mb_7"/> --}}
                     </div>
@@ -272,7 +271,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <x-organisms.ui.table.td text="Current Stock"/>
+                                    <x-organisms.ui.table.td text="Current Balance"/>
                                     <td>
                                         <div class="ui input fluid">
                                             <input wire:model.defer="item.qty" type="number" min="0" placeholder="Enter Stocks..." @if (!$modal['edit_in_inItem']) readonly @endif>
@@ -297,21 +296,6 @@
                                 </tr>
                             
                             </x-slot>
-                            {{-- <x-slot name="tfoot">
-                                <tr>
-                                    <td></td>
-                                    <td>
-                                        <div class="x-flex x-flex-xbetween x-flex-ycenter ui">
-                                            <div>
-                                                <x-atoms.ui.input wire-model="item.in" type="number" min="0" class="{{ $modal['edit_in_inItem'] ? 'disabled' : '' }}" placeholder="Enter In-Item Quantity..."/>
-                                            </div>
-                                            <div>
-                                                <x-atoms.ui.button wire:click.prevent="" class="tiny icon right labeled  {{ $modal['edit_in_inItem'] ? 'disabled' : '' }}">In <i class="icon right arrow"></i></x-atoms.ui.button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </x-slot> --}}
                         </x-organisms.ui.table>
                     </div>
                     <input id="updateItem_from_inItem" type="submit" style="opacity: 0" hidden>
@@ -348,3 +332,4 @@
     @endsection
 
 </x-organisms.modal>
+

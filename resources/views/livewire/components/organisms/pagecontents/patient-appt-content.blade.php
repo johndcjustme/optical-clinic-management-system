@@ -1,15 +1,8 @@
 <x-layout.page-content>
     @section('section-page-title')
-        <div class="">
-            <div>
-                <x-atoms.ui.header>
-                    Hello {{ Auth::user()->name }}
-                </x-atoms.ui.header>
-            </div>
-            <div>
-                <small>{{ Auth::user()->email }}</small>
-            </div>
-        </div>
+        <x-atoms.ui.header 
+            title="Book"
+            desc="Hello {{ Auth::user()->name }}"/>
     @endsection
 
     @section('section-links')
@@ -54,7 +47,7 @@
                         </div>
                     </div>
                 </div> --}}
-                <div class="ui icon top right pointing dropdown button basic tiny" style="z-index:1">
+                <div class="ui icon top right pointing dropdown button tiny" style="z-index:1">
                     <i class="filter icon"></i>
                     <div class="menu inverted">
                         <div class="header">Filter</div>

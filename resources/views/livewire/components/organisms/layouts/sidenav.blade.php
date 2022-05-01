@@ -11,73 +11,93 @@
             {{-- <hr class="my_10" style="border-top: 1px solid rgba(0, 0, 0, 0.090);"> --}}
             <div class="ui divider"></div>
             <div>
-                <a href="/dashboard" title="Dashboard">
-                    <li class="@yield('dashboard') ">
-                        <ion-icon name="pie-chart-outline"></ion-icon>
-                        <span>Dashboard</span>
-                    </li>
-                </a>
-                <a href="/patients" title="Patient">
-                    <li class="@yield('patients') ">
-                        <ion-icon name="people-outline"></ion-icon>
-                        <span>Patients</span>
-                    </li>
-                </a>
-                <a href="/inventory" title="Inventory">
-                    <li class="@yield('inventory') ">
-                        <ion-icon name="albums-outline"></ion-icon>
-                        <span>Inventory</span>
-                    </li>
-                </a>
-                <a href="/suppliers" title="Supplier">
-                    <li class="@yield('suppliers') ">
-                        <ion-icon name="bus-outline"></ion-icon>
-                        <span>Suppliers</span>
-                    </li>
-                </a>
-                <a href="/orders" title="Orders">
-                    <li class="@yield('orders') ">
-                        <ion-icon name="cart-outline"></ion-icon>
-                        <span>Orders</span>
-                    </li>
-                </a>
-                <a href="/appointments" title="Appointments">
-                    <li class="@yield('appointments') ">
-                        <ion-icon name="calendar-outline"></ion-icon>
-                        <span>Appointments</span>
-                    </li>
-                </a>
-                <a href="/users" title="User">
-                    <li class="@yield('users') ">
-                        <ion-icon name="person-outline"></ion-icon>
-                        <span>Users</span>
-                    </li>
-                </a>
-                <a href="/patient-appt" title="Book">
-                    <li class="@yield('patientAppt') ">
-                        <ion-icon name="calendar-outline"></ion-icon>
-                        <span>Book</span>
-                    </li>
-                </a>
-                <a href="/reports" title="Report">
-                    <li class="@yield('reports') ">
-                        <ion-icon name="pulse-outline"></ion-icon>
-                        <span>Reports</span>
-                    </li>
-                </a>
-                <a href="/forum" title="Forum">
-                    <li class="@yield('forum') ">
-                        <ion-icon name="chatbubbles-outline"></ion-icon>
-                        <span>Furom</span>  
-                    </li>
-                </a>
+                @if (Auth::user()->hasRole('admin'))
+                    <a href="/dashboard" title="Dashboard">
+                        <li class="@yield('dashboard') ">
+                            {{-- <ion-icon name="pie-chart-outline"></ion-icon> --}}
+                            <i class="icon chart bar"></i>
+                            <span>Dashboard</span>
+                        </li>
+                    </a>
+                    <a href="/patients" title="Patient">
+                        <li class="@yield('patients') ">
+                            {{-- <ion-icon name="people-outline"></ion-icon> --}}
+                            <i class="icon wheelchair"></i>
+                            <span>Patients</span>
+                        </li>
+                    </a>
+                    <a href="/inventory" title="Inventory">
+                        <li class="@yield('inventory') ">
+                            {{-- <ion-icon name="albums-outline"></ion-icon> --}}
+                            <i class="icon boxes"></i>
+                            <span>Inventory</span>
+                        </li>
+                    </a>
+                    <a href="/suppliers" title="Supplier">
+                        <li class="@yield('suppliers') ">
+                            {{-- <ion-icon name="layers-outline"></ion-icon> --}}
+                            <i class="icon square outline"></i>
+                            <span>Suppliers</span>
+                        </li>
+                    </a>
+                    <a href="/orders" title="Orders">
+                        <li class="@yield('orders') ">
+                            {{-- <ion-icon path="sidebar-icons/cart-outline.svg"></ion-icon> --}}
+                            <i class="icon cart arrow down"></i>
+                            <span>Orders</span>
+                        </li>
+                    </a>
+                    <a href="/appointments" title="Appointments">
+                        <li class="@yield('appointments') ">
+                            {{-- <ion-icon name="calendar-outline"></ion-icon> --}}
+                            <i class="icon calendar alternate outline"></i>
+                            <span>Appointments</span>
+                        </li>
+                    </a>
+                    <a href="/users" title="User">
+                        <li class="@yield('users') ">
+                            {{-- <ion-icon name="person-outline"></ion-icon> --}}
+                            <i class="icon user outline"></i>
+                            <span>Users</span>
+                        </li>
+                    </a>
+
+                    <a href="/reports" title="Report">
+                        <li class="@yield('reports') ">
+                            {{-- <ion-icon name="pulse-outline"></ion-icon> --}}
+                            <i class="icon chart line"></i>
+                            <span>Reports</span>
+                        </li>
+                    </a>
+                @endif
+
+                @if (Auth::user()->hasRole('user')) 
+                    <a href="/book" title="Book">
+                        <li class="@yield('patientAppt') ">
+                            {{-- <ion-icon name="calendar-outline"></ion-icon> --}}
+                            <i class="icon calendar outline"></i>
+                            <span>Book</span>
+                        </li>
+                    </a>
+                @endif
+                @if (Auth::user()->hasROle('admin|staff|user'))
+                    <a href="/forum" title="Forum">
+                        <li class="@yield('forum') ">
+                            {{-- <ion-icon name="chatbubbles-outline"></ion-icon> --}}
+                            <i class="icon comments outline"></i>
+                            <span>Furom</span>  
+                        </li>
+                    </a>
+                @endif
+
             </div>
             <div>
                 <div class="ui divider"></div>
                 {{-- <hr class="my_10" style="border-top: 1px solid rgba(0, 0, 0, 0.090);"> --}}
                 <a href="#" title="Logout">
                     <li class="">
-                        <ion-icon name="log-out-outline" class="red"></ion-icon>
+                        {{-- <ion-icon name="power-outline" style="color: red"></ion-icon> --}}
+                        <i class="icon power" style="color: red"></i>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <span onclick="event.preventDefault(); this.closest('form').submit();">Logout</span>

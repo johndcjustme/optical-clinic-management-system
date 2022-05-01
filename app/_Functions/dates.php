@@ -15,7 +15,17 @@ function humanReadableTime($time) {
     return isset($time) ? \Carbon\Carbon::parse($time)->format('g:i A') : ''; 
 }
 
-function tomorrow()
+function getTomorrow()
 {
     return date("Y-m-d", strtotime('tomorrow'));
+}
+
+function getYesterday()
+{
+    return date("Y-m-d", strtotime("yesterday"));
+}
+
+function getToday()
+{
+    return date("Y-m-d");
 }

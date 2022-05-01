@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Pages;
 
+use Illuminate\Support\Str;
 use Livewire\Component;
 use App\Models\User;
 use App\Models\Role;
@@ -29,7 +30,7 @@ class PageUsers extends Component
 
     public $subPage = 1;
 
-    public $role;
+    // public $role;
 
     public $changePassword = false;
 
@@ -55,7 +56,7 @@ class PageUsers extends Component
     protected $queryString = [
         'subPage' => ['except' => ''],
         'searchUser' => ['except' => ''],
-        'role' => ['except' => ''],
+        // 'role' => ['except' => ''],
     ];
 
             
@@ -73,7 +74,7 @@ class PageUsers extends Component
         'email' => '',
         'password' => '',
         'password_confirmation' => '',
-        'role' => '',
+        // 'role' => '',
     ];
 
     protected $rules = [
@@ -81,7 +82,7 @@ class PageUsers extends Component
         'user.email' => 'required|email',
         'user.password' => 'required|min:6',
         'user.password_confirmation' => 'required|min:6',
-        'user.role' => 'required',
+        // 'user.role' => 'required',
     ];
 
     public function render()
@@ -91,20 +92,20 @@ class PageUsers extends Component
 
         $searchUser = $this->searchUser . '%';
 
-        $data = [
-            'admins' => User::where('user_role', 1)->where('user_role', 2)->get(),
-            'users' => User::with('role')->where('name', 'like', $searchUser)->get(),
-            'allRoles' => Role::all(),
-        ];
+        // $data = [
+        //     'admins' => User::where('user_role', 1)->where('user_role', 2)->get(),
+        //     'users' => User::with('role')->where('name', 'like', $searchUser)->get(),
+        //     'allRoles' => Role::all(),
+        // ];
 
-        if (!empty($this->role)) {
-            $data += ['roles' => Role::where('id', $this->role)->get()];    
-        } else {
-            $data += ['roles' => Role::all()];    
-        }
+        // if (!empty($this->role)) {
+        //     $data += ['roles' => Role::where('id', $this->role)->get()];    
+        // } else {
+        //     $data += ['roles' => Role::all()];    
+        // }
 
 
-        return view('livewire.pages.page-users', $data)
+        return view('livewire.pages.page-users')
             ->extends('layouts.app')
             ->section('content');
     }
@@ -128,7 +129,10 @@ class PageUsers extends Component
 
     public function resetFields()
     {
-        $this->reset(['user', 'modalRoleTab']);
+        $this->reset([
+            'user', 
+            // 'modalRoleTab'
+        ]);
     }
 
 
@@ -148,7 +152,7 @@ class PageUsers extends Component
             [
                 'user.name' => 'required|string|max:255',
                 'user.email' => 'required|string|email|max:255|unique:users,email',
-                'user.role' => 'required',
+                // 'user.role' => 'required',
                 'user.password' => 'required|min:6',
                 'user.password_confirmation' => 'required|min:6',
                 'avatar' => 'image|max:1024|nullable',
@@ -161,7 +165,7 @@ class PageUsers extends Component
                 'user.password.min' => 'Too short',
                 'user.password_confirmation.required' => 'Required',
                 'user.password_confirmation.min' => 'Too short',
-                'user.role.required' => 'Required',
+                // 'user.role.required' => 'Required',
             ],
         );
 
@@ -169,7 +173,7 @@ class PageUsers extends Component
             'name' => $this->user['name'],
             'email' => $this->user['email'],
             'password' => Hash::make($this->user['password']),
-            'role_id' => $this->user['role'],
+            // 'role_id' => $this->user['role'],
         ];
 
         if (!empty($this->avatar)) {
@@ -200,14 +204,14 @@ class PageUsers extends Component
             [
                 'user.name' => 'required|string|max:255',
                 'user.email' => 'required|string|email|max:255|unique:users,email,' . $this->user['id'],
-                'user.role' => 'required',
+                // 'user.role' => 'required',
                 'avatar' => 'image|max:1024|nullable',
             ],
             [
                 'user.name.required' => 'Required',
                 'user.email.required' => 'Required',
                 'user.email.unique' => 'Email already taken',
-                'user.role.required' => 'Required',
+                // 'user.role.required' => 'Required',
             ],
         );
 
@@ -215,7 +219,7 @@ class PageUsers extends Component
 
         $updateUser = [
             'name' => $this->user['name'],
-            'role_id' => $this->user['role'],
+            // 'role_id' => $this->user['role'],
             'email' => $this->user['email'],
         ];
 
@@ -409,26 +413,30 @@ class PageUsers extends Component
             'roleName' => 'required',
         ]);
 
+
         Role::create([
-            'role' => $this->roleName,
+            'name' => Str::lower(Str::replace(' ', '_', $this->roleName)),
+            'display_name' => Str::title($this->roleName),
+            'Description' => Str::title($this->roleName),
         ]);
+
         $this->reset(['roleName']);
     }
 
-    public function deleteRole($roleId)
-    {
-        Role::destroy($roleId);
-    }
+    // public function deleteRole($roleId)
+    // {
+    //     Role::destroy($roleId);
+    // }
 
 
 
 
-    public function openModalRoles($action)
-    {
-        $this->modalRoleTab = true;
-        $this->modal['add'] = true;
-        $this->modal['show'] = true;
-    }
+    // public function openModalRoles($action)
+    // {
+    //     $this->modalRoleTab = true;
+    //     $this->modal['add'] = true;
+    //     $this->modal['show'] = true;
+    // }
 
     public function showModal($action, $id) 
     {
@@ -453,7 +461,10 @@ class PageUsers extends Component
 
     public function closeModal()
     {
-        $this->reset(['modal', 'confirmDeleteRole', 'avatar', 'changePassword']);
+        $this->reset([
+            'modal', 
+            // 'confirmDeleteRole', 
+            'avatar', 'changePassword']);
         $this->resetErrorBag();
         $this->resetFields();
     }

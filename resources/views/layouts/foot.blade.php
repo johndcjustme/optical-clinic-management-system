@@ -106,6 +106,28 @@ style="
 
 
 
+{{-- 
+<script>
+    const element = document.getElementById('print-dashboard');
+    
+    var opt = {
+        margin:       1,
+        filename:     'myfile.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        // html2canvas:  { scale: 1 },
+        jsPDF:        { unit: 'cm', format: 'letter', orientation: 'portrait' }
+    };
+
+
+
+    function generatePDF() {
+        html2pdf()
+        .from(element).set(opt)
+        .save();
+    }
+</script> --}}
+
+
 
 
 </body>

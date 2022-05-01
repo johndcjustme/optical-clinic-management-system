@@ -12,7 +12,7 @@
                 width:100vw;
                 height:100vh;
                 background:rgba(0, 0, 0, 0.767);  
-                z-index:700; 
+                z-index:1000; 
                 overflow-y:scroll;">
             <div class="animate_bottom"
                 @click.away="$wire.closeModal()"

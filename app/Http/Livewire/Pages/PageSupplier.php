@@ -49,7 +49,6 @@ class PageSupplier extends Component
         $direction = 'asc',
         $colName = ''; 
 
-
     public $modal = [
         'show' => false,
         'add' => false,
@@ -72,7 +71,6 @@ class PageSupplier extends Component
             ->orWhere('supplier_email', 'like', $searchSupplier)
             ->orderBy('supplier_name', $this->direction)
             ->paginate($this->pageNumber);
-
 
         return view('livewire.pages.page-supplier', ['suppliers' => $suppliers])
             ->extends('layouts.app')
@@ -104,13 +102,15 @@ class PageSupplier extends Component
             [
                 'su.name' => 'required',
                 'su.email' => 'required|email',
+                'su.no' => 'required',
                 'previewAvatar' => 'image|max:1024|nullable',
             ],
             [
                 'su.name.required' => 'Required',
                 'su.email.email' => 'Enter valid email',
+                'su.no.required' => 'Required',
                 'su.email.required' => 'Required',
-            ],
+            ]
         );
 
         return [
@@ -127,22 +127,15 @@ class PageSupplier extends Component
 
     public function addSupplier()
     {
-
-
-
         $createSupplier = $this->setSupplier();
 
         if (!empty($this->previewAvatar) || ($this->previewAvatar != null)) {
-
             $createSupplier += ['supplier_avatar' => $this->previewAvatar->hashName()];
-
             $this->previewAvatar->store('/', 'avatars');            
         }
      
         Supplier::create($createSupplier);
-
         $this->closeModal();
-        
         $this->dispatchBrowserEvent('toast', [
             'title' => null,
             'class' => 'success',
@@ -153,7 +146,6 @@ class PageSupplier extends Component
     public function updateSupplier($supplierId)
     {
         $supplier = Supplier::findOrFail($supplierId);
-
         $updateSupplier = $this->setSupplier();
 
         if (!empty($this->previewAvatar) || ($this->previewAvatar != null)) {
@@ -165,9 +157,7 @@ class PageSupplier extends Component
         }
 
         $supplier->update($updateSupplier);
-
         $this->closeModal();
-
         $this->dispatchBrowserEvent('toast', [
             'title' => null,
             'class' => 'success',
@@ -181,18 +171,23 @@ class PageSupplier extends Component
 
 
 
-    public function deletingSupplier($supplierId)
+    public function deletingSupplier($supplierId, $supplierName)
     {
         $this->su['id'] = $supplierId;
         $this->delete['supplier'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog'); 
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Confirm',
+            'content' => 'Are you sure you want to delete this supplier? "' . $supplierName . '"'
+        ]); 
     }
 
     public function deletingSuppliers()
     {
         $this->delete['suppliers'] = true;
-
-        $this->dispatchBrowserEvent('confirm-dialog'); 
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Confirm',
+            'content' => 'Are you sure you want to delete this supplier(s)?'
+        ]); 
     }
 
     public function deleteSupplier()
@@ -206,13 +201,12 @@ class PageSupplier extends Component
         }
         
         $supplier->delete();
-
+        $this->reset(['su']);
         $this->confirm_dialog_modal_close();
-
         $this->dispatchBrowserEvent('toast', [
-            'title' => null,
+            'title' => 'Success',
             'class' => 'success',
-            'message' => 'Supplier Deleted successfully.',
+            'message' => 'Supplier has been successfully deleted.',
         ]);
     }
 
@@ -228,20 +222,23 @@ class PageSupplier extends Component
         Supplier::destroy($this->selectedSuppliers);
 
         $this->selectedSuppliers = [];
-
+        $this->reset(['su']);
         $this->confirm_dialog_modal_close();
-
         $this->dispatchBrowserEvent('toast', [
-            'title' => null,
+            'title' => 'Success',
             'class' => 'success',
-            'message' => 'Suppliers Deleted successfully.',
+            'message' => 'Supplier(s) has been successfully deleted.',
         ]);
     }
 
     public function confirm()
     {
-        $this->delete['supplier']   ? $this->deleteSupplier() : '';
-        $this->delete['suppliers']   ? $this->deleteSuppliers() : '';
+        $this->delete['supplier']   
+            ? $this->deleteSupplier() 
+            : NULL;
+        $this->delete['suppliers']   
+            ? $this->deleteSuppliers() 
+            : NULL;
 
         $this->reset(['delete']);
     }
@@ -275,7 +272,7 @@ class PageSupplier extends Component
 
     public function closeModal()
     {
-        $this->reset(['su', 'modal']);
+        $this->reset(['su', 'modal', 'previewAvatar']);
         $this->resetErrorBag();
         $this->confirm_dialog_modal_close();
     }

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Dompdf\Dompdf;
 
 use PDF;
 
@@ -54,6 +55,7 @@ class PagePatient extends Component
     public $selectedPatients = [];
 
     public $previewAvatar;
+
 
     public 
         $filter = '',
@@ -172,9 +174,7 @@ class PagePatient extends Component
     public function render() 
     {        
         $this->total();
-
-
-
+        
         $searchItem = '%' . $this->searchItem . '%';
         $items = Item::where('item_name', 'like', $searchItem)->get();
 
@@ -256,7 +256,7 @@ class PagePatient extends Component
                 'pt.occ' => 'nullable',
                 'pt.email' => 'nullable',
                 'pt.queue' => 'nullable',
-                'previewAvatar' => 'image|max:1024|nullable'
+                'previewAvatar' => 'image|mimes:jpeg,png,jpg|max:2048|nullable'
             ],
             [
                 'pt.fname.required' => 'Required',  
@@ -325,7 +325,8 @@ class PagePatient extends Component
             ->update(['patient_exam_status' => false]);
     }
 
-    public function revertExam($patientId) {
+    public function revertExam($patientId) 
+    {
         Patient::where('id', $patientId)
             ->update(['patient_exam_status' => true]);
     }
@@ -641,7 +642,8 @@ class PagePatient extends Component
 
         if (!empty($this->previewAvatar)) {
             $newPatient += ['patient_avatar' => $this->previewAvatar->hashName()];
-            $this->previewAvatar->store('/', 'avatars'); }
+            $this->previewAvatar->store('/', 'avatars'); 
+        }
             
         Patient::create($newPatient);
 
@@ -939,5 +941,123 @@ class PagePatient extends Component
     {
         $this->reset(['modal']);
         return redirect()->to('/orders?subPage=1&modal[show]=1&modal[add]=1&modal[update]=0&orderPatientId=' . $this->pt['id']);
+    }
+
+    public function downloadPrescription()
+    {
+
+        $date = Str::replace(' ', '_', date("Y-m-d h:i:sa"));
+        $ptName = Str::title('john doe');
+        $ptName = Str::replace(' ', '_', $ptName);
+
+
+        // $pdfContent = PDF::loadView('livewire.pages.page-patient', ['purchases' => Purchase::with('patient')->latest()->get()])->output();
+
+        // return response()->streamDownload(
+        //     fn() => print($pdfContent),
+        //     'file_name.pdf'
+        // );
+
+        return response()->streamDownload(function () {
+            $pdf = \App::make('dompdf.wrapper');
+            $pdf->loadHTML($this->pdfExam());
+            echo $pdf->stream();
+        },  $ptName . '_' . $date . '.pdf');
+
+        return $pdf->stream();
+    }
+
+
+
+
+
+    public function pdfExam()
+    {
+        $html = '
+            <style>
+                table.table1 {
+                    border: 1px solid lightgray;
+                    border-collapse: collapse;
+                }
+                .table1 th, .table1 td {
+                    border: 1px solid lightgray;
+                    padding: 5px;
+                }
+                .bb {
+                    border-bottom: 1px solid black;
+                }
+                .text-center {
+                    text-align: center;
+                }
+                .text-right {
+                    text-align: right;
+                }
+
+            </style>
+
+            <div style="border-bottom:1px solid lightgray; padding-bottom:30px">
+                <center style="margin-bottom: 20px;"><h3>DANGO OPTICAL CLINIC</h3></center>
+                <table class="table1" style="width:100%;">
+                    <tr>
+                        <th>RX</th>
+                        <th>SPH</th>
+                        <th>CYL</th>
+                        <th>AXIS</th>
+                        <th>NVA</th>
+                        <th>PH</th>
+                        <th>CVA</th>
+                    </tr>
+                    <tr>
+                        <th>OD</th>
+                        <td class="text-center">' . $this->exam['exam_OD_SPH'] . '</td>
+                        <td class="text-center">' . $this->exam['exam_OD_CYL'] . '</td>
+                        <td class="text-center">' . $this->exam['exam_OD_AXIS'] . '</td>
+                        <td class="text-center">' . $this->exam['exam_OD_NVA'] . '</td>
+                        <td class="text-center">' . $this->exam['exam_OD_PH'] . '</td>
+                        <td class="text-center">' . $this->exam['exam_OD_CVA'] . '</td>
+                    </tr>
+                    <tr>
+                        <th>OS</th>
+                        <td class="text-center">' . $this->exam['exam_OS_SPH'] . '</td>
+                        <td class="text-center">' . $this->exam['exam_OS_CYL'] . '</td>
+                        <td class="text-center">' . $this->exam['exam_OS_AXIS'] . '</td>
+                        <td class="text-center">' . $this->exam['exam_OS_NVA'] . '</td>
+                        <td class="text-center">' . $this->exam['exam_OS_PH'] . '</td>
+                        <td class="text-center">' . $this->exam['exam_OS_CVA'] . '</td>
+                    </tr>
+                    <tr>
+                        <th>ADD</th>
+                        <td colspan="6">' . $this->exam['exam_ADD'] . '</td>
+                    </tr>
+                    <tr>
+                        <th>P.D</th>
+                        <td colspan="6">' . $this->exam['exam_PD'] . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">REMARKS:  ' . $this->exam['exam_remarks'] . '</td>
+                    </tr>
+                </table>
+                <br>
+                <table style="width: 100%;">
+                    <tr>
+                        <td>Name: ' . $this->pt['fullname'] . '</td>
+                        <td class="text-right">Age: ' . $this->pt['age'] . '</td>
+                    </tr>
+                    <tr>
+                        <td>Address: ' . $this->pt['addr'] . '</td>
+                        <td class="text-right">Occupation: ' . $this->pt['occ'] . '</td>
+                    </tr>
+                    <tr>
+                        <td><br></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Date: ' . humanReadableDate(date('Y-m-d')) . '</td>
+                        <td class="text-right">Dr.: Jonathan Dango</td>
+                    </tr>
+                </table>
+            </div>';
+
+        return $html;
     }
 }
