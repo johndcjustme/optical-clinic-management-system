@@ -4,16 +4,18 @@ namespace App\Http\Livewire\Pages;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
-
 use App\Models\Order;
 use App\Models\Ordered_item;
+use App\Models\Order_detail;
 use App\Models\Patient;
 use App\Models\Item;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
-
+use Illuminate\Support\Arr;
+use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Facades\Mail;
+use Dompdf\Dompdf;
 use PDF;
 
 
@@ -38,9 +40,18 @@ class PageOrders extends Component
 
     public $description;
 
+    public $page = 1;
+
+    public $viewOrderPatientId = '', $viewOrderExamId = '';
+
+
+
+
+    // public $ordered_items = [];
+
 
     public 
-        $total,
+        $total    = 0,
         $discount = 0,
         $balance  = 0,
         $deposit  = 0,
@@ -64,6 +75,8 @@ class PageOrders extends Component
         'update' => false,
         'previeworder' => false,
         'sendorder' => false,
+
+        'viewOrder' => false,
     ];
 
     public $order = [
@@ -81,10 +94,11 @@ class PageOrders extends Component
     protected $listeners = ['showModal', 'thisPatient'];
 
     protected $queryString = [
+        'page' => ['except' => ''],
         'subPage' => ['except' => ''],
         'searchOrder' => ['except' => ''],
-        'modal',
-        'orderPatientId' => ['except' => ''],
+        // 'modal',
+        // 'orderPatientId' => ['except' => ''],
     ];
 
     public function render()
@@ -92,9 +106,14 @@ class PageOrders extends Component
 
         $render = [];
 
-        $this->total();
+        // $this->total();
 
-        $orders = Order::with('patient')->where('patient_id', '!=', NULL)->orderByDesc('created_at');
+        $orders = Order_detail::with('patient');
+        $orderDetail = Order_detail::with('patient')->with('exam');
+
+        if (!empty($this->viewOrderPatientId) && !empty($this->viewOrderExamId))
+            $orderDetail->where('patient_id', $this->viewOrderPatientId)->where('exam_id', $this->viewOrderExamId);
+            
 
         switch ($this->subPage) {
             case 1: $orders = $orders->where('order_status', 1); break;
@@ -104,7 +123,10 @@ class PageOrders extends Component
             default;
         }
 
-        return view('livewire.pages.page-orders', ['orders' => $orders->paginate($this->pageNumber)])
+        return view('livewire.pages.page-orders', [
+            'orders' => $orders->orderByDesc('created_at')->paginate($this->pageNumber),
+            'orderDetails' => $orderDetail->get(),
+            ])
             ->extends('layouts.app')
             ->section('content');
 
@@ -116,31 +138,42 @@ class PageOrders extends Component
     }
 
 
-    public function pdf()
-    {
+    // public function pdf()
+    // {
 
-        return response()->streamDownload(function () {
-            $pdf = App::make('dompdf.wrapper');
-            $pdf->loadHTML('<h1>Test</h1>');
-            echo $pdf->stream();
-        }, 'test.pdf');
+    //     return response()->streamDownload(function () {
+    //         $pdf = App::make('dompdf.wrapper');
+    //         $pdf->loadHTML('<h1>Test</h1>');
+    //         echo $pdf->stream();
+    //     }, 'test.pdf');
 
      
-        // $pdf = PDF::loadView('livewire.pages.create-pdf',['title' => 'I am a title']);
+    //     // $pdf = PDF::loadView('livewire.pages.create-pdf',['title' => 'I am a title']);
      
-        // return $pdf->download('tutsmake.pdf');
+    //     // return $pdf->download('tutsmake.pdf');
         
 
+    // }
+
+
+
+    public function thispdf()
+    {
+        // Browsershot::html('<h1>Hello world!!</h1>')->save('example.pdf');
+        $image = Browsershot::url('http://127.0.0.1:8000/orders') 
+            ->setScreenshotType('jpeg', 100)
+            ->save('this.png');
     }
 
     public function updatedDescription()
     {
-        Order::find($this->order['id'])->update(['order_desc' => $this->description]);
+        Order_detail::find($this->order['id'])->update(['order_desc' => $this->description]);
     }
 
-    public function total() // called in render method
+
+    public function total($total) // called in render method
     {
-        $this->total = 1000;
+        $this->total = $total;
 
         // $purchased_item =  Purchased_item::where('purchase_id', $this->latest_purchase['id'])->get();
 
@@ -153,7 +186,7 @@ class PageOrders extends Component
             ? $this->discount > $this->total
                 ? session()->flash('discount', 'error')
                 : $this->total = $this->total - $this->discount
-            : NULL;
+            : '';
 
         $this->deposit > 0
             ? $this->deposit > $this->total
@@ -194,17 +227,17 @@ class PageOrders extends Component
     public function orderCategoryDesc($value) 
     {
         switch ($value) {
-            case 1: return '2'; break;
-            case 2: return '1';  break;
-            case 3: return '7'; break;
-            case 4: return '4';  break;
+            case 1: return Order_detail::where('order_status', $value)->count(); break;
+            case 2: return Order_detail::where('order_status', $value)->count(); break;
+            case 3: return Order_detail::where('order_status', $value)->count(); break;
+            case 4: return Order_detail::where('order_status', $value)->count(); break;
             default:
         }
     }
 
     public function hasOrderStatus($orderStatus)
     {
-        $orders = Order::where('order_status', $orderStatus)->where('patient_id', '!=', NULL)->count();
+        $orders = Order_detail::where('order_status', $orderStatus)->where('patient_id', '!=', NULL)->count();
         switch ($orderStatus) {
             case 1: 
                 if ($orders > 0) 
@@ -224,7 +257,11 @@ class PageOrders extends Component
 
     public function orderAssignPatient($patientId)
     {
-        Order::find($this->order['id'])->update(['patient_id' => $patientId]);
+        $order = Order_detail::create([
+            'patient_id' => $patientId,
+            'order_status' => 1,
+        ]);
+        $this->order['id'] = $order->id;
         $this->getPatient($patientId);
     }
 
@@ -232,16 +269,16 @@ class PageOrders extends Component
 
 
 
-    public function addOrder()
-    {
-        $order = Order::create(['order_status' => 1]);
-        $this->order['id'] = $order->id;
-        $this->hasOrder = true;
-    }
+    // public function addOrder()
+    // {
+    //     $order = Order_detail::create(['order_status' => 1]);
+    //     $this->order['id'] = $order->id;
+    //     $this->hasOrder = true;
+    // }
 
     public function updateOrder()
     {
-        Order::find($order->id)->update([
+        Order_detail::find($order->id)->update([
             'patient_id' => $this->pt['id'],
         ]);
 
@@ -252,40 +289,50 @@ class PageOrders extends Component
     {
         $this->order['id'] = $orderId;
         $this->delete['order'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog');  
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Confirm',
+            'content' => 'Are you sure you want to delete this order?'
+        ]);  
     }
 
     public function deleteOrder()
     {
-        Order::destroy($this->order['id']);
+        Order_detail::destroy($this->order['id']);
+
+        $this->reset(['delete']);
 
         $this->dispatchBrowserEvent('confirm-dialog-close'); 
 
         $this->dispatchBrowserEvent('toast',[
-            'title' => null,
+            'title' => 'Success',
             'class' => 'success',
-            'message' => 'Successfully Deleted',
+            'message' => 'Order has been successfully deleted.',
         ]);
     }
 
     public function deletingOrders()
     {
         $this->delete['orders'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog');  
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Cofirm',
+            'content' => 'Are you sure you want to delete selected order(s)?'
+        ]);  
     }
 
     public function deleteOrders()
     {
-        Order::destroy($this->selectedOrders);
+        Order_detail::destroy($this->selectedOrders);
 
         $this->selectedOrders = [];
+
+        $this->reset(['delete']);
 
         $this->dispatchBrowserEvent('confirm-dialog-close'); 
 
         $this->dispatchBrowserEvent('toast',[
-            'title' => null,
+            'title' => 'Success',
             'class' => 'success',
-            'message' => 'Successfully Deleted',
+            'message' => 'Order(s) has been successfully deleted.',
         ]);
     }
 
@@ -295,35 +342,39 @@ class PageOrders extends Component
 
 
 
-    public function previewOrder()
+    // public function previewOrder()
+    // {
+    //     // $data;
+    //     $code = Str::random(8);
+
+    //     foreach ($this->selectedOrders as $orderId) {
+    //         Order_detail::where('id', $orderId)->update(['order_code' => $code]);
+    //     }
+    //     // dd($orderId);
+
+    //     $order = Order_detail::find($orderId);
+    //     $this->order['code'] = $order->order_code;
+
+    //     $this->modal['previeworder'] = true;
+    // }
+
+
+
+
+    public function orderAddItem($itemId, $itemPrice)
     {
-        // $data;
-        $code = Str::random(8);
+        // $this->ordered_items[] = $itemId;
 
-        foreach ($this->selectedOrders as $orderId) {
-            Order::where('id', $orderId)->update(['order_code' => $code]);
-        }
-        // dd($orderId);
-
-        $order = Order::find($orderId);
-        $this->order['code'] = $order->order_code;
-
-        $this->modal['previeworder'] = true;
-    }
-
-
-
-
-    public function orderAddItem($itemId)
-    {
-        $item = Item::find($itemId)->first();
+        // $item = Item::find($itemId)->first();
 
         Ordered_item::create([
-            'order_id' => $this->order['id'],
+            'order_detail_id' => $this->order['id'],
             'item_id' => $itemId,
-            'ordered_item_price' => $item->item_price,
+            'ordered_item_price' => $itemPrice,
             'ordered_item_qty' => 1,
         ]);
+
+        $this->total += $itemPrice;
     }
 
 
@@ -337,29 +388,44 @@ class PageOrders extends Component
         Ordered_item::destroy($itemId);
     }
 
-    public function disableOn($itemId, $valueToDisable, $type)
+    public function disableOn($itemId, $price, $valueToDisable, $action)
     {
-        $DB_RAW;
-        $ordered_item = Ordered_item::find($itemId);
+        // $DB_RAW;
+        $ordered_item = Ordered_item::findOrFail($itemId)->first();
 
-        if ($type == 'inc') {
+        if ($action == 'inc') {
+            $this->total += $price;
             $DB_RAW = 'ordered_item_qty + 1';
+            $ordered_item->update(['ordered_item_qty' => DB::raw($DB_RAW)]);
+        $itemId = '';
+
             // dd($valueToDisable + 1);
         }
-        elseif ($type == 'dec') {
+        elseif ($action == 'dec') {
+            $this->total -= $price;
             $DB_RAW = 'ordered_item_qty - 1';
+            $ordered_item->update(['ordered_item_qty' => DB::raw($DB_RAW)]);
+        $itemId = '';
+
             // dd($valueToDisable - 1);
         }
 
-        if ($valueToDisable == $valueToDisable) {
-            // return false;
-        } else {
-            // return true;
-        }
-        $ordered_item->update(['ordered_item_qty' => DB::raw($DB_RAW)]);
+
+        // if ($valueToDisable == $valueToDisable) {
+        //     // return false;
+        // } else {
+        //     // return true;
+        // }
+
+        // $ordered_item->update(['ordered_item_qty' => DB::raw($DB_RAW)]);
     }
 
-
+    public function viewOrder($patientId, $examId)
+    {
+        $this->viewOrderPatientId = $patientId;
+        $this->viewOrderExamId = $examId;
+        $this->showModal('viewOrder', null);
+    }
 
 
     public function showModal($action, $orderId)
@@ -371,13 +437,19 @@ class PageOrders extends Component
                 break;
 
             case 'update': 
-                $order = Order::find($orderId);
+                $order = Order_detail::find($orderId);
                 $this->order['id'] = $order->id;
                 $this->description = $order->order_desc;
 
                 $this->getPatient($order->patient_id);
-                $this->hasOrder = true;
+                // $this->hasOrder = true;
+
+                $this->total = Ordered_item::where('order_detail', $order->id)->sum('ordered_item_price');
+
                 $this->modal['update'] = true;
+                break;
+            case 'viewOrder':
+                $this->modal['viewOrder'] = true;
                 break;
             default;
         }
@@ -387,7 +459,7 @@ class PageOrders extends Component
 
     public function closeModal()
     {
-        $this->reset(['modal', 'orderPatientId', 'hasOrder']);
+        $this->reset(['modal', 'order', 'orderPatientId', 'hasOrder', 'viewOrderPatientId', 'viewOrderExamId']);
     }
 
     public function confirm()
@@ -404,7 +476,7 @@ class PageOrders extends Component
 
     public function itemSum($orderId)
     {
-        return Ordered_item::where('order_id', $orderId)->sum('ordered_item_qty');
+        return Ordered_item::where('order_detail_id', $orderId)->sum('ordered_item_qty');
         // $count = 0;
         // foreach (Ordered_item::where('order_id', $orderId)->get() as $ordered_item) {
         //     $count = $ordered_item->order_item_qty + $ordered_item->order_item_qty;
@@ -426,25 +498,180 @@ class PageOrders extends Component
         $this->pt['addr'] = $pt->patient_address;
 
         // $this->updateOrder();
-        $this->getFullName($patientId);
+        // $this->getFullName($pt->patient_lname, $pt->patient_fname, $pt->patient_mname);
     }
 
 
     public function getFullName($patientId)
     {
+        $patient = Patient::findOrFail($patientId);
+        $this->pt['addr'] = $patient->patient_address;
         if (!empty($patientId)) {
-            $patient = Patient::findOrFail($patientId);
             return $patient->patient_lname . ', ' . $patient->patient_fname . ' ' . $patient->patient_mname;
         } else {
-            return 'Search Patient';
+            return '';
         }
     }
 
-    public function storage($url) 
+
+
+    public function pdf()
     {
-        if (!empty($url) || ($url != null)) {
-            return Storage::disk('avatars')->url($url); } 
-        else {
-            return Storage::disk('avatars')->url('default-user-avatar.png'); } 
+
+        // return response()->streamDownload(function () {
+        //     $pdf = \App::make('dompdf.wrapper');
+        //     $pdf->loadHTML($this->convert_customer_data_to_html());
+        //     echo $pdf->stream();
+        // }, 'test.pdf');
+
+        Browsershot::html($this->convert_customer_data_to_html())
+            ->margins('1', '1', '1', '1', 'cm')
+            ->format('letter')
+            // ->scale(0.9)
+            ->save('example.pdf');
+
+
+
+
+    //  return $pdf->stream();
+    }
+
+
+
+    public function convert_customer_data_to_html()
+    {
+
+        $html = '
+        <center style="margin-bottom:20px; font-size:20px;"><h3>DANGO OPTICAL CLINIC</h3></center>
+            <style>
+                html {
+                    font-family: Arial, Helvetica, sans-serif;
+                }
+                table.table1 {
+                    border: 2px solid rgb(175, 175, 175);
+                    border-collapse: collapse;
+                }
+                .table1 th, .table1 td {
+                    border: 1px solid lightgray;
+                    padding: 7px 5px;
+                }
+                .bb {
+                    border-bottom: 1px solid black;
+                }
+                .text-center {
+                    text-align: center;
+                }
+                .text-right {
+                    text-align: right;
+                }
+            </style>';
+
+            foreach (Order_detail::with('patient')->with('exam')->get() as $order) {
+                foreach ($this->selectedOrders as $selected) {
+                    if ($order->id == $selected) {
+                        $html .= '
+                        <div style="padding-bottom:30px">
+                            <table class="table1" style="width:100%;">
+                                <tr>
+                                    <td colspan="5"><b>NAME: </b><span style="font-size:19px;">' . Str::title($order->patient->patient_lname . ', ' . $order->patient->patient_fname . ' ' . $order->patient->patient_mname) . '</span></td>
+                                    <td colspan="2"><b>AGE: </b>' . $order->patient->patient_age . '</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7"><b>ADDRESS: </b>' . $order->patient->patient_address . '</td>
+                                </tr>
+                                <tr>
+                                    <th colspan="7" style="padding:12px 0"><center> <span class="ui header">REFRACTION</span></center></th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">RX</th>
+                                    <th class="text-center">SPH</th>
+                                    <th class="text-center">CYL</th>
+                                    <th class="text-center">AXIS</th>
+                                    <th class="text-center">NVA</th>
+                                    <th class="text-center">PH</th>
+                                    <th class="text-center">CVA</th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">OD</th>
+                                    <td class="text-center">' . $order->exam->exam_OD_SPH . '</td>
+                                    <td class="text-center">' . $order->exam->exam_OD_CYL . '</td>
+                                    <td class="text-center">' . $order->exam->exam_OD_AXIS . '</td>
+                                    <td class="text-center">' . $order->exam->exam_OD_NVA . '</td>
+                                    <td class="text-center">' . $order->exam->exam_OD_PH . '</td>
+                                    <td class="text-center">' . $order->exam->exam_OD_CVA . '</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">OS</th>
+                                    <td class="text-center">' . $order->exam->exam_OS_SPH . '</td>
+                                    <td class="text-center">' . $order->exam->exam_OS_CYL . '</td>
+                                    <td class="text-center">' . $order->exam->exam_OS_AXIS . '</td>
+                                    <td class="text-center">' . $order->exam->exam_OS_NVA . '</td>
+                                    <td class="text-center">' . $order->exam->exam_OS_PH . '</td>
+                                    <td class="text-center">' . $order->exam->exam_OS_CVA . '</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">ADD</th>
+                                    <td colspan="2">' . $order->exam->exam_ADD . '</td>
+                                    <th class="text-center">P. D.</th>
+                                    <td colspan="3">' . $order->exam->exam_PD . '</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7" style="padding-top:12px; padding-bottom:12px;"><b style="margin-right:8px;">REMARKS: </b>' . $order->exam->exam_remarks . '</td>
+                                </tr>
+
+                                <tr>
+                                    <th class="text-center">LENSE</th>
+                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">' . $order->lense . '</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">FRAME</th>
+                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">' . $order->frame . '</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">TINT</th>
+                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">' . $order->tint . '</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">OTHERS</th>
+                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">' . $order->others . '</td>
+                                </tr>
+                            </table>
+                        </div>';
+                    }
+                }
+            }
+
+
+        return $html;
+    }
+
+
+
+
+
+    public function sendMail()
+    {
+
+        // Mail::to('johndecastro.604@gmail.com')
+        //     ->send('download-pdf');
+
+        $data["email"] = "johndecastro.604@gmail.com";
+        $data["title"] = "From Dango";
+        $data["body"] = "This is Demo";
+ 
+        $file = public_path('example.pdf');
+  
+        Mail::send('download-pdf', $data, function($message)use($data, $fileb) {
+            $message->to($data["email"], $data["email"])
+                    ->subject($data["title"])
+                    ->attach($file);
+ 
+            // foreach ($files as $file){
+            //     $message->attach($file);
+            // }
+            
+        });
+ 
+        dd('Mail sent successfully');
     }
 }

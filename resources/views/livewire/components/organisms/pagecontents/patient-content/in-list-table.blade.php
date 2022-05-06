@@ -6,13 +6,13 @@
     <x-organisms.ui.table.td style="width:8em">
         <div class="flex flex_y_center full_w" style="gap:0.8em">
             <div>
-                <div wire:click.prevent="patientShowModal('isExam', {{ $pt->id }})" class="clickable_icon">
+                <div wire:click.prevent="patientShowModal('exam', {{ $pt->id }})" class="clickable_icon">
                     <span class="ui text teal">
                         <i class="fa-solid fa-pen"></i>
                     </span>
                 </div>
             </div>
-            <div wire:click.prevent="patientShowModal('isPurchase', {{ $pt->id }})">
+            <div wire:click.prevent="patientShowModal('purchase', {{ $pt->id }})">
                 <div class="clickable_icon">
                     <span class="ui text blue">
                         <i class="fa-solid fa-cart-shopping"></i>

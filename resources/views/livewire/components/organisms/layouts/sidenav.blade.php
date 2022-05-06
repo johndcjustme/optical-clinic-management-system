@@ -109,8 +109,10 @@
 
         <div class="relative bt_1" style="padding:0.7em;">
             <div class="sidenav_user_avatar overflow_hidden">
-                <div onclick="window.location.assign('/account')" class="pointer">
-                    <x-atom.profile-photo size="2.5em" path="{{ $this->storage(Auth::user()->avatar) }}"/>
+                <div>
+                    <a href="/account" class="pointer">
+                        <x-atom.profile-photo size="2.5em" path="{{ $this->storage(Auth::user()->avatar) }}"/>
+                    </a>
                 </div>
                 <span class="ml_7 x-flex x-flex-column">
                     <div style="font-weight:bold; font-size;0.2rem">{{ Auth::user()->name }}</div>

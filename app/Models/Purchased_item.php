@@ -26,6 +26,5 @@ class Purchased_item extends Model
     {
         return $this->belongsTo(Purchase::class);
     }
-
     
 }

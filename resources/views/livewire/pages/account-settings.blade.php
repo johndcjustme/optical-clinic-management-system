@@ -14,7 +14,9 @@
             @include('livewire.components.organisms.pagecontents.account-settings-content')      
         </div>
 
-        <x-alert type="error" message="{{ session('message') }}" />
+        {{-- <x-alert type="error" message="{{ session('message') }}" /> --}}
+
+        <x-organisms.ui.confirm-dialog wire-confirm="confirm"/>
     
     </div>
 

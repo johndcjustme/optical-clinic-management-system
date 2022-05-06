@@ -13,16 +13,10 @@
     @endsection
 
     @section('section-heading-left')
-  
     @endsection
 
     @section('section-main') 
-
-        
-
         <div id="print-me" style="display:flex; flex-direction:column; width:100%;">
-            {{-- <h3 class="ui dividing header">Patients</h3> --}}
-
                 <div class="ui grid">
                     <div class="sixteen wide column">
                         <div class="ui secondary menu">
@@ -47,7 +41,7 @@
                                         <div class="x-flex x-flex-center">
                                             <div class="ui inverted statistic">
                                                 <div class="label">
-                                                    Patients Total
+                                                    Patient's Total
                                                 </div>
                                                 <div class="value">
                                                     {{ $this->totalOfPatients('all') }}
@@ -100,7 +94,7 @@
                                         <div class="x-flex x-flex-center">
                                             <div class="ui inverted statistic">
                                                 <div class="label">
-                                                    Orders Total
+                                                    Order's Total
                                                 </div>
                                                 <div class="value">
                                                     {{ $this->totalOfPatients('all') }}
@@ -300,10 +294,9 @@
 
 
 
-
             <div class="ui grid">
                 <div class="ten wide computer ten wide tablet sixteen wide mobile column" style="width:60%;">
-                    <div class="ui segment" style="height:330px;">
+                    <div class="ui segment" style="height:360px;">
                         <div class="content">
                             <div class="x-flex x-flex-xbetween">
                                 <div>
@@ -330,20 +323,19 @@
                                     </div>
                                 </div>
                             </div>
-                            <div style="height:230px">
+                            <div style="height:250px">
                                 <livewire:livewire-area-chart
                                     key="{{ $areaChartModel->reactiveKey() }}"
-                                    :area-chart-model="$areaChartModel"
-                                />
+                                    :area-chart-model="$areaChartModel"/>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="six wide computer six wide tablet sixteen wide mobile column" style="width:40%">
-                    <div class="ui segment" style="height:330px;">
+                    <div class="ui segment" style="height:360px;">
                         <div class="content">
                             <h3>Inventory</h3>
-                            <div style="height:250px">
+                            <div style="height:270px">
                                 <livewire:livewire-column-chart :column-chart-model="$columnChartModel"/>
                             </div>
                         </div>
@@ -355,22 +347,21 @@
             
             <br>
             {{-- <h3 class="ui dividing header">Top Selling Products</h3>\ --}}
-           
             <div class="ui grid">
                 <div class="sexteen wide column">
 
-                        <div class="ui secondary  menu">
-                            <a wire:click.prevent="$set('product', 'top')" class="item {{ $product == 'top' ? 'active' : '' }}" style="position:relative;">
-                                Top Products
-                            </a>
-                            <a wire:click.prevent="$set('product', 'low')" class="item {{ $product == 'low' ? 'active' : '' }}" style="position:relative;">
-                                Low In demand
-                            </a>
-                            <a wire:click.prevent="$set('product', 'out_of_stocks')" class="item {{ $product == 'out_of_stocks' ? 'active' : '' }}" style="position:relative;">
-                                Out of Stocks
-                                <small style="position: absolute; top:-3px; right:-3px; height:15px; width:15px; border-radius:50%; background:red; color:white;" class="x-flex x-flex-center">7</small>
-                            </a>
-                        </div>
+                    <div class="ui secondary  menu">
+                        <a wire:click.prevent="$set('product', 'top')" class="item {{ $product == 'top' ? 'active' : '' }}" style="position:relative;">
+                            Top Products
+                        </a>
+                        <a wire:click.prevent="$set('product', 'low')" class="item {{ $product == 'low' ? 'active' : '' }}" style="position:relative;">
+                            Low In demand
+                        </a>
+                        <a wire:click.prevent="$set('product', 'out_of_stocks')" class="item {{ $product == 'out_of_stocks' ? 'active' : '' }}" style="position:relative;">
+                            Out of Stocks
+                            <small style="position: absolute; top:-3px; right:-3px; height:15px; width:15px; border-radius:50%; background:red; color:white;" class="x-flex x-flex-center">7</small>
+                        </a>
+                    </div>
 
                     <x-organisms.ui.table class="unstackable compact">
                         <x-slot name="thead">
@@ -384,142 +375,22 @@
                                 <tr>
                                     <x-organisms.ui.table.td
                                         text="{{ $item->item_name }}"
-                                        desc="{{ $item->item_desc }}"
-                                    />
+                                        desc="{{ $item->item_desc }}"/>
                                     <x-organisms.ui.table.td
-                                        text="{{ $item->category->name ?? '' }}"
-                                    />
+                                        text="{{ $item->category->name ?? '' }}"/>
                                     <x-organisms.ui.table.td
                                         text="{{ number_format($item->item_price) ?? '' }}"
-                                        text-icon="fa-peso-sign"
-                                    />
+                                        text-icon="fa-peso-sign"/>
                                     <x-organisms.ui.table.td
                                         text="100pcs"
-                                        desc="over this year"
-                                    />
+                                        desc="over this year"/>
                                 </tr>
                             @endforeach
                         </x-slot>
                     </x-organisms.ui.table>
                     {{ $items->links('livewire.components.paginator') }}
-
                 </div>
             </div>
         </div>
     @endsection
-
 </x-layout.page-content>
-
-
-
-
-{{-- 
-
-@push('js')
-    <script>
-        var options = {
-            chart: {
-                type: 'line',
-                height: '250px',
-                animations: {
-                    enabled: false
-                },
-                stroke: {
-                    curve: 'smooth'
-                },
-                labels: {
-                    show: false
-                },
-
-            },
-            series: [{
-                name: 'Patients',
-                data: [@php echo $monthValues @endphp]
-            }],
-            xaxis: {
-                categories: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEPT', 'OCT', 'NOV', 'DEC', ],
-                tooltip: {
-                    enabled: false
-                }
-            }
-        }
-
-        var chartYearlyPatients = new ApexCharts(document.querySelector("#chartYearlyPatients"), options);
-
-        chartYearlyPatients.render();
-
-
-
-        var options = {
-            chart: {
-                type: 'line',
-                height: '250px',
-                animations: {
-                    enabled: false
-                },
-                stroke: {
-                    curve: 'smooth'
-                },
-                labels: {
-                    show: false
-                },
-            },
-
-            series: [{
-                name: 'Patients',
-                data: [10, 20, 30, 20]
-            }],
-            xaxis: {
-                categories: ['WEEK 1', 'WEEK 2', 'WEEK 3', 'WEEK 4'],
-                tooltip: {
-                    enabled: false
-                }
-            }
-        }
-
-        var chartMonthlyPatients = new ApexCharts(document.querySelector("#chartMonthlyPatients"), options);
-
-        chartMonthlyPatients.render();
-
-
-
-
-
-        var options = {
-            chart: {
-                type: 'donut',
-            },
-            legend: {
-                show: false,
-            },
-            plotOptions: {
-                pie: {
-                    customScale: 0.7,
-                    donut: {
-                        size: 60,
-                        labels: {
-                            show: true,
-                        }
-                    }
-                }
-            },
-
-            series: [100, 55, 25],
-            labels: ['Lense', 'Frame', 'Acessories']
-        }
-
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-
-        chart.render();
-
-
-
-        document.getEventListeners('livewire:load', () => {
-            @this.on('refreshChart', (chartData) => {
-                chart.updateSeries([{
-                    data: chartData.seriesData
-                }])
-            })
-        })
-    </script>
-@endpush --}}

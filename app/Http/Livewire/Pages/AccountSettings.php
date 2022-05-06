@@ -12,136 +12,29 @@ class AccountSettings extends Component
 {
     use WithFileUploads;
 
-    public $profilephoto;
-    public $currTab = 'profile';
-    public $find_curr_user;
-    public $editProfile = false;
-    public $path = 'public/photos/avatars/';
-    public $defaultAvatarName = 'default-avatar-user.png';
-    // public $resetAvatar = false;
-    protected $listeners = ['mount'];
 
-    public $user = [
-        'resetAvatar' => false,
-        'id' => '',
-        'name' => '',
-        'email' => '',
-        'avatar' => '',
-        'password' => '',
-        'curr_password' => '',
-        'new_password' => '',
-        'confirm_new_password' => '',
+    public $avatar;
+
+    public $myAvatar;
+
+    public $name;
+
+    public $email;
+
+    public $currentPassword = '';
+
+    public $newPassword = '';
+
+    public $confirmPassword = '';
+
+    public $confirm = [
+        'updateAccount' => false,
     ];
-    
-
-    public function mount()
-    {
-        $userId = Auth::user()->id;
-        $this->find_curr_user = User::where('id', $userId)->first();
-        $this->user['id'] = $this->find_curr_user->id;
-        $this->user['name'] = $this->find_curr_user->name;
-        $this->user['email'] = $this->find_curr_user->email;
-        $this->user['avatar'] = $this->find_curr_user->avatar;
-
-    }
-
-    public function updatedPhoto()
-    {
-        $this->validate([
-            'profilephoto' => 'image|max:1024',
-        ]);
-    }
-
-    public function updateUserProfile()
-    {
-        $validateData = $this->validate(
-            [
-                'user.name' => 'nullable',
-                'user.email' => 'required|email',
-            ],
-            [
-                'user.email.required' => 'Email address is required.',
-                'user.email.email' => 'Must be a valid email address.',
-            ],
-        );
 
 
 
 
-        if (empty($this->profilephoto) || ($this->profilephoto === null)) {
-            if ($this->user['resetAvatar']) {
-                $this->find_curr_user->update([
-                    'name' => $this->user['name'],
-                    'email' => $this->user['email'],
-                    'avatar' => $this->defaultAvatarName,
-                ]);
-            } else {
-                $this->find_curr_user->update([
-                    'name' => $this->user['name'],
-                    'email' => $this->user['email'],
-                ]);
-            }
-            $this->user['resetAvatar'] = false;
-        } else {
-            $this->find_curr_user->update([
-                'name' => $this->user['name'],
-                'email' => $this->user['email'],
-                'avatar' => $this->profilephoto->hashName(),
-            ]);
-            $this->profilephoto->store($this->path);
-        }
 
-        if ($this->find_curr_user) {
-            $this->editProfile = false;
-            session()->flash('message', 'Changes applied succesfully.');
-        } else {
-            session()->flash('message', 'An error has occured. Please try again.');
-        }
-        // dd($this->user['name'] . ' ' . $this->user['email'] . ' ' . $this->profilephoto);
-    }
-
-    public function changePassword()
-    {
-        $validateData = $this->validate(
-            [
-                'user.curr_password' => 'required|min:6|max:24',
-                'user.new_password' => 'required|min:6|max:24',
-                'user.confirm_new_password' => 'required|min:6|max:24',
-            ],
-            [
-                'user.curr_password.required' => 'required',
-                'user.new_password.required' => 'required',
-                'user.confirm_new_password.required' => 'required',
-                'user.curr_password.min' => 'Minimum of 6 characters',
-                'user.new_password.min' => 'Minimum of 6 characters ',
-                'user.confirm_new_password.min' => 'Minimum of 6 characters',
-            ],
-        );
-
-        if (Hash::check($this->user['curr_password'], $this->find_curr_user->password)) {
-            if ($this->user['new_password'] !== $this->user['curr_password']) {
-                if ($this->user['new_password'] === $this->user['confirm_new_password']) {
-                    $this->find_curr_user->update([
-                        'password' => Hash::make($this->user['new_password']),
-                    ]);
-                    if($this->find_curr_user) {
-                        session()->flash('success', 'Your password was successfully changed.');
-                        $this->user['curr_password'] = '';
-                        $this->user['new_password'] = '';
-                        $this->user['confirm_new_password'] = '';
-                    }
-                } else {
-                    session()->flash('isNewPasswordMatched', 'Your new password did not matched.');
-                }
-            } else {
-                session()->flash('isNewPasswordMatched', 'Your new password is matching with your current password. Please try another password.');
-                $this->user['new_password'] = '';
-                $this->user['confirm_new_password'] = '';
-            }
-        } else {
-            session()->flash('isCurrPasswordMatched', 'Your current password did not matched.');
-        }
-    }
 
 
     public function render()
@@ -149,5 +42,92 @@ class AccountSettings extends Component
         return view('livewire.pages.account-settings')
             ->extends('layouts.app')
             ->section('content');
+    }
+
+    public function mount()
+    {
+        $user = Auth::user();
+        $this->avatar = $user->avatar;
+        $this->name = $user->name;
+        $this->email = $user->email;
+    }
+
+
+    public function updateAccount()
+    {
+        $this->validate(
+            [
+                'name' => 'required|max:10',
+                'email' => 'required|email'
+            ],
+            [
+                'name.required' => 'Required',
+                'name.max' => 'Max: 10',
+                'email.required' => 'Required',
+                'email.email' => 'Enter valid email',
+            ]);
+
+
+        $user = User::findOrFail(Auth::user()->id)->update([
+            'name' => $this->name,
+            'email' => $this->email,
+        ]);
+
+        if ($user) {
+            return redirect('/account')->with('accountUpdated', 'Your account has been updated successfully.');
+        } else {
+            $this->dispatchBrowserEvent('toast', [
+                'class' => 'error',
+                'title' => 'Error',
+                'message' => 'An error has occured. Please try again.']);
+        }
+
+        $this->reset(['confirm']);
+    }
+
+    public function changePassword()
+    {
+
+        $this->validate(
+            [
+                'currentPassword' => 'required|min:6',
+                'newPassword' => 'required|min:6',
+                'confirmPassword' => 'required|min:6|same:newPassword',   
+            ],
+            [
+                'currentPassword.required' => 'Required',
+                'newPassword.required' => 'Required',
+                'confirmPassword.required' => 'Required',
+                
+                'currentPassword.min' => 'Min: 6',
+                'newPassword.min' => 'Min: 6',
+                'confirmPassword.min' => 'Min: 6',
+
+                'confirmPassword.same' => 'Your new password did not match with the repeat password.',
+        ]);
+
+
+        if (Hash::check($this->currentPassword, Auth::user()->password)) {
+            $user = User::findOrFail(Auth::user()->id)->update(['password' => Hash::make($this->confirmPassword)]);
+            $user
+                ? session()->flash('passwordChanged', 'Password has been successfull updated.')
+                : session()->flash('passwordChangedError', 'There\'s and error updating your password.');
+        } 
+        else {
+            session()->flash('passwordChangedError', 'Your current password did not match. Please try again');
+        }
+
+        $this->reset(['currentPassword', 'newPassword', 'confirmPassword']);
+    }
+
+    public function updateAvatar()
+    {
+        $this->validate([
+            'myAvatar' => 'image|max:1024',
+        ]);
+        dd($this->myAvatar);
+
+        $user = User::findOrFail(Auth::user()->id)->update(['avatar' => $this->myAvatar]);
+        $user ? dd('success') : dd('malas');
     }
 }

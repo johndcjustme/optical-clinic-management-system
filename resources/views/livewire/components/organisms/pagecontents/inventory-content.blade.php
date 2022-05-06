@@ -13,14 +13,6 @@
                 <div class="ui transparent" style="display: flex">
                     <div wire:click.prevent="$set('subPage', 1)" class="ui mini transparent" style="display: flex;">
                         {{ $this->tabDisplayActiveItem($onDisplayItemType) }} <div class="ui description ml_3" style="opacity: 0.6">{{ $this->countItems($onDisplayItemType) }}</div> 
-                        {{-- {{ App\Models\Category::where('id', $onDisplayItemType)->first()->name; }} --}}
-                        {{-- @switch($onDisplayItemType)
-                            @case('all') All Items<div class="ui description ml_3" style="opacity: 0.6"></div> @break
-                            @case('le') Lenses <div class="ui description ml_3" style="opacity: 0.6"></div> @break
-                            @case('fr') Frames <div class="ui description ml_3" style="opacity: 0.6"></div> @break
-                            @case('ac') Accessories <div class="ui description ml_3" style="opacity: 0.6">{{ $this->countItems('ac') }}</div> @break
-                            @default
-                        @endswitch --}}
                     </div>
                     <div class="ui floating dropdown icon">
                     <i class="dropdown icon"></i>
@@ -29,15 +21,12 @@
                         @foreach ($categories as $category)
                             <div wire:click.prevent="$set('onDisplayItemType', {{ $category->id }})" data-value="all" class="item"><span class="text">{{ $category->name }}</span><span class="description">{{ $this->countItems($category->id) }}</span></div>
                         @endforeach
-                        {{-- <div wire:click.prevent="$set('onDisplayItemType', 'le')" data-value="le" class="item"><span class="text">Lense</span><span class="description">{{ $this->countItems('le') }}</span></div>
-                        <div wire:click.prevent="$set('onDisplayItemType', 'fr')" data-value="fr" class="item"><span class="text">Frame</span><span class="description">{{ $this->countItems('fr') }}</span></div>
-                        <div wire:click.prevent="$set('onDisplayItemType', 'ac')" data-value="ac" class="item"><span class="text">Accessory</span><span class="description">{{ $this->countItems('ac') }}</span></div> --}}
                     </div>
                     </div>
                 </div>
             </div>
-            <div wire:click.prevent="$set('subPage', 3)" class="item {{ $this->activePage(3) }}">In Items</div>
-            <div wire:click.prevent="$set('subPage', 4)" class="item {{ $this->activePage(4) }}">Out Items</div>
+            <div wire:click.prevent="$set('subPage', 3)" class="item {{ $this->activePage(3) }}">In Out</div>
+            <div wire:click.prevent="$set('subPage', 4)" class="item {{ $this->activePage(4) }}">Orders</div>
             <div wire:click.prevent="$set('subPage', 5)" class="item {{ $this->activePage(5) }}">Categories</div>
         </div>
     @endsection
@@ -59,8 +48,10 @@
                             </x-slot>
                         </x-atoms.ui.header-dropdown-menu>
                     @else
-                        <x-atoms.ui.header-add-btn label="Add Item" wire-click="showModal('add', null)"/>
-                        <x-atoms.ui.header-add-btn icon="right arrow" label="In Item" wire-click="showModal('inItem', null)"/>
+                        <div class="ui buttons">
+                            <x-atoms.ui.header-add-btn label="Add Item" wire-click="showModal('add', null)"/>
+                            <x-atoms.ui.header-add-btn icon="right arrow" label="In Item" wire-click="showModal('inItem', null)"/>
+                        </div>
                     @endif
                     @break
                     
@@ -68,12 +59,16 @@
                     @break
 
                 @case(3)
+                    <div class="ui buttons">
+                        <x-atoms.ui.header-add-btn label="Add Item" wire-click="showModal('add', null)"/>
+                        <x-atoms.ui.header-add-btn icon="right arrow" label="In Item" wire-click="showModal('inItem', null)"/>
+                    </div>
                     {{-- <x-atoms.ui.header-add-btn label="In Item" wire-click="showModal('inItem', null)"/> --}}
                     @break
                 @case(5)
                     <x-atoms.ui.header-add-btn label="Add Category" wire-click="showModal('addCategory', null)"/>
                     @break
-
+                        
             @endswitch
         @endsection
 
@@ -108,6 +103,15 @@
                     @break
                 {{-- @case(2) <div> <x-atoms.ui.search wire-model="searchSupplier" placeholder="Search..."/> </div> @break --}}
                 @case(3)  
+                    <div class="ui buttons basic tiny">
+                        <button wire:click.prevent="$set('sort', 'asc')" class="ui button {{ $sort == 'asc' ? 'active' : '' }}">Asc</button>
+                        <button wire:click.prevent="$set('sort', 'desc')" class="ui button {{ $sort == 'desc' ? 'active' : '' }}">Desc</button>
+                    </div>
+                    <div class="ui buttons basic tiny">
+                        <button wire:click.prevent="$set('status', 'all')" class="ui button {{ $status == 'all' ? 'active' : '' }}">All</button>
+                        <button wire:click.prevent="$set('status', 'in')" class="ui button {{ $status == 'in' ? 'active' : '' }}">In</button>
+                        <button wire:click.prevent="$set('status', 'out')" class="ui button {{ $status == 'out' ? 'active' : '' }}">Out</button>
+                    </div>
                     <x-atoms.ui.header-dropdown-menu class="right pointing tiny">
                         <x-slot name="menu"> 
                             <div class="item">
@@ -136,7 +140,7 @@
                             <x-organisms.ui.table.th label="Name" order-by="item_name" />
                             <x-organisms.ui.table.th label="Category" order-by="item_type" />
                             <x-organisms.ui.table.th label="Supplier" />
-                            <x-organisms.ui.table.th label="Stocks" order-by="item_qty" />
+                            <x-organisms.ui.table.th label="On Hand" order-by="item_qty" />
                             <x-organisms.ui.table.th label="Price" order-by="item_price" />
                             <x-organisms.ui.table.th style="width:1em" />
                             <x-organisms.ui.table.th-more/>
@@ -203,11 +207,11 @@
                 @case(3)
                     <x-organisms.ui.table class="selectable">
                         <x-slot name="thead">
-                            <x-organisms.ui.table.th label="Item" order-by="item_type" />
+                            <x-organisms.ui.table.th label="Item"/>
                             <x-organisms.ui.table.th label="Status" />
                             <x-organisms.ui.table.th label="Qty" />
                             <x-organisms.ui.table.th label="Balance" />
-                            <x-organisms.ui.table.th label="Date" order-by="item_name" style="width:15em"/>
+                            <x-organisms.ui.table.th label="Date" style="width:15em"/>
                             <x-organisms.ui.table.th-more/>
                         </x-slot>
                         <x-slot name="tbody">
@@ -216,10 +220,15 @@
                                     <x-organisms.ui.table.td 
                                         text="{{ $in_out->item->item_name }}" 
                                         desc="{{ $in_out->item->item_desc }}"/>
-                                    <x-organisms.ui.table.td text="{{ $in_out->status ? 'IN' : 'OUT' }}"/>
-                                    <x-organisms.ui.table.td text="{{ $in_out->qty }}"/>
-                                    <x-organisms.ui.table.td text="{{ $in_out->balance }}"/>
-                                    <x-organisms.ui.table.td text="{{ humanReadableDate($in_out->created_at) }}" desc="{{ humanReadableTime($in_out->created_at) }}"/>
+                                    <x-organisms.ui.table.td 
+                                        text="{{ $in_out->status ? 'IN' : 'OUT' }}"/>
+                                    <x-organisms.ui.table.td 
+                                        text="{{ $in_out->qty }}"/>
+                                    <x-organisms.ui.table.td 
+                                        text="{{ $in_out->balance }}"/>
+                                    <x-organisms.ui.table.td 
+                                        text="{{ humanReadableDate($in_out->created_at) }}" 
+                                        desc="{{ humanReadableTime($in_out->created_at) }}"/>
                                     <x-organisms.ui.table.td-more>
                                         <x-atom.more.option
                                             wire-click="showModal('update', 'supplier', 'ID HERE')"

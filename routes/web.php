@@ -43,7 +43,6 @@ Route::middleware(['auth', 'role:admin|user'])->group(function() {
 
 Route::middleware(['auth', 'role:user'])->group(function() {
     Route::get('/book', App\Http\Livewire\Pages\PagePatientAppt::class)->name('book');
-    // Route::get('/forum', App\Http\Livewire\Pages\PageForum::class);
 });
 
 

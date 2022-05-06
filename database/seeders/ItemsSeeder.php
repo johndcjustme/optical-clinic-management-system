@@ -24,6 +24,7 @@ class ItemsSeeder extends Seeder
 
         $item = Item::create([
             'item_name' => Str::random(10),
+            'category_id' => 1,
             'item_desc' => 'Item description and description',
             'item_size' => '234x453',
             'item_type' => 'le',
@@ -33,6 +34,7 @@ class ItemsSeeder extends Seeder
 
         $item = Item::create([
             'item_name' => Str::random(10),
+            'category_id' => 1,
             'item_desc' => 'Item description and description',
             'item_size' => '234x453',
             'item_type' => 'le',
@@ -42,6 +44,7 @@ class ItemsSeeder extends Seeder
 
         $item = Item::create([
             'item_name' => Str::random(10),
+            'category_id' => 1,
             'item_desc' => 'Item description and description',
             'item_size' => '234x453',
             'item_type' => 'le',
@@ -51,6 +54,7 @@ class ItemsSeeder extends Seeder
 
         $item = Item::create([
             'item_name' => Str::random(10),
+            'category_id' => 1,
             'item_desc' => 'Item description and description',
             'item_size' => '234x453',
             'item_type' => 'fr',
@@ -60,6 +64,7 @@ class ItemsSeeder extends Seeder
 
         $item = Item::create([
             'item_name' => Str::random(10),
+            'category_id' => 1,
             'item_desc' => 'Item description and description',
             'item_size' => '234x453',
             'item_type' => 'fr',
@@ -69,6 +74,7 @@ class ItemsSeeder extends Seeder
 
         $item = Item::create([
             'item_name' => Str::random(10),
+            'category_id' => 1,
             'item_desc' => 'Item description and description',
             'item_size' => '234x453',
             'item_type' => 'fr',
@@ -78,6 +84,7 @@ class ItemsSeeder extends Seeder
 
         $item = Item::create([
             'item_name' => Str::random(10),
+            'category_id' => 1,
             'item_desc' => 'Item description and description',
             'item_size' => '234x453',
             'item_type' => 'ac',
@@ -87,6 +94,7 @@ class ItemsSeeder extends Seeder
 
         $item = Item::create([
             'item_name' => Str::random(10),
+            'category_id' => 1,
             'item_desc' => 'Item description and description',
             'item_size' => '234x453',
             'item_type' => 'ac',
@@ -96,6 +104,7 @@ class ItemsSeeder extends Seeder
 
         $item = Item::create([
             'item_name' => Str::random(10),
+            'category_id' => 1,
             'item_desc' => 'Item description and description',
             'item_size' => '234x453',
             'item_type' => 'ac',

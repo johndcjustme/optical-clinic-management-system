@@ -62,8 +62,8 @@ class Patient extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function order()
+    public function order_details()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Order_detail::class);
     }
 }

@@ -2,6 +2,6 @@
     height:{{ $size }};
     width:{{ $size }};
     border-radius: 0.7em;
-    border: 1px solid #0E6EB8;
+    border: 1px solid lightgray;
     overflow: hidden;
 ">

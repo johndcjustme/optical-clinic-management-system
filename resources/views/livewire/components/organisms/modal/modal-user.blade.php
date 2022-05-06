@@ -103,14 +103,13 @@
         @else
             @if (!$modalRoleTab)
                 <form wire:submit.prevent="createOrUpdateUser" class="ui form">
-
                     <div class="field">
                         <div class="flex flex_y_center gap_1">
                             <div>                        
                                 @if ($avatar)                            
                                     <x-atoms.ui.avatar src="{{ $avatar->temporaryUrl() }}" size="5em"/>
                                 @else
-                                    <x-atom.profile-photo size="5em" path="{{ $this->storage($user['avatar']) }}" />
+                                    <x-atom.profile-photo size="5em" path="{{ avatar($user['avatar']) }}" />
                                 @endif
                             </div>
                             <div>

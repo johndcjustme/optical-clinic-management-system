@@ -32,4 +32,9 @@ class Exam extends Model
     {
         return $this->belongsTo(Patient::class, 'patient_id');
     }
+
+    public function order_detail()
+    {
+        return $this->hasMany(Order_detail::class);
+    }
 }

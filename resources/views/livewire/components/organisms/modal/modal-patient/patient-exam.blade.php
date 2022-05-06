@@ -55,9 +55,9 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td class="mt_12" colspan="8">
+                    <td colspan="8">
                         <div class="mt_15">
-                            <label>Remarks ...</label>
+                            <label>REMARKS</label>
 
                             {{-- <div class="ui fluid icon input"> --}}
                             <div class="ui input fluid">

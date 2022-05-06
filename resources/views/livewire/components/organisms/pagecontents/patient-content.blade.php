@@ -182,7 +182,6 @@
                         <x-slot name="tbody">
                             @foreach ($inqueue->where('patient_exam_status', true) as $pt)   
                                 @include('livewire.components.organisms.pagecontents.patient-content.in-list-table')
-                                
                             @endforeach
                         </x-slot>
                     </x-organisms.ui.table>
@@ -247,7 +246,7 @@
                                     text="On Hand"/>
                                 <x-organisms.ui.table.td-more>
                                     <x-atom.more.option
-                                        wire-click="patientShowModal('isPurchase', {{ $purchase->patient->id }})"
+                                        wire-click="patientShowModal('purchase', {{ $purchase->patient->id }})"
                                         option-name="Details"/>
                                 </x-organisms.ui.table.td>
                             </tr>
@@ -463,13 +462,13 @@
                                 <x-organisms.ui.table.td>
                                     <div class="flex flex_y_center full_w" style="gap:0.8em">
                                         <div>
-                                            <div wire:click.prevent="patientShowModal('isExam', {{ $pt->id }})" class="clickable_icon">
+                                            <div wire:click.prevent="patientShowModal('exam', {{ $pt->id }})" class="clickable_icon">
                                                 <span class="ui text teal">
                                                     <i class="fa-solid fa-pen"></i>
                                                 </span>
                                             </div>
                                         </div>
-                                        <div wire:click.prevent="patientShowModal('isPurchase', {{ $pt->id }})">
+                                        <div wire:click.prevent="patientShowModal('purchase', {{ $pt->id }})">
                                             <div class="clickable_icon">
                                                 <span class="ui text blue">
                                                     <i class="fa-solid fa-cart-shopping"></i>
@@ -579,11 +578,11 @@
                                                     <x-layout.lists-section.list-item item-name="" item-desc="">
                                                         <div class="flex flex_y_center full_w" style="gap:0.8em">
                                                             <div>
-                                                                <div wire:click.prevent="patientShowModal('isExam', {{ $pt->id }})" class="clickable_icon">
+                                                                <div wire:click.prevent="patientShowModal('exam', {{ $pt->id }})" class="clickable_icon">
                                                                     <i class="fa-solid fa-pen  green"></i>
                                                                 </div>
                                                             </div>
-                                                            <div wire:click.prevent="patientShowModal('isPurchase', {{ $pt->id }})">
+                                                            <div wire:click.prevent="patientShowModal('purchase', {{ $pt->id }})">
                                                                 <div class="clickable_icon">
                                                                     <i class="fa-solid fa-cart-shopping" style="color: rgb(255, 81, 0)"></i>
                                                                 </div>
@@ -640,11 +639,11 @@
                                                     <x-layout.lists-section.list-item item-name="" item-desc="">
                                                         <div class="flex flex_y_center full_w" style="gap:0.8em">
                                                             <div>
-                                                                <div wire:click.prevent="patientShowModal('isExam', {{ $pt->id }})" class="clickable_icon">
+                                                                <div wire:click.prevent="patientShowModal('exam', {{ $pt->id }})" class="clickable_icon">
                                                                     <i class="fa-solid fa-pen  green"></i>
                                                                 </div>
                                                             </div>
-                                                            <div wire:click.prevent="patientShowModal('isPurchase', {{ $pt->id }})">
+                                                            <div wire:click.prevent="patientShowModal('purchase', {{ $pt->id }})">
                                                                 <div class="clickable_icon">
                                                                     <i class="fa-solid fa-cart-shopping" style="color: rgb(255, 81, 0)"></i>
                                                                 </div>
@@ -698,11 +697,11 @@
                                                     <x-layout.lists-section.list-item item-name="" item-desc="">
                                                         <div class="flex flex_y_center full_w" style="gap:0.8em">
                                                             <div>
-                                                                <div wire:click.prevent="patientShowModal('isExam', {{ $pt->id }})" class="clickable_icon">
+                                                                <div wire:click.prevent="patientShowModal('exam', {{ $pt->id }})" class="clickable_icon">
                                                                     <i class="fa-solid fa-pen  green"></i>
                                                                 </div>
                                                             </div>
-                                                            <div wire:click.prevent="patientShowModal('isPurchase', {{ $pt->id }})">
+                                                            <div wire:click.prevent="patientShowModal('purchase', {{ $pt->id }})">
                                                                 <div class="clickable_icon">
                                                                     <i class="fa-solid fa-cart-shopping" style="color: rgb(255, 81, 0)"></i>
                                                                 </div>
@@ -766,11 +765,11 @@
                                             <x-layout.lists-section.list-item item-name="" item-desc="">
                                                 <div class="flex flex_y_center full_w" style="gap:0.8em">
                                                     <div>
-                                                        <div wire:click.prevent="patientShowModal('isExam', {{ $pt->id }})" class="clickable_icon">
+                                                        <div wire:click.prevent="patientShowModal('exam', {{ $pt->id }})" class="clickable_icon">
                                                             <i class="fa-solid fa-pen  green"></i>
                                                         </div>
                                                     </div>
-                                                    <div wire:click.prevent="patientShowModal('isPurchase', {{ $pt->id }})">
+                                                    <div wire:click.prevent="patientShowModal('purchase', {{ $pt->id }})">
                                                         <div class="clickable_icon">
                                                             <i class="fa-solid fa-cart-shopping" style="color: rgb(255, 81, 0)"></i>
                                                         </div>

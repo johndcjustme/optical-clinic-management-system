@@ -239,7 +239,7 @@ class PageUsers extends Component
         $this->dispatchBrowserEvent('toast',[
             'title'   => NULL,
             'class'   => 'success',
-            'message' => 'Updated successfully.',
+            'message' => 'User has been updated motherfucker.',
         ]);
     }
 

@@ -187,6 +187,11 @@
   <script>
 
 
+    function myFunction() {
+      console.log('hey')
+    }
+
+
       $('.ui.dropdown').dropdown();
 
 
@@ -267,6 +272,8 @@
 
   })
   ;
+
+
 
   </script>
             

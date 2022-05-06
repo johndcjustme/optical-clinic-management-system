@@ -12,13 +12,14 @@ class Ordered_item extends Model
     public $fillable = [
         'order_id',
         'item_id',
+        'order_details_id',
         'ordered_item_price',
         'ordered_item_qty',
     ];
 
-    public function order()
+    public function order_details()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order_detail::class);
     }
 
     public function item()

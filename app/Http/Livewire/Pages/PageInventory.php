@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Tab;
 use App\Models\Patient;
-use App\Models\In_out_of_item;
+use App\Models\In_out_of_item as In_item;
 // use App\Models\Lense;
 // use App\Models\Frame;
 // use App\Models\Accessory;
@@ -30,6 +30,8 @@ class PageInventory extends Component
     
 
     public $subPage = 1;
+
+    public $sort = 'asc', $status = 'all';
 
 
     public $modal = [
@@ -116,7 +118,7 @@ class PageInventory extends Component
 
     public $showDropdown = false;
 
-    public $pageNumber = 10;
+    public $pageNumber = 50;
 
 
 
@@ -125,6 +127,7 @@ class PageInventory extends Component
         'searchItem' => ['except' => ''],
         'onDisplayItemType',
         'subPage' => '1',
+        'status'
     ];
 
     protected $listeners = ['updatedPhoto'];
@@ -200,7 +203,16 @@ class PageInventory extends Component
                 // break;
 
             case 3:
-                $data = ['in_out_items' => In_out_of_item::with('item')->paginate($this->pageNumber)];
+
+                $in_out_of_items = In_item::with('item');
+
+                if ($this->status == 'in') {
+                    $in_out_of_items->where('status', true);
+                } elseif ($this->status == 'out') {
+                    $in_out_of_items->where('status', false);
+                }
+
+                $data = ['in_out_items' => $in_out_of_items->orderBy('created_at', $this->sort)->paginate($this->pageNumber)];
                 break;
             case 4:
                 $data = [];
@@ -546,17 +558,18 @@ class PageInventory extends Component
         $this->validate(['item.in' => 'required|integer']);
 
 
-
-        $lastBalance = 0;
+        // $lastBalance = 0;
         $newBalance = $this->item['in'];
 
-        foreach (In_out_of_item::where('item_id', $this->item['id'])->where('status', true)->get() as $in_out) {
-            $lastBalance += $in_out->qty;
-        }
+        $lastBalance = In_item::where('item_id', $this->item['id'])->latest()->first()->balance ?? 0;
+
+        // foreach (In_item::where('item_id', $this->item['id'])->where('status', true)->get() as $in_out) {
+        //     $lastBalance += $in_out->qty;
+        // }
 
         $newBalance += $lastBalance;
 
-        $in_out = In_out_of_item::create([
+        $in_out = In_item::create([
             'item_id' => $this->item['id'],
             'status' => true,
             'qty' => $this->item['in'],
@@ -738,7 +751,7 @@ class PageInventory extends Component
 
         $stocks = 0;
 
-        $in_out_items = In_out_of_item::where('item_id', $itemId)->where('status',true)->get();
+        $in_out_items = In_item::where('item_id', $itemId)->where('status',true)->get();
 
         foreach ($in_out_items as $in_out) {
             $stocks += $in_out->qty;

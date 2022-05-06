@@ -7,6 +7,8 @@ use App\Models\Patient;
 use App\Models\Exam;
 use App\Models\Tab;
 use App\Models\Day;
+use App\Models\Category;
+use App\Models\Supplier;
 use App\Models\Setting;
 use Illuminate\Support\Str;
 use Faker;
@@ -23,6 +25,20 @@ class DatabaseSeeder extends Seeder
         $faker = Faker\Factory::create();
 
         $this->call(LaratrustSeeder::class);
+
+        Category::create([
+            'name' => 'Lense',
+        ]);
+
+        Supplier::create([
+            'supplier_name' => $faker->name,
+            'supplier_contact_no' => '09484710735',
+            'supplier_address' => 'manila',
+            'supplier_bank' => Str::random(7),
+            'supplier_acc_no' => '12345677account',
+            'supplier_branch' => Str::random(10) . 'branch',
+            'supplier_email' => Str::random(7) . '@email.com',
+        ]);
 
         Day::create([
             'day' => 'Monday',

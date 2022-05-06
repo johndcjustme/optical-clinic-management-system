@@ -11,6 +11,7 @@ class In_out_of_item extends Model
 
     public $fillable = [
         'item_id',
+        'purchased_item_id',
         'status',
         'qty',
         'balance',

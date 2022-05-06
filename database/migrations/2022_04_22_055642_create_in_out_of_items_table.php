@@ -16,6 +16,7 @@ class CreateInOutOfItemsTable extends Migration
         Schema::create('in_out_of_items', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('item_id')->nullable();
+            $table->integer('purchased_item_id')->nullable();
             $table->boolean('status')->nullable();
             $table->integer('qty')->nullable();
             $table->integer('balance')->nullable();
@@ -25,6 +26,11 @@ class CreateInOutOfItemsTable extends Migration
                 ->references('id')
                 ->on('items')
                 ->nullOnDelete();
+
+        //     $table->foreign('purchased_item_id')
+        //         ->references('id')
+        //         ->on('items')
+        //         ->onDelete('cascade');
         });
     }
 

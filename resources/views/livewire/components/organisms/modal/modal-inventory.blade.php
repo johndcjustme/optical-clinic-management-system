@@ -159,13 +159,11 @@
                     <div class="two fields">
                         <div class="field">
                             <x-atoms.ui.label>Item Name <x-atoms.ui.required/> @error('item.name') <span class="error">{{ $message }}</span> @enderror</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="item.name" type="text" class="mb_7"/>
-                            {{-- <x-atoms.ui.label>Item Description</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="item.desc" type="text" class="mb_7"/> --}}
+                            <x-atoms.ui.input wire-model="item.name" type="text" class="mb_7" placeholder="Enter item name..."/>
                             <x-atoms.ui.label>Item Size</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="item.size" type="text" class="mb_7"/>
-                            <x-atoms.ui.label>Low Stock Level</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="item.buffer" type="text" class="mb_7"/>
+                            <x-atoms.ui.input wire-model="item.size" type="text" class="mb_7" placeholder="Enter item size..."/>
+                            <x-atoms.ui.label>Low Stock Level/Reserved</x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="item.buffer" type="text" class="mb_7" placeholder="Enter low stock level..."/>
                         </div>
                         <div class="field">
                             <x-atoms.ui.label>Supplier</x-atoms.ui.label>
@@ -181,15 +179,15 @@
                             {{-- <x-atoms.ui.label>Item Quantity</x-atoms.ui.label>
                             <x-atoms.ui.input wire-model="item.qty" type="number" class="mb_7"/> --}}
                             <x-atoms.ui.label>Item Price</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="item.price" type="number" class="mb_7"/>
+                            <x-atoms.ui.input wire-model="item.price" type="number" class="mb_7" placeholder="Enter price..."/>
                             <x-atoms.ui.label>Item Cost</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="item.cost" type="number" class="mb_7"/>
+                            <x-atoms.ui.input wire-model="item.cost" type="number" class="mb_7" placeholder="Enter cost..."/>
                         </div>
                     </div>
                     <div class="field">
                         <x-atoms.ui.label>Item Description</x-atoms.ui.label>
                         <div class="ui input">
-                            <textarea wire:model.defer="item.desc" name="" id="" rows="2"></textarea>
+                            <textarea wire:model.defer="item.desc" name="" id="" rows="2" placeholder="Enter description..."></textarea>
                         </div>
                         {{-- <x-atoms.ui.input wire-model="item.desc" type="text" class="mb_7"/> --}}
                     </div>
