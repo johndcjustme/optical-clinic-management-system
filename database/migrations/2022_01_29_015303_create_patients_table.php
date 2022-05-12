@@ -17,6 +17,7 @@ class CreatePatientsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('patient_avatar')->nullable();
+            $table->string('patient_avatar_clr')->nullable();
             $table->string('patient_fname');
             $table->string('patient_lname');
             $table->string('patient_mname')->nullable();

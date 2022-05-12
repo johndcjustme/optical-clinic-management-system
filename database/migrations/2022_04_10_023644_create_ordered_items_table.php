@@ -21,7 +21,7 @@ class CreateOrderedItemsTable extends Migration
             $table->integer('ordered_item_qty')->nullable();
             $table->timestamps();
 
-            $table->foreign('order_details')
+            $table->foreign('order_detail_id')
                 ->references('id')
                 ->on('order_details')
                 ->onDelete('cascade');

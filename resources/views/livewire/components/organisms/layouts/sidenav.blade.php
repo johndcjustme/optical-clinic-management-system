@@ -11,7 +11,7 @@
             {{-- <hr class="my_10" style="border-top: 1px solid rgba(0, 0, 0, 0.090);"> --}}
             <div class="ui divider"></div>
             <div>
-                @if (Auth::user()->hasRole('admin'))
+                @if (Auth::user()->hasRole(['admin', 'staff']))
                     <a href="/dashboard" title="Dashboard">
                         <li class="@yield('dashboard') ">
                             {{-- <ion-icon name="pie-chart-outline"></ion-icon> --}}
@@ -46,7 +46,7 @@
                             <i class="icon cart arrow down"></i>
                             <span>Orders</span>
                         </li>
-                    </a>
+                    </a >
                     <a href="/appointments" title="Appointments">
                         <li class="@yield('appointments') ">
                             {{-- <ion-icon name="calendar-outline"></ion-icon> --}}

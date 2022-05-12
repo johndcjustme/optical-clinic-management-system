@@ -78,11 +78,29 @@
             border-top: 2px dashed rgb(194, 194, 194);
         }
 
-        .ui.steps .step:after {
-            z-index: 1;
+        .x-notification-panel .x-action-links  {
+            transition: 0.2s ease-in-out;
+            opacity: 0;
+        }
+
+        .x-notification-panel:hover .x-action-links {
+            opacity: 1; 
+        }
+
+        .noscroll {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+          }
+        .noscroll::-webkit-scrollbar {
+            display: none;
         }
 
 
+
+
+        .ui.steps .step:after {
+            z-index: 1;
+        }
 
 
 
@@ -226,7 +244,6 @@
       window.addEventListener('confirm-dialog-close', event => {
           $.modal.close();
       })
-
 
       window.addEventListener('toast', event => {
           $('body')

@@ -40,7 +40,8 @@
             "app/_Functions/sendSMS.php",
             "app/_Functions/colors.php",
             "app/_Functions/confirm_dialog.php",
-            "app/_Functions/toast.php"
+            "app/_Functions/toast.php",
+            "app/_Functions/notification.php"
         ]
 
     },

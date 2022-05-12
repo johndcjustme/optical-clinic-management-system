@@ -25,7 +25,7 @@
 
         </div><br>
 
-        <div class="" style="z-index:0">
+        <div class="" style="z-index:0;">
             @yield('section-main')
         </div>
 

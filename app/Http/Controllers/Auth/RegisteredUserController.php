@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Str;
+
 
 class RegisteredUserController extends Controller
 {
@@ -62,6 +64,7 @@ class RegisteredUserController extends Controller
                     'password' => Hash::make($request->password),
                 ]);
                 $user->attachRole('3'); // parameter can be a Role object, array, id or the role string name
+                notify('newUser', 'new user', 'Hello there! you have a newly registered user ' . Str::title($user->name) . ' ' . $user->email . '.');
                 break;
             default:
         }

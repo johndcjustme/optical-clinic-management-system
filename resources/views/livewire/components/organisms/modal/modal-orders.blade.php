@@ -1,16 +1,64 @@
-<x-organisms.modal max-width="{{ $modal['viewOrder'] ? '600px' : '500px' }}">
+<style>
+    table.table1 {
+        font-family: Arial, Helvetica, sans-serif;
+        border: 3px solid rgb(175, 175, 175);
+        border-collapse: collapse;
+    }
+    .table1 th, .table1 td {
+        border: 1px solid lightgray;
+        padding: 7px 5px;
+    }
+    .bb {
+        border-bottom: 1px solid black;
+    }
+    .text-center {
+        text-align: center;
+    }
+    .text-right {
+        text-align: right;
+    }
+</style>
+
+
+<x-organisms.modal max-width="{{ $modal['viewOrder'] && ! $sendOrder ? '600px' : '500px' }}">
 
     @section('modal_title')
         <div>
-            @if ($modal['viewOrder'])
-            <div class="x-flex x-gap-1">
-                <div wire:click.prevent="pdf" class="ui button small icon" data-tooltip="Download pdf" data-position="bottom left" data-inverted="" data-variation="mini"><i class="icon download"></i> Download PDF</div>
-                <div wire:click.prevent="" class="ui button small icon" data-tooltip="Download pdf" data-position="bottom left" data-inverted="" data-variation="mini">Order Now</div>
-            </div>
-            @else
-                <div class="ui dropdown icon circular floating button tiny" x-init="$('.ui.dropdown').dropdown()" style="z-index: 500">
+            @if ($modal['viewOrder'] && ! $sendOrder)
+                <div class="x-flex x-gap-1">
+                    <x-atoms.ui.button-modal 
+                        icon="download"
+                        class="circular icon"
+                        wire-click="downloadPdf"
+                        data-tooltip="Download PDf" 
+                        data-position="bottom left"
+                        data-variation="mini"
+                        data-inverted=""/>
+                    <x-atoms.ui.button-modal 
+                        class="circular icon"
+                        icon="cart"
+                        wire-click="$set('sendOrder', true)" 
+                        data-tooltip="Send to supplier" 
+                        data-position="bottom left"
+                        data-variation="mini"
+                        data-inverted=""/>
+                </div>
+            @elseif ($modal['viewOrder'] && $sendOrder)
+                <div class="x-flex x-gap-1">
+                    <x-atoms.ui.button-modal 
+                        icon="angle left"
+                        class="circular icon"
+                        wire-click="$set('sendOrder', false)"/>
+                    <button
+                        type="submit"
+                        form="sendemail0923"
+                        class="ui button small blue">
+                        <i class="icon paper plane"></i>
+                        Send
+                    </button>
+                </div>
+                {{-- <div class="ui dropdown icon circular floating button tiny" x-init="$('.ui.dropdown').dropdown()" style="z-index: 500">
                     <i class="add user icon"></i>
-                    {{-- <span class="">Patient</span> --}}
                     <div class="menu right small">
                         <div class="ui icon search input">
                             <i class="search icon"></i>
@@ -26,7 +74,6 @@
                                 <div wire:click.prevent="orderAssignPatient({{ $pt->id }})" class="item">
                                     <div class="x-flex x-flex-ycenter x-gap-1">
                                         <x-atom.profile-photo size="2.5em" path="{{ avatar($pt->patient_avatar) }}" />
-                                        {{-- <img class="ui avatar image" src="{{ $this->storage($pt->patient_avatar) }}"> --}}
                                         <div>
                                             {{ $this->getFullName($pt->id) }}
                                         </div>
@@ -35,7 +82,7 @@
                             @endforeach
                         </div>
                     </div>
-                </div>
+                </div> --}}
             @endif
         </div>
         <div>
@@ -47,11 +94,10 @@
                 @endif
             </h4>
         </div>
-        <div class="">
+        <div>
             <x-atoms.ui.button wire:click.prevent="closeModal" class="tiny">Close</x-atoms.ui.button>
             @if (!$modal['viewOrder'])
                 <x-atoms.ui.button class="secondary tiny" form="" type="submit">Save</i></x-atoms.ui.button>
-            @else
             @endif
         </div>
     @endsection
@@ -254,101 +300,52 @@
 
         @elseif ($modal['viewOrder'])
             <br>
-            <center style="margin-bottom:25px; margin-top:15px;"><h3>DANGO OPTICAL CLINIC</h3></center>
-            <style>
-                table.table1 {
-                    font-family: Arial, Helvetica, sans-serif;
-                    border: 3px solid rgb(175, 175, 175);
-                    border-collapse: collapse;
-                }
-                .table1 th, .table1 td {
-                    border: 1px solid lightgray;
-                    padding: 7px 5px;
-                }
-                .bb {
-                    border-bottom: 1px solid black;
-                }
-                .text-center {
-                    text-align: center;
-                }
-                .text-right {
-                    text-align: right;
-                }
-            </style>
-
-            @foreach ($orderDetails as $order)
-                @foreach ($selectedOrders as $selected)
-                    @if ($order->id == $selected)
-                        <div style="padding-bottom:30px">
-                            <table class="table1" style="width:100%;">
-                                <tr>
-                                    <td colspan="5"><b>NAME: </b><span class="" style="font-size:16px;">{{ Str::title($order->patient->patient_lname . ', ' . $order->patient->patient_fname . ' ' . $order->patient->patient_mname) }}</span></td>
-                                    <td colspan="2"><b>AGE: </b>{{ $order->patient->patient_age }}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="7"><b>ADDRESS: </b>{{ $order->patient->patient_address}}</td>
-                                </tr>
-                                <tr>
-                                    <th colspan="7" style="padding:12px 0"><center><span class="ui header">REFRACTION</span></center></th>
-                                </tr>
-                                <tr>
-                                    <th class="text-center">RX</th>
-                                    <th class="text-center">SPH</th>
-                                    <th class="text-center">CYL</th>
-                                    <th class="text-center">AXIS</th>
-                                    <th class="text-center">NVA</th>
-                                    <th class="text-center">PH</th>
-                                    <th class="text-center">CVA</th>
-                                </tr>
-                                <tr>
-                                    <th class="text-center">OD</th>
-                                    <td class="text-center">{{ $order->exam->exam_OD_SPH }}</td>
-                                    <td class="text-center">{{ $order->exam->exam_OD_CYL }}</td>
-                                    <td class="text-center">{{ $order->exam->exam_OD_AXIS }}</td>
-                                    <td class="text-center">{{ $order->exam->exam_OD_NVA }}</td>
-                                    <td class="text-center">{{ $order->exam->exam_OD_PH }}</td>
-                                    <td class="text-center">{{ $order->exam->exam_OD_CVA }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-center">OS</th>
-                                    <td class="text-center">{{ $order->exam->exam_OS_SPH }}</td>
-                                    <td class="text-center">{{ $order->exam->exam_OS_CYL }}</td>
-                                    <td class="text-center">{{ $order->exam->exam_OS_AXIS }}</td>
-                                    <td class="text-center">{{ $order->exam->exam_OS_NVA }}</td>
-                                    <td class="text-center">{{ $order->exam->exam_OS_PH }}</td>
-                                    <td class="text-center">{{ $order->exam->exam_OS_CVA }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-center">ADD</th>
-                                    <td colspan="2">{{ $order->exam->exam_ADD }}</td>
-                                    <th class="text-center">P. D.</th>
-                                    <td colspan="3">{{ $order->exam->exam_PD }}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="7" style="padding-top:12px; padding-bottom:12px;"><b style="margin-right:8px;">REMARKS: </b> {{ $order->exam->exam_remarks }}</td>
-                                </tr>
-
-                                <tr>
-                                    <th class="text-center">LENSE</th>
-                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">{{ $order->lense }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-center">FRAME</th>
-                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">{{ $order->frame }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-center">TINT</th>
-                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">{{ $order->tint }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-center">OTHERS</th>
-                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">{{ $order->others }}</td>
-                                </tr>
-                            </table>
+            @if ($sendOrder) 
+                <form wire:submit.prevent="sendMail" class="ui form" id="sendemail0923">
+                    <div class="field">
+                        <x-atoms.ui.label>To <x-atoms.ui.required/>@error ('to') <span class="ui text red">{{ $message }}</span> @enderror </x-atoms.ui.label>
+                        <div class="ui fluid dropdown selection" x-init="$('.ui.fluid.dropdown').dropdown()">
+                            <input type="hidden" wire:model="to" name="user" placeholder="Select Supplier">
+                            <i class="dropdown icon"></i>
+                            <div class="default">{{ $to }}</div>
+                            <div class="menu">
+                                @foreach(App\Models\Supplier::all() as $su)
+                                    <div wire:click.prevent="$set('to', '{{ $su->supplier_email }}')" class="vertical item" data-value="{{ $su->supplier_email }}">
+                                        <span class="description">{{ $su->supplier_email }}</span>
+                                        <span class="text">{{ $su->supplier_name }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
-                    @endif
-                @endforeach
-            @endforeach
+                    </div>
+                    <div class="field">
+                        <x-atoms.ui.label>Subject</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="subject" type="text" placeholder="Enter Name..." class="fluid mb_7"/>
+                    </div>
+                    <div class="field">
+                        <x-atoms.ui.label>Body</x-atoms.ui.label>
+                        <div class="ui input"><textarea wire:model.defer="body" id=""></textarea></div>
+                    </div>
+                </form>
+            @else    
+                <center style="margin-bottom:25px; margin-top:15px;"><h3>DANGO OPTICAL CLINIC</h3></center>
+                @if (!empty($this->viewOrderPatientId) && !empty($this->viewOrderExamId))
+                    @foreach ($orderDetails as $order)
+                        @include('livewire.components.organisms.modal.modal-orders.view-orders')
+                    @endforeach
+                @else
+                    @foreach ($orderDetails as $order)
+                        @foreach ($selectedOrders as $selected)
+                            @if ($order->id == $selected)
+                                @include('livewire.components.organisms.modal.modal-orders.view-orders')
+                            @endif
+                        @endforeach
+                    @endforeach
+                @endif
+            @endif
+
+
+           
         @else
             <br><br>
             <div class="x-flex x-flex-center">
@@ -357,3 +354,6 @@
         @endif        
     @endsection
 </x-organisms.modal>
+
+
+

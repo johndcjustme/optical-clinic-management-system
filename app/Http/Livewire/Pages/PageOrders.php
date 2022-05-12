@@ -19,16 +19,22 @@ use Dompdf\Dompdf;
 use PDF;
 
 
+use App\_Classes\NotificationClass;
+
+ 
+
+
 
 class PageOrders extends Component
 {
     use WithPagination;
 
-
-    
+        
     public $subPage = 1;
 
     public $selectedOrders = [];
+
+    public $selectAll = false;
 
     public $orderPatientId;
 
@@ -44,11 +50,22 @@ class PageOrders extends Component
 
     public $viewOrderPatientId = '', $viewOrderExamId = '';
 
+    public $sendOrder = false;
 
+    public $toName, $to, $subject, $body;
+
+
+    
 
 
     // public $ordered_items = [];
 
+
+    public $confirm = [
+        'send_orders_to_supplier' => false,
+        'valueOfStatusToChange' => '',
+        'changeStatus' => false,
+    ];
 
     public 
         $total    = 0,
@@ -104,7 +121,11 @@ class PageOrders extends Component
     public function render()
     {
 
+
+
         $render = [];
+
+
 
         // $this->total();
 
@@ -125,7 +146,7 @@ class PageOrders extends Component
 
         return view('livewire.pages.page-orders', [
             'orders' => $orders->orderByDesc('created_at')->paginate($this->pageNumber),
-            'orderDetails' => $orderDetail->get(),
+            'orderDetails' => $orderDetail->orderByDesc('created_at')->get(),
             ])
             ->extends('layouts.app')
             ->section('content');
@@ -155,6 +176,32 @@ class PageOrders extends Component
 
     // }
 
+
+    // public function notify($title, $description)
+    // {
+    //     $notify = new NotificationClass();
+    //     $notify->notify($title, $description);
+    // }
+
+
+    public function updatedSubPage()
+    {
+        $this->reset([
+            'selectedOrders',
+            'selectAll',
+        ]);
+    }
+
+    public function updatedSelectAll($value)
+    {
+        if ($value) {
+            $this->selectedOrders = Order_detail::pluck('id')->map(function ($id) {
+                return(string) $id;
+            });
+        } else {
+            $this->selectedOrders = [];
+        }
+    }
 
 
     public function thispdf()
@@ -276,6 +323,32 @@ class PageOrders extends Component
     //     $this->hasOrder = true;
     // }
 
+    public function changeStatus($value) 
+    {
+        $this->confirm['changeStatus'] = true;
+        $this->confirm['valueOfStatusToChange'] = $value;
+
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Update Status',
+            'content' => 'Change status to "' . $this->orderCategory($value) . '"?'
+        ]);
+    }
+
+
+    public function statusChanged($statusValue)
+    {
+        // dd($statusValue);
+        foreach($this->selectedOrders as $selectedOrder) {
+            Order_detail::where('id', $selectedOrder)->update(['order_status' => $statusValue]);
+        }
+        $this->reset([
+            'selectedOrders', 
+            'selectAll'
+        ]);
+    }
+
+    
+
     public function updateOrder()
     {
         Order_detail::find($order->id)->update([
@@ -290,8 +363,8 @@ class PageOrders extends Component
         $this->order['id'] = $orderId;
         $this->delete['order'] = true;
         $this->dispatchBrowserEvent('confirm-dialog', [
-            'title' => 'Confirm',
-            'content' => 'Are you sure you want to delete this order?'
+            'title' => 'Are you sure?',
+            'content' => 'This row will be deleted, continue?'
         ]);  
     }
 
@@ -314,8 +387,8 @@ class PageOrders extends Component
     {
         $this->delete['orders'] = true;
         $this->dispatchBrowserEvent('confirm-dialog', [
-            'title' => 'Cofirm',
-            'content' => 'Are you sure you want to delete selected order(s)?'
+            'title' => 'Are you sure?',
+            'content' => 'Selected row(s) will be removed!'
         ]);  
     }
 
@@ -422,6 +495,10 @@ class PageOrders extends Component
 
     public function viewOrder($patientId, $examId)
     {
+        $this->reset([
+            'viewOrderPatientId',
+            'viewOrderExamId',
+        ]);
         $this->viewOrderPatientId = $patientId;
         $this->viewOrderExamId = $examId;
         $this->showModal('viewOrder', null);
@@ -459,7 +536,23 @@ class PageOrders extends Component
 
     public function closeModal()
     {
-        $this->reset(['modal', 'order', 'orderPatientId', 'hasOrder', 'viewOrderPatientId', 'viewOrderExamId']);
+        $this->reset([
+            'modal', 
+            'order', 
+            'orderPatientId', 
+            'hasOrder', 
+            'viewOrderPatientId', 
+            'viewOrderExamId', 
+            'sendOrder', 
+
+            'to', 
+            'subject', 
+            'body',
+
+            'confirm',
+        ]);
+
+        $this->resetErrorBag();
     }
 
     public function confirm()
@@ -470,6 +563,15 @@ class PageOrders extends Component
         $this->delete['orders'] 
             ? $this->deleteOrders() 
             : NULL;
+        $this->confirm['send_orders_to_supplier']
+            ? $this->sendMail()
+            : NULL;
+        $this->confirm['changeStatus']
+            ? $this->statusChanged($this->confirm['valueOfStatusToChange'])
+            : NULL;
+
+
+        $this->dispatchBrowserEvent('confirm-dialog-close'); 
     }
 
 
@@ -515,25 +617,69 @@ class PageOrders extends Component
 
 
 
-    public function pdf()
+
+    public function downloadPdf()
     {
+        date_default_timezone_set("Asia/Manila");
 
-        // return response()->streamDownload(function () {
-        //     $pdf = \App::make('dompdf.wrapper');
-        //     $pdf->loadHTML($this->convert_customer_data_to_html());
-        //     echo $pdf->stream();
-        // }, 'test.pdf');
+        $today = Str::replace('-', '_', getToday() . '_' . date('h:i:sa'));
+        $filename = 'patient_orders_' . $today . '.pdf';
 
-        Browsershot::html($this->convert_customer_data_to_html())
-            ->margins('1', '1', '1', '1', 'cm')
-            ->format('letter')
-            // ->scale(0.9)
-            ->save('example.pdf');
+        return response()->streamDownload(function () {
+            $pdf = \App::make('dompdf.wrapper');
+            $pdf->loadHTML($this->convert_customer_data_to_html());
+            echo $pdf->stream();
+        }, $filename);
+    }
+
+    public function confirmSendingEmail()
+    {
+        $this->confirm['send_orders_to_supplier'] = true;
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Send Email',
+            'content' => 'Order will be sent to ' . $this->to,
+        ]);
+    }
+
+    public function sendMail()
+    {
+        $this->validate(
+            [
+                'to' => 'required'
+            ],
+            [
+                'to.required' => 'Required'
+            ]
+        );
 
 
+        $this->statusChanged(2);
+
+        // $data = [
+        //     'email'     => 'johndecastro.604@gmail.com',
+        //     'subject'   => $this->subject,
+        //     'body'      => $this->body];
+
+        // $file = public_path('patient-orders.pdf');
+
+        // Browsershot::html($this->convert_customer_data_to_html())
+        //     ->margins('1', '1', '1', '1', 'cm')
+        //     ->format('letter')
+        //     ->save($file);
+  
+        // Mail::send('send-patient-orders', $data, function($message) use ($data, $file) {
+        //     $message->to($data["email"])
+        //             ->subject($data["subject"])
+        //             ->attach($file);});
+
+        // unlink($file);
 
 
-    //  return $pdf->stream();
+        $this->dispatchBrowserEvent('toast', [
+            'class' => 'success',
+            'title' => 'Sent!',
+            'message' => 'Order was sent successfully.'
+        ]);
     }
 
 
@@ -566,7 +712,7 @@ class PageOrders extends Component
                 }
             </style>';
 
-            foreach (Order_detail::with('patient')->with('exam')->get() as $order) {
+            foreach (Order_detail::with('patient')->with('exam')->orderByDesc('created_at')->get() as $order) {
                 foreach ($this->selectedOrders as $selected) {
                     if ($order->id == $selected) {
                         $html .= '
@@ -646,32 +792,4 @@ class PageOrders extends Component
     }
 
 
-
-
-
-    public function sendMail()
-    {
-
-        // Mail::to('johndecastro.604@gmail.com')
-        //     ->send('download-pdf');
-
-        $data["email"] = "johndecastro.604@gmail.com";
-        $data["title"] = "From Dango";
-        $data["body"] = "This is Demo";
- 
-        $file = public_path('example.pdf');
-  
-        Mail::send('download-pdf', $data, function($message)use($data, $fileb) {
-            $message->to($data["email"], $data["email"])
-                    ->subject($data["title"])
-                    ->attach($file);
- 
-            // foreach ($files as $file){
-            //     $message->attach($file);
-            // }
-            
-        });
- 
-        dd('Mail sent successfully');
-    }
 }

@@ -1,15 +1,15 @@
 
  {{-- <div class="x-flex x-flex-center" style="background:black"> --}}
-     <div id="fade" class="modal" style="max-width: 300px; padding:1.5em; border-radius:0.3em; position:relative;">
-        <div>
-            <h3 id="modal-title">{{ $title }}</h3>
-        </div>
-        <p class="py_10" id="modal-content">
-            {{ $content }}
-        </p>
-        <div class="flex flex_x_end pointer" style="gap:0.7em;">
-            <a class="ui button tiny fluid" rel="modal:close">No</a>
-            <a class="ui button tiny secondary fluid" wire:click.prevent="{{ $wireConfirm }}">Yes</a>
+     <div id="fade" class="modal ui card" style="max-width:300px; position:relative;">
+        <div class="content">
+            <div id="modal-title" class="header">{{ $title }}</div>
+            <div id="modal-content" class="description">
+                {{ $content }}
+            </div>
+            <div class="x-flex x-gap-1" style="margin-top:2em;">
+                <a rel="modal:close" class="ui button small fluid">No</a>
+                <a wire:click.prevent="{{ $wireConfirm }}" class="ui button small fluid red">Yes</a>
+            </div>
         </div>
     </div>
  {{-- </div> --}}

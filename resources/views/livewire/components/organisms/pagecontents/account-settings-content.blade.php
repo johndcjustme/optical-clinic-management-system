@@ -41,7 +41,7 @@
                     </center>
                 </div>
             </div> --}}
-            <div x-data="{open: false}" class="ui segment column" style="max-width:350px;">
+            <div x-data="{open: false}" class="ui segment column" style="max-width:320px;">
                 <form wire:submit.prevent="updateAccount" class="ui form">
                     <div class="field">
                         <div class="" style="height: 100%">
@@ -56,7 +56,7 @@
                                         <input wire:model="{{ $myAvatar }}" id="changeUserAvatar001" type="file" style="opacity: 0;" hidden>
                                     </center>
                                     <center style="margin-top:1.5em;">
-                                        <div class="ui horizontal list divided">
+                                        <div class="ui horizontal list divided tiny">
                                             <label class="ui button tertiary item">Reset Avatar</label>
                                             <label class="ui button tertiary item" for="changeUserAvatar001">Upload Avatar</label>
                                         </div>
@@ -70,12 +70,12 @@
                         @if (session()->has('accountUpdated'))
                             <div class="ui positive message" x-init="$('.message .close').on('click', function() { $(this).closest('.message').transition('fade');});">
                                 <i class="close icon"></i>
-                                <div class="header">
-                                    Success
-                                </div>
+                                <div class="header">Success</div>
                                 <p>{{ session('accountUpdated') }}</p>
                             </div>
                         @endif
+                    </div>
+                    <div class="field">
                         <x-atoms.ui.label>Name <x-atoms.ui.required/> @error('name') <span class="ui text red">{{ $message }}</span> @endError</x-atoms.ui.label>
                         <x-atoms.ui.input wire-model="name" type="text" placeholder="Enter Name (10 characters maximum)..." class="fluid mb_7"/>
                     </div>
@@ -85,7 +85,7 @@
                     </div>
                     <br>
                     <div class="x-flex x-flex-xbetween x-flex-ycenter x-gap-1">
-                        <div class="">
+                        <div>
                             <a @click="open = ! open" class="pointer">Change password <i :class="open ? 'up' : 'down'" class="icon caret"></i></a>
                         </div>
                         <div class="">
@@ -114,17 +114,23 @@
                                 <p>{{ session('passwordChangedError') }}</p>
                             </div>
                         @endif
-                        <x-atoms.ui.label>Current Password <x-atoms.ui.required> @error('currentPassword') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
-                        <x-atoms.ui.input wire-model="currentPassword" type="password" class="mb_7" placeholder="Enter current password..."/>
-
-                        <x-atoms.ui.label>New Password <x-atoms.ui.required> @error('newPassword') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
-                        <x-atoms.ui.input wire-model="newPassword" type="password" class="mb_7" placeholder="Minimum of 6 characters..."/>
-    
-                        <x-atoms.ui.label>Repeat Password <x-atoms.ui.required> @error('confirmPassword') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
-                        <x-atoms.ui.input wire-model="confirmPassword" type="password" class="mb_7" placeholder="Minimum of 6 characters... "/>
                     </div>
-                    <div class="x-flex x-flex-xend">
-                        <button type="submit" class="ui button secondary fluid">Change Password</button>
+                    <div class="field">
+                        <x-atoms.ui.label>Current Password <x-atoms.ui.required> @error('currentPassword') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
+                        <input class="ui input fluid" type="password" wire:model="currentPassword" placeholder="Enter current password...">
+                    </div>
+
+                    <div class="field">
+                        <x-atoms.ui.label>New Password <x-atoms.ui.required> @error('newPassword') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
+                        <input class="ui input fluid" type="password" wire:model="newPassword" placeholder="Minimum of 6 characters...">
+                    </div>
+
+                    <div class="field">
+                        <x-atoms.ui.label>Repeat Password <x-atoms.ui.required> @error('confirmPassword') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
+                        <input class="ui input fluid" type="password" wire:model="confirmPassword" placeholder="Minimum of 6 characters...">
+                    </div>
+                    <div>
+                        <button type="submit" class="ui button secondary fluid {{ empty($currentPassword) || empty($newPassword) || empty($confirmPassword) ? 'disabled' : '' }}">Change Password</button>
                     </div>
                 </form>
             </div>

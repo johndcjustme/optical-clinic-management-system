@@ -3,6 +3,15 @@
 use \Carbon\Carbon;
 
 
+
+date_default_timezone_set("Asia/Manila");
+
+
+function notificationTime($date) {
+    $carbon = Carbon::parse($date);
+    return $carbon->isoFormat('MMM D') . ', ' . $carbon->format('g:i A'); 
+}
+
 function humanReadableDate($date) { 
     return Carbon::parse($date)->isoFormat('MMM D, YYYY'); 
 }

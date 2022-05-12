@@ -17,12 +17,16 @@
         </div>
         <div>
             <div>
-                @if ($textIcon) <i class="fa-solid {{ $textIcon }}" style="margin-right: 3px"></i> @endif 
+                @if ($textIcon) 
+                    <i class="fa-solid {{ $textIcon }}" style="margin-right: 3px"></i> 
+                @endif 
                 {{ $text }}
             </div>
             <div>
-                <small class="dark_200">
-                    @if ($descIcon) <i class="fa-solid {{ $descIcon }}" style="margin-right: 3px"></i> @endif 
+                <small style="opacity:0.6">
+                    @if ($descIcon) 
+                        <i class="fa-solid {{ $descIcon }}" style="margin-right: 3px"></i> 
+                    @endif 
                     {{ $desc }}
                 </small>
             </div>

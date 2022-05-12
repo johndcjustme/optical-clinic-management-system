@@ -43,6 +43,10 @@ class PageForum extends Component
 
     public $photos = [];
 
+    public $limit = 15;
+
+    public $openComment = false;
+
     public $delete = [
         'post' => false,
         'comment' => false,
@@ -54,10 +58,15 @@ class PageForum extends Component
         'patient' => ['except' => '', 'except' => 0],
     ];
 
+    public function loadMore() 
+    {
+        $this->limit += 15;
+    }
+
     public function render()
     {
         return view('livewire.pages.page-forum', [
-            'posts' => Post::with('user')->latest()->get(),
+            'posts' => Post::with('user')->latest()->limit($this->limit)->get(),
             'comments' => Comment::with('user')->latest()->get(),
             'commentcomments' => Commentcomment::with('user')->latest()->get(),
             'chatrooms' => Chatroom::with('user')->latest('updated_at')->limit(50)->get(),
@@ -135,10 +144,14 @@ class PageForum extends Component
     {
         $this->validate(['postContent' => 'required|max:100']);
 
-        Post::create([
+        $post = Post::create([
             'user_id' => Auth::user()->id,
             'post_content' => $this->postContent,
         ]);
+
+        $postId = '#post_' . $post->id;
+
+        notify('newPost', Auth::user()->name . ' posted', $this->postContent, '/forum?subPage=1' . $postId);
 
         $this->newPost = false;
         $this->postContent = '';
@@ -163,11 +176,13 @@ class PageForum extends Component
 
     public function replyPost($postId, $userId)
     {
-        Comment::create([
+        $comment = Comment::create([
             'post_id' => $postId,
             'user_id' => $userId,
             'comment_content' => $this->commentContent,
         ]);
+
+        notify('newPost', 'title', 'comment', 'link');
 
         $this->commentContent = '';
     }

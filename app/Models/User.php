@@ -89,6 +89,11 @@ class User extends Authenticatable
         return $this->hasOne(Chatroom::class, 'user_id', 'id');
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
     // public function role()
     // {
     //     return $this->belongsTo(Role::class);

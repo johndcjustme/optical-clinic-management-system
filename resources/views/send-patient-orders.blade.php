@@ -1,5 +1,5 @@
-<h1>Hey</h1>
-<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Suscipit, dolorem velit ullam adipisci consequatur cum eos neque doloribus excepturi inventore veniam molestias voluptatibus facere recusandae beatae deleniti consectetur voluptate corrupti.</p>
+<p>{{ $body }}</p>
+{{-- <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p> --}}
 {{-- @include('layouts.head')
 
     <div style="width: 100%">
