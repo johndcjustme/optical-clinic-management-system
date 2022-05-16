@@ -19,6 +19,13 @@
                             <span>Dashboard</span>
                         </li>
                     </a>
+                    <a href="/ledger" title="Ledger">
+                        <li class="@yield('ledger') ">
+                            {{-- <ion-icon name="people-outline"></ion-icon> --}}
+                            <i class="icon clipboard list"></i>
+                            <span>Ledger</span>
+                        </li>
+                    </a>
                     <a href="/patients" title="Patient">
                         <li class="@yield('patients') ">
                             {{-- <ion-icon name="people-outline"></ion-icon> --}}
@@ -85,7 +92,7 @@
                         <li class="@yield('forum') ">
                             {{-- <ion-icon name="chatbubbles-outline"></ion-icon> --}}
                             <i class="icon comments outline"></i>
-                            <span>Furom</span>  
+                            <span>Forum</span>  
                         </li>
                     </a>
                 @endif

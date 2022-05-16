@@ -14,6 +14,7 @@ use App\Models\In_out_of_item as In_item;
 // use App\Models\Lense;
 // use App\Models\Frame;
 // use App\Models\Accessory;
+use Illuminate\Support\Facades\DB;
 use App\Models\Supplier;
 use App\Models\Category;
 use App\Models\Item;
@@ -33,6 +34,9 @@ class PageInventory extends Component
 
     public $sort = 'asc', $status = 'all';
 
+    public $filter = [
+        'lowStocks' => false,
+    ];
 
     public $modal = [
         'show'           => false,
@@ -63,6 +67,7 @@ class PageInventory extends Component
         'cost'          => '',
         'has_image'     => '',
         'in'            => '',
+        'on_hand'       => '',
     ];
 
     // public $su = [
@@ -165,12 +170,12 @@ class PageInventory extends Component
                 $this->colName = 'item_name';
                 $searchItem = $this->searchItem . '%';
                 if ($this->onDisplayItemType == 'all') {
-                    $items = Item::with('supplier')->with('category')
+                    $items = Item::with(['supplier','category'])
                         ->where('item_name', 'like', $searchItem)
                         ->orderBy($this->colName, $this->direction)
                         ->paginate($this->pageNumber);
                 } else {
-                    $items = Item::with('supplier')->with('category')
+                    $items = Item::with(['supplier', 'category'])
                         ->where('item_name', 'like', $searchItem)
                         ->where('category_id', $this->onDisplayItemType)
                         ->orderBy($this->colName, $this->direction)
@@ -553,38 +558,59 @@ class PageInventory extends Component
 
 
 
-    public function inItem()
+    public function inItem($itemId)
     {
-        $this->validate(['item.in' => 'required|integer']);
+        $this->item['id'] = $itemId;
 
+        $this->validate([
+            'item.in' => 'nullable|integer',
+            'item.buffer' => 'nullable|integer'
+        ]);
 
+        if (empty($this->item['in']))
+            $this->item['in'] = 0;
+
+        if (empty($this->item['buffer']))
+            $this->item['buffer'] = 0;
         // $lastBalance = 0;
-        $newBalance = $this->item['in'];
 
-        $lastBalance = In_item::where('item_id', $this->item['id'])->latest()->first()->balance ?? 0;
+
+
+        // $newBalance = $this->item['in'];
+
+        // $lastBalance = In_item::where('item_id', $this->item['id'])->latest()->first()->balance ?? 0;
+
+
 
         // foreach (In_item::where('item_id', $this->item['id'])->where('status', true)->get() as $in_out) {
         //     $lastBalance += $in_out->qty;
         // }
 
-        $newBalance += $lastBalance;
+        // $newBalance += $lastBalance;
 
-        $in_out = In_item::create([
-            'item_id' => $this->item['id'],
-            'status' => true,
-            'qty' => $this->item['in'],
-            'balance' => $newBalance,
+        if ($this->item['in'] != 0)
+            $in_out = In_item::create([
+                'item_id' => $this->item['id'],
+                'status' => true,
+                'qty' => $this->item['in'],
+                // 'balance' => $newBalance,
+            ]);
+
+
+        $item = Item::find($this->item['id'])->update([
+            'item_qty' => DB::raw('item_qty + ' . $this->item['in']),
+            'item_buffer' => $this->item['buffer'],
         ]);
 
-        Item::find($this->item['id'])->update([
-            'item_qty' => $newBalance,
-        ]);
+        dd($item->id);
 
         $this->dispatchBrowserEvent('toast', [
             'title' => 'Success',
             'class' => 'success',
             'message'=> $this->item['name'] . ' has in ' . $this->item['in'] . ' pcs.'
         ]);
+
+        $this->reset(['item']);
     }
 
 

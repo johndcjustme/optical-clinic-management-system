@@ -28,7 +28,7 @@
         </small>
 
 
-        <div style="position: relative;" x-data="{open:false}" wire:poll.3000ms>
+        <div style="position: relative;" x-data="{open:false}">
             <div @click="open= ! open" class="ui button circular secondary tiny icon" style="position:relative;">
                 <i class="icon bell"></i>
                 @if (count($notifications) > 0)

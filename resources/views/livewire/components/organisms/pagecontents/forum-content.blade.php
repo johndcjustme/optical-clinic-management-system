@@ -40,8 +40,11 @@
 
 
                     <div>
-                        <div style="position:sticky; top:5em; width:200px;" x-data="{showPeople: true}">
-                            <div class="ui relaxed aligned selection list">
+                        <div style="position:sticky; top:5em; width:250px;" x-data="{showPeople: true, showRules: true,}">
+                            <div class="ui relaxed aligned selection list noscroll" style="overflow-y: auto; height:80vh;">
+
+
+
                                 <div class="item @if ($subPage == 1) active @endif" wire:click.prevent="subPage(1)">
                                     <div class="content">
                                         <i class="comments icon"></i> 
@@ -49,6 +52,8 @@
                                         {{-- <div class="description">Updated 10 mins ago</div> --}}
                                     </div>
                                 </div>
+
+
                                 <div class="item @if ($subPage == 2) active @endif" wire:click.prevent="subPage(2)">
                                     <div class="content">
                                         <i class="comment icon"></i> 
@@ -56,6 +61,50 @@
                                         {{-- <div class="description">Updated 22 mins ago</div> --}}
                                     </div>
                                 </div>
+
+
+
+
+                                <div class="ui divider"></div>
+                                <div class="item" :class="showRules ? 'active' : ''">
+                                    <div @click="showRules = ! showRules" class="right floated content">
+                                        <i :class="showRules ? 'down' : 'up'" class="icon caret"></i>
+                                    </div>
+                                    
+                                    <div class="content">
+                                        <i class="file alternate icon"></i> 
+                                        Rules
+                                        {{-- <div class="description">Updated 34 mins ago</div> --}}
+                                      
+                                        <div x-show="showRules" x-transition>
+                                            @if (Auth::user()->hasRole('admin'))
+                                                <form wire:submit.prevent="addRule" style="margin-top:1.5em;">
+                                                    <div class="ui input fluid" style="margin-bottom:0.4em;">
+                                                        <textarea wire:model.defer="text_rule" placeholder="Write some rules" style="width:100%;"></textarea>
+                                                    </div>
+                                                    <button class="ui button secondary tiny fluid" type="submit">Add rule</button>
+                                                </form>
+                                            @endif
+                                            <ol class="ui suffixed list" style="padding-left: 20px; margin-top:1em;">
+                                                @foreach(App\Models\Rule::all() as $rule)
+                                                    <li>
+                                                        @if (Auth::user()->hasRole('admin'))
+                                                            <a wire:click.prevent="deleteRule({{ $rule->id }})">
+                                                                <i class="icon minus square inverted red" title="Remove"></i>
+                                                            </a>
+                                                        @endif
+                                                        {{ $rule->rule }}
+                                                    </li>
+                                                @endforeach
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+
                                 <div class="ui divider"></div>
                                 <div @click="showPeople = ! showPeople" class="item" :class="showPeople ? 'active' : ''">
                                     <div class="right floated content">
@@ -64,29 +113,56 @@
                                     
                                     <div class="content">
                                         <i class="users icon"></i> 
-                                        Members <span style="opacity: 0.5; margin-left:0.3em;">({{ count(App\Models\Member::all()) }})</span>
+                                        People <span style="opacity: 0.5; margin-left:0.3em;">({{ count(App\Models\Member::all()) }})</span>
                                         {{-- <div class="description">Updated 34 mins ago</div> --}}
                                         <div x-show="showPeople" x-transition>
-                                            <br>
-                                            @foreach (App\Models\Member::with('user')->get() as $member)
-                                                <div class="flex gap_1" style="margin: 0.8em 0">
-                                                    <div class="x-flex x-flex-ycenter">
-                                                        <x-atom.profile-photo size="2.4em" path="{{ $this->storage($member->user->avatar) }}"/>
-                                                    </div>
-                                                    <div class="content" style="width:100%;">                                    
-                                                        <div class="flex flex_x_between gap_1">
-                                                            <div style="font-weight:bold">{{ $member->user->name}}</div>
-                                                            {{-- <small style="opacity: 0.5; font-size:0.7rem;">Date joined: {{ $this->date($member->created_at) }} </small> --}}
+                                            <div>
+                                                <br><br>
+                                                <h6 class="ui dividing tiny header" style="font-weight:bold; opacity:0.6">ADMINS</h6>  
+                                                @foreach (App\Models\User::whereRoleIs('admin')->get() as $admin)
+                                                    <div class="flex gap_1" style="margin: 0.8em 0">
+                                                        <div class="x-flex x-flex-ycenter">
+                                                            <x-atom.profile-photo size="2.1em" path="{{ $this->storage($admin->avatar) }}"/>
                                                         </div>
-                                                        <small class="text">
-                                                            {{ $member->user->email }}
-                                                        </small>
+                                                        <div class="content" style="width:100%;">                                    
+                                                            <div class="flex flex_x_between gap_1">
+                                                                <div style="font-weight:bold">{{ $admin->name}}</div>
+                                                                {{-- <small style="opacity: 0.5; font-size:0.7rem;">Date joined: {{ $this->date($member->created_at) }} </small> --}}
+                                                            </div>
+                                                            <small class="text" style="opacity: 0.6">
+                                                                {{ $admin->email }}
+                                                            </small>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            @endforeach
+                                                @endforeach
+                                                <br>
+                                                <h6 class="ui dividing tiny header" style="font-weight:bold; opacity:0.6">MEMBERS</h6>  
+                                                @foreach ($members as $member)
+                                                    <div class="flex gap_1" style="margin: 0.8em 0">
+                                                        <div class="x-flex x-flex-ycenter">
+                                                            <x-atom.profile-photo size="2.1em" path="{{ $this->storage($member->user->avatar) }}"/>
+                                                        </div>
+                                                        <div class="content" style="width:100%;">                                    
+                                                            <div class="flex flex_x_between gap_1">
+                                                                <div style="font-weight:bold">{{ $member->user->name}}</div>
+                                                                {{-- <small style="opacity: 0.5; font-size:0.7rem;">Date joined: {{ $this->date($member->created_at) }} </small> --}}
+                                                            </div>
+                                                            <small class="text" style="opacity: 0.6">
+                                                                {{ $member->user->email }}
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+
+
+
+                                
+
+
                                 
                             </div>
                         </div>
@@ -116,7 +192,7 @@
                                     </button> --}}
                                     <button @click="createPost = ! createPost" class="ui button icon primary">
                                         <i class="edit icon"></i>
-                                        Create Post
+                                        Post
                                     </button>
                                 </div>
                             </div>
@@ -127,6 +203,7 @@
                                 <div class="field">
                                     <textarea wire:model.defer="postContent" placeholder="Write a post..." style="height:100px;"></textarea>
                                 </div>
+                                <input class="ui input" type="file" wire:model="photos" style="margin-bottom:1em;" multiple>
                                 <div class="flex flex_x_end">
                                     <div class="mr_3">
                                         {{-- <button wire:click.prevent="$toggle('newPost')" class="ui button tiny basic">Cancel</button> --}}
@@ -178,8 +255,7 @@
                         @if ($this->checkMember(Auth::user()->id))
 
                             @foreach ($posts as $post)        
-                                {{ $post->id }}
-                                <div id="{{ 'post_' . $post->id }}" class="" style="padding:1.5em; width:100%; margin:0.7em 0; border-radius:0.4em; -webkit-box-shadow: 0px 4px 14px -3px rgba(0,0,0,0.12); -moz-box-shadow: 0px 4px 14px -3px rgba(0,0,0,0.12); box-shadow: 0px 4px 14px -3px rgba(0,0,0,0.12);">
+                                <div id="{{ 'post_' . $post->id }}" class="" style="padding:1.5em; width:100%; margin:1em 0; border-radius:0.4em; -webkit-box-shadow: 0px 4px 14px -3px rgba(0,0,0,0.12); -moz-box-shadow: 0px 4px 14px -3px rgba(0,0,0,0.12); box-shadow: 0px 4px 14px -3px rgba(0,0,0,0.12);">
                                     <div class="flex flex_column gap_1">
                                         <div class="flex flex_x_between gap_1">
                                             <div class="flex gap_1">
@@ -204,13 +280,21 @@
                                             </div>
                                         </div>
                                         <div class="text">
-                                            {{-- <div style="white-space: pre-wrap; font-family:Arial, Helvetica, sans-serif"> --}}
-                                                {{ $post->post_content }}
-                                            {{-- </div> --}}
+<pre style="white-space: pre-wrap; font-family:Arial, Helvetica, sans-serif">
+{{ $post->post_content }}
+</pre>
+                                        </div>
+                                        <div style="
+                                            display: grid;
+                                            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                                            grid-gap: 15px;
+                                        ">
+                                            @foreach (App\Models\Post_photo::where('post_id', $post->id)->get() as $photo)
+                                                <img wire:click.prevent="viewPhoto({{ $post->id }})" src="{{ storage('items', $photo->name) }}" style="width:100%; min-width:500px; min-width:50px; border-radius:0.2em; border:1px solid #ebebeb">
+                                            @endforeach
                                         </div>
                                     </div>
-                                    <div x-data="{openComment: false}" class="ui threaded comments">
-                
+                                    <div x-data="{openComment: false}" class="ui threaded comments">                                        
                                         <div class="reaction flex flex_y_center gap_1">
                                             <span class="pointer ui button tiny fluid" wire:click.prevent="likePost({{ $post->id }}, {{ Auth::user()->id }})">
                                                 <i class="@if($this->liked($post->id, Auth::user()->id, 1)) fa-solid @else fa-regular @endif fa-thumbs-up mr_2"></i>
@@ -231,7 +315,7 @@
                                                 </div> --}}
                                                 <form @click.outside="replyPost = false" wire:submit.prevent="replyPost({{ $post->id }}, {{ Auth::user()->id }})" class="x-flex x-gap-1" style="width:100%;">
                                                     <div class="ui input" style="width:100%;">
-                                                        <textarea class="ui input" wire:model.defer="commentContent" row="5" placeholder="Write a comment on this post..." style="height:4em; width:100%"></textarea>
+                                                        <textarea class="ui input" wire:model.defer="commentContent" row="5" placeholder="Write a comment..." style="height:4em; width:100%"></textarea>
                                                     </div>
                                                     <div>
                                                         <button type="submit" class="ui button basic icon tiny"><i class="icon share"></i></button>
@@ -240,7 +324,6 @@
                                             </div>
                                             {{-- <div class="ui divider"></div> --}}
                                                 @foreach ($comments->where('post_id', $post->id) as $comment)                        
-                                                    {{ $comment->id }}
                                                     <div id="{{ 'comment_' . $comment->id }}" class="comment" style="margin:1.5em 0">
                                                         <a class="avatar">
                                                             <x-atom.profile-photo size="35px" path="{{ $this->storage($comment->user->avatar) }}"/>
@@ -270,9 +353,9 @@
                                                             </div>
                         
                                                             <div class="text">
-                                                                {{-- <div style="white-space: pre-wrap; font-family:Arial, Helvetica, sans-serif"> --}}
-                                                                    {{ $comment->comment_content }}
-                                                                {{-- </div> --}}
+<pre style="white-space: pre-wrap; font-family:Arial, Helvetica, sans-serif">
+{{ $comment->comment_content }}
+</pre>
                                                             </div>
                     
                                                             <div x-data="{comment_comment: false}">
@@ -294,7 +377,7 @@
                                                                             {{-- <a @click="replyComment = ! replyComment">Add Comment</a> --}}
                                                                             <form @click.outside="replyComment = false" wire:submit.prevent="replyComment({{ $comment->id }}, {{ Auth::user()->id }})" x-show="open" @click.outside="open= false" class="x-flex x-gap-1">
                                                                                 <div class="ui input fluid" style="width:100%;">
-                                                                                    <textarea wire:model.defer="commentContent" style="width:100%;" placeholder="Write your comment here..."></textarea>
+                                                                                    <textarea wire:model.defer="commentContent" style="width:100%;" placeholder="Write a reply..."></textarea>
                                                                                 </div>
                                                                                 <div>
                                                                                     <button type="submit" class="ui button basic icon tiny"><i class="icon share"></i></button>
@@ -325,9 +408,9 @@
                                                                                     </div>
                     
                                                                                     <div class="text">
-                                                                                        {{-- <div style="white-space: pre-wrap; font-family:Arial, Helvetica, sans-serif"> --}}
-                                                                                            {{ $commentcomment->comment }}
-                                                                                        {{-- </div> --}}
+<pre style="white-space: pre-wrap; font-family:Arial, Helvetica, sans-serif">
+{{ $commentcomment->comment }}
+</pre>
                                                                                     </div>
                     
                                                                                     <div class="pointer" wire:click.prevent="likeComment({{ $commentcomment->id }}, {{ Auth::user()->id }}, 3)">

@@ -6,10 +6,22 @@ use App\Models\Member;
 use App\Models\Notification;
 
 
-function notify($type, $title, $description, $link = null)
+function notify($type, $title, $description, $link = null, $userId = null)
 {
     switch ($type) {
-        case 'newUser':
+        case 'admin-staff': 
+            foreach (User::whereRoleIs('admin')->orWhereRoleIs('staff')->get() as $user) {
+                Notification::create([
+                    'user_id' => $user->id,
+                    'title' => $title,
+                    'desc' => $description,
+                    'is_read' => false,
+                    'link' => $link,
+                ]);
+            }
+            break;
+
+        case 'newUser': 
             foreach (User::whereRoleIs('admin')->orWhereRoleIs('staff')->get() as $user) {
                 Notification::create([
                     'user_id' => $user->id,
@@ -30,6 +42,15 @@ function notify($type, $title, $description, $link = null)
                     'is_read' => false,
                 ]);
             }
+            break;
+        
+        case 'createdAppt':
+            Notification::create([
+                'user_id' => $userId,
+                'title' => $title,
+                'desc' => $description,
+                'is_read' => false,
+            ]);
             break;
     }
 }

@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\User;
+use App\Models\Post_photo;
 use App\Models\Like;
 use App\Models\Member;
 use App\Models\Message;
@@ -15,8 +16,10 @@ use App\Models\Comment_in_comment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Livewire\WithFileUploads;
+use App\Models\Rule;
 
 use Illuminate\Support\Facades\Storage;
+
 
 
 
@@ -41,11 +44,15 @@ class PageForum extends Component
 
     public $patient = 0;
 
-    public $photos = [];
+    public $photos;
 
     public $limit = 15;
 
     public $openComment = false;
+
+    public $viewPhoto = false, $displayPhoto;
+
+    public $text_rule;
 
     public $delete = [
         'post' => false,
@@ -66,16 +73,33 @@ class PageForum extends Component
     public function render()
     {
         return view('livewire.pages.page-forum', [
-            'posts' => Post::with('user')->latest()->limit($this->limit)->get(),
-            'comments' => Comment::with('user')->latest()->get(),
-            'commentcomments' => Commentcomment::with('user')->latest()->get(),
-            'chatrooms' => Chatroom::with('user')->latest('updated_at')->limit(50)->get(),
+            'posts' => Post::with(['user'])->latest()->limit($this->limit)->get(),
+            'comments' => Comment::with(['user'])->latest()->get(),
+            'commentcomments' => Commentcomment::with(['user'])->latest()->get(),
+            'chatrooms' => Chatroom::with(['user'])->latest('updated_at')->limit(50)->get(),
+            'members' => Member::with(['user'])->get(),
         ])
             ->extends('layouts.app')
             ->section('content');
     }
 
 
+
+
+    public function addRule()
+    {
+        $this->validate([
+            'text_rule' => 'required|max:255'
+        ]); 
+
+        Rule::create(['rule' => $this->text_rule]);
+        $this->text_rule = '';
+    }
+
+    public function deleteRule($ruleId) 
+    {
+        Rule::destroy($ruleId);
+    }
 
 
 
@@ -86,6 +110,19 @@ class PageForum extends Component
         dd($this->photos);
     }
 
+
+
+    public function viewPhoto($postId)
+    {
+        $photo = Post_photo::where('post_id', $postId)->first()->name;
+        $this->displayPhoto = storage('items', $photo);
+        $this->viewPhoto = true;
+    }
+
+    public function closeModal()
+    {
+        $this->viewPhoto = false;
+    }
 
 
 
@@ -142,12 +179,25 @@ class PageForum extends Component
 
     public function createPost()
     {
-        $this->validate(['postContent' => 'required|max:100']);
+        $this->validate([
+            'postContent' => 'required|max:100',
+            'photos.*' => 'image|max:2048|nullable',
+        ]);
 
         $post = Post::create([
             'user_id' => Auth::user()->id,
             'post_content' => $this->postContent,
         ]);
+
+        if (!empty($this->photos)) {
+            foreach ($this->photos as $photo) {
+                Post_photo::create([
+                    'post_id' => $post->id, 
+                    'name' => $photo->hashName(),
+                ]);
+                $photo->store('/', 'items');
+            }
+        }
 
         $postId = '#post_' . $post->id;
 
@@ -155,6 +205,8 @@ class PageForum extends Component
 
         $this->newPost = false;
         $this->postContent = '';
+        $this->photos = [];
+
     }
 
 
@@ -169,9 +221,11 @@ class PageForum extends Component
             'comment_id' => $commentId,
             'comment' => $this->commentContent,
         ]);
+
+        notify('newPost', Auth::user()->name . ' replied on a comment', $this->commentContent, '/forum');
+
         $this->commentContent = '';
     }
-
 
 
     public function replyPost($postId, $userId)
@@ -182,7 +236,7 @@ class PageForum extends Component
             'comment_content' => $this->commentContent,
         ]);
 
-        notify('newPost', 'title', 'comment', 'link');
+        notify('newPost', Auth::user()->name . ' commented on a post', $this->commentContent, '/forum');
 
         $this->commentContent = '';
     }
@@ -191,11 +245,24 @@ class PageForum extends Component
     {
         $this->deleteId = $postId;
         $this->delete['post'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog'); 
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Delete Post',
+            'content' => 'Are you sure you want to delete this post?'
+        ]); 
     }
 
     public function deletePost()
     {
+        $photos = Post_photo::where('post_id', $this->deleteId);
+        
+        if ($photos) {
+            foreach ($photos->get() as $photo) {
+                Storage::disk('items')->exists($photo->name) 
+                    ? Storage::disk('items')->delete($photo->name) : '' ;
+            }
+            $photos->delete();
+        }
+
         Post::destroy($this->deleteId);
         $this->confirm_dialog_modal_close();
         $this->dispatchBrowserEvent('toast',[
@@ -209,7 +276,10 @@ class PageForum extends Component
     {
         $this->deleteId = $commentId;
         $this->delete['comment'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog'); 
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Delete Comment',
+            'content' => 'Are you sure you want to delete this comment?'
+        ]); 
     }
 
     public function deleteComment()
@@ -273,27 +343,35 @@ class PageForum extends Component
     }
 
 
-    public function countPostLikes($postId)                     
-    { return Like::where('post_comment_id', $postId)->where('post_type', 1)->count(); }
+    public function countPostLikes($postId)              
+    { 
+        return Like::where('post_comment_id', $postId)->where('post_type', 1)->count();
+    }
 
     public function countCommentLikes($commentId, $postType)    
-    { return Like::where('post_comment_id', $commentId)->where('post_type', $postType)->count(); }
+    { 
+        return Like::where('post_comment_id', $commentId)->where('post_type', $postType)->count(); 
+    }
 
     public function countPostComments($postId)                  
-    { return Comment::where('post_id', $postId)->count(); }
+    { 
+        return Comment::where('post_id', $postId)->count(); 
+    }
 
     public function countCommentComments($commentId)            
-    { return Commentcomment::where('comment_id', $commentId)->count(); }
+    { 
+        return Commentcomment::where('comment_id', $commentId)->count(); 
+    }
 
     public function countPosts()
     {
-        $posts = Post::all()->count();
+        $posts = Post::count();
         return $posts > 1 ? $posts . ' Posts' : $posts . ' Post';
     }
 
     public function countMembers()
     {
-        $members = Member::all()->count();
+        $members = Member::count();
         return $members > 1 
                     ? $members . ' Members' 
                     : $members . ' Member';

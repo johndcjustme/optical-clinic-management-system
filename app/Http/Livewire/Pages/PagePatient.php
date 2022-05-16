@@ -188,6 +188,7 @@ class PagePatient extends Component
         'subPage'       => 1,
         'historyPage'   => ['except' => '', 'except' => 0],
         'patientId'     => ['except' => ''],
+        // 'modal'         => ['except' => false],
     ];
 
     protected $listeners = ['getLastExam'];
@@ -234,24 +235,23 @@ class PagePatient extends Component
 
         $render = [
             'pts' => $pts,
-            'selectedItems' => Purchased_item::with('item')->where('purchase_id', $this->purchase['id'])->orderBy('id', 'desc')->get(),
+            'selectedItems' => Purchased_item::with(['item'])->where('purchase_id', $this->purchase['id'])->orderBy('id', 'desc')->get(),
             'items' => $items,
-            'purchases' => Purchase::with('patient')->latest()->get(),
+            'purchases' => Purchase::with(['patient'])->latest('id')->get(),
             'inqueue' => Patient::where('patient_queue', true)->orderByDesc('updated_at')->paginate($this->pageNumber),
+            'allPurchases' => Purchase::with(['patient'])->where('total', '>', 0)->orderBy('balance', 'desc')->get(),
         ];
         
-        if ($this->subPage == 2) {
-            $render += [
-                'allPurchases' => Purchase::with('patient')->where('total', '>', 0)->orderBy('balance', 'desc')->get(),
-            ];
-        }
+        // if ($this->subPage == 2) {
+        //     $render += [
+        //         'allPurchases' => Purchase::with('patient')->where('total', '>', 0)->orderBy('balance', 'desc')->get(),
+        //     ];
+        // }
 
         if ($this->historyPage > 0) 
-
-
             $render += [
-                'purchasesHistory' => Purchase::where('patient_id', $this->patientId)->latest()->get(),
-                'examsHistory' => Exam::where('patient_id', $this->patientId)->latest()->get(),
+                'purchasesHistory' => Purchase::where('patient_id', $this->patientId)->latest('id')->get(),
+                'examsHistory' => Exam::where('patient_id', $this->patientId)->latest('id')->get(),
             ];
 
         return view('livewire.pages.page-patient', $render)
@@ -350,6 +350,14 @@ class PagePatient extends Component
     {
         $this->resetPage();
     }
+
+    // public function updatedSubPage()
+    // {
+    //     $this->reset([
+    //         'selectedPatients',
+    //         'searchPatient',
+    //     ]);   
+    // }
 
     public function subPage($subPageNumber)
     {
@@ -1066,10 +1074,6 @@ class PagePatient extends Component
         $this->pt['email']      = $patient->patient_email;
         $this->pt['fullname']   = $patient->patient_lname . ', ' . $patient->patient_fname . ' ' . $patient->patient_mname;
     }
-
-
-
-
 
     public function patientShowModal($action, $patientId)
     {

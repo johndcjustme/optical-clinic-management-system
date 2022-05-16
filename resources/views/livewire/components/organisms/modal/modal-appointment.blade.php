@@ -271,7 +271,6 @@
                         </div>
                         @break
                     @default
-                        
                 @endswitch
             @endif
             
@@ -333,6 +332,5 @@
             </form>
         @endif         
     @endsection
-
 </x-organisms.modal>
 

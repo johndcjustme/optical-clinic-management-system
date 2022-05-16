@@ -3,9 +3,9 @@
 namespace App\Http\Livewire\Components\Organisms\Layouts;
 
 use Livewire\Component;
-use App\Models\Post;
-use App\Models\Comment;
-use App\Models\Like;
+// use App\Models\Post;
+// use App\Models\Comment;
+// use App\Models\Like;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -50,13 +50,13 @@ class Topbar extends Component
 
         $this->today = date('Y-m-d');
 
-        $posts = Post::with('patient')->with('user')->latest()->get();
-        $comments = Comment::with('patient')->with('user')->latest()->get();
+        // $posts = Post::with('patient')->with('user')->latest()->get();
+        // $comments = Comment::with('patient')->with('user')->latest()->get();
 
         return view('livewire.components.organisms.layouts.topbar', [
-            'posts' => $posts, 
-            'comments' => $comments, 
-            'likes' => Like::all(),
+            // 'posts' => $posts, 
+            // 'comments' => $comments, 
+            // 'likes' => Like::all(),
             'notifications' => Notification::where('user_id', Auth::user()->id)->where('is_read', false)->orderByDesc('created_at')->get(),
         ]);
     }

@@ -137,9 +137,7 @@
             @break
 
             @case(2)
-             {{ $time }}
                 @if (App\Models\Setting::where('code', 11)->first()->status)
-
                     <div class="ui centered grid">
                         <div class="column" style="max-width:400px;">
                             <div class="ui styled fluid accordion" x-init="$('.ui.accordion').accordion();"

@@ -344,6 +344,12 @@ class PageAppointments extends Component
     }
 
 
+    public function notfifyUserOnAppointmentStatusUpdate($userId) 
+    {
+        $userIdToSendNotification = Patient::findOrFail($userId)->user_id;
+
+        notify('createdAppt', 'Appointment update', 'Your appointment status was updated.', '', $userIdToSendNotification);
+    }
 
     public function updateApptStatus($statusId, $apptId)
     {
@@ -361,9 +367,14 @@ class PageAppointments extends Component
     public function updateStatus() 
     {
         $this->dispatchBrowserEvent('confirm-dialog-close');
-        $appt = Appointment::find($this->apptId);
+        $appt = Appointment::findOrFail($this->apptId);
         $appt->update(['appointment_category_id' => $this->statusId]);
         if ($appt) {
+
+            $this->notfifyUserOnAppointmentStatusUpdate($appt->patient_id); 
+            // $userIdToSendNotification = Patient::findOrFail($appt->patient_id)->user_id;
+            // notify('createdAppt', 'Appointment update', 'Your appointment status was updated.', '', $userIdToSendNotification);
+
             $this->notify($appt->patient_id, $appt->appointment_category_id);
             $this->dispatchBrowserEvent('toast',[
                 'title' => null,
@@ -452,6 +463,7 @@ class PageAppointments extends Component
                     'appt_status' => $this->appt['pt_status']
                 ]);
 
+
                 if ($this->appt['pt_date'] < date('Y-m-d')) {
                     $this->dispatchBrowserEvent('toast',[
                         'title' => null,
@@ -459,6 +471,7 @@ class PageAppointments extends Component
                         'message' => 'Over Due',
                     ]);
                 } else {
+                    $this->notfifyUserOnAppointmentStatusUpdate($appt->patient_id);
                     $this->notify($appt->patient_id, $this->appt['pt_status']);
                     $this->dispatchBrowserEvent('toast',[
                         'title' => null,

@@ -19,6 +19,10 @@
         {{-- @if ($modal['show']) --}}
         {{-- @includeIf('livewire.components.organisms.modal.modal-inventory') --}}
         {{-- @endif --}}
+        @if ($viewPhoto)
+            @include('livewire.components.organisms.modal.modal-forum-image')
+        @endif
+
 
         <x-alert type="error" message="{{ session('message') }}" />
 

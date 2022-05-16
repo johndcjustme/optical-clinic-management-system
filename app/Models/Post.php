@@ -35,4 +35,9 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function post_photos()
+    {
+        return $this->hasMany(Post_photo::class);
+    }
 }

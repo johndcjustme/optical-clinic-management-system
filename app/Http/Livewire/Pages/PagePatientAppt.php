@@ -114,9 +114,9 @@ class PagePatientAppt extends Component
 
         if (!empty($patient->id)) {
             if ($this->filter == 'all') {
-                $myAppts = Appointment::with('patient')->with('appointment_category')->orderByDesc('created_at')->where('patient_id', Auth::user()->id)->get();
+                $myAppts = Appointment::with('patient')->with('appointment_category')->orderByDesc('created_at')->where('patient_id', $patient->id)->get();
             } else {
-                $myAppts = Appointment::with('patient')->with('appointment_category')->orderByDesc('created_at')->where('patient_id', Auth::user()->id)->where('appointment_category_id', $this->filter)->get();
+                $myAppts = Appointment::with('patient')->with('appointment_category')->orderByDesc('created_at')->where('patient_id', $patient->id)->where('appointment_category_id', $this->filter)->get();
             }
             return view('livewire.pages.page-patient-appt', [
                 'my_appts' => $myAppts,
@@ -217,7 +217,7 @@ class PagePatientAppt extends Component
 
         $myId = Auth::user()->id;
 
-        Patient::updateOrCreate(
+        $pt = Patient::updateOrCreate(
             [
                 'user_id' => $myId,
             ],
@@ -234,8 +234,14 @@ class PagePatientAppt extends Component
             ]
         );
 
+        $patient_name = $this->pt['fname'] . ' ' . $this->pt['lname'] . ' from ' . $this->pt['addr'] . '.';
+
+        notify('admin-staff', 'New patient', 'Hello there, you have a newly registered patient, ' . $patient_name);
+
         $this->resetErrorBag();
+
         $this->step = 2;
+
         $this->dispatchBrowserEvent('toast',[
             'title' => null,
             'class' => 'success',
@@ -260,14 +266,24 @@ class PagePatientAppt extends Component
 
         $date = $this->year . '-' . $this->month . '-' . $this->day;
 
+        $pt = Patient::where('user_id', Auth::user()->id)->first();
+
         $appt = Appointment::create([
-            'patient_id'  => Auth::user()->id,
+            'patient_id'  => $pt->id,
             'appt_date'   => $date,
             'appt_time'   => $this->time,
             'appointment_category_id' => $apptStatus,
         ]);
     
         if ($appt) {
+            
+
+            $patient_name = $pt->patient_fname . ' ' . $pt->patient_mname . ' ' . $pt->patient_lname;
+
+            notify('admin-staff', 'new appointment', $patient_name . ' just created an appointment on ' . humanReadableDate($date) . ' at ' . humanReadableTime($this->time) . '.');
+
+            notify('createdAppt', 'Appointment has created', 'Your appointment is on ' . humanReadableDate($date) . ' at ' . humanReadableTime($this->time) . '. See you there!', '', Auth::user()->id);
+
             $this->step = 3;
             $this->reset(['confirm', 'appt']);
             $this->dispatchBrowserEvent('confirm-dialog-close');
@@ -327,10 +343,12 @@ class PagePatientAppt extends Component
     public function countAppts($status)
     {
         // $this->pt['id'] = Patient::where('user_id', Auth::user()->id)->first()->id;
+        $patientId = Patient::where('user_id', Auth::user()->id)->first()->id;
+
         if ($status == 'all')
-            return Appointment::where('patient_id', Auth::user()->id)->count();
+            return Appointment::where('patient_id', $patientId)->count();
         else 
-            return Appointment::where('patient_id', Auth::user()->id)->where('appointment_category_id', $status)->count();
+            return Appointment::where('patient_id', $patientId)->where('appointment_category_id', $status)->count();
 
         // switch ($status) {
         //     case 1:

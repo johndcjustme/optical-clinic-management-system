@@ -44,15 +44,6 @@ class DatabaseSeeder extends Seeder
             'day' => 'Monday',
             'status' => false,
         ]);
-
-        Day::create([
-            'day' => 'Monday',
-            'status' => false,
-        ]);
-        Day::create([
-            'day' => 'Monday',
-            'status' => false,
-        ]);
         Day::create([
             'day' => 'Tuesday',
             'status' => false,

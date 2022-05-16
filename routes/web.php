@@ -26,6 +26,7 @@ Route::middleware(['auth', 'role:admin|staff'])->group(function() {
     Route::get('/users', App\Http\Livewire\Pages\PageUsers::class);
     Route::get('/orders', App\Http\Livewire\Pages\PageOrders::class);
     Route::get('/inventory', App\Http\Livewire\Pages\PageInventory::class);
+    Route::get('/ledger', App\Http\Livewire\Pages\PageLedger::class);
     // Route::get('/create-pdf', [App\Http\Controllers\UserController::class, 'index']);
     // Route::get('/preview-pdf/{code}', [App\Http\Controllers\PreviewPDF::class, 'index']);
     // Route::get('/download-pdf/{code}', [App\Http\Controllers\DownloadPDF::class, 'downloadPDF']);
@@ -34,6 +35,7 @@ Route::middleware(['auth', 'role:admin|staff'])->group(function() {
     Route::get('/reports', App\Http\Livewire\Pages\PageReports::class);
     // Route::get('/forum', App\Http\Livewire\Pages\PageForum::class);
     Route::get('/suppliers', App\Http\Livewire\Pages\PageSupplier::class);
+
 });
 
 Route::middleware(['auth', 'role:admin|user|staff'])->group(function() {
