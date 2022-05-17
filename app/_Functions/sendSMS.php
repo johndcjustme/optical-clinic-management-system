@@ -1,6 +1,5 @@
 <?php
 
-
 use Nexmo\Laravel\Facade\Nexmo;
 
 function sendSMS($to, $text)

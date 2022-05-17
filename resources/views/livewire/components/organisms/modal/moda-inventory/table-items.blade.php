@@ -1,3 +1,7 @@
+@php 
+    $lowStocks = $this->lowStocks($item->id);
+@endphp
+
 <tr>
     <x-organisms.ui.table.td 
         checkbox="selectedItems" 
@@ -25,20 +29,14 @@
     <x-organisms.ui.table.td 
         text="{{ $item->supplier->supplier_name ?? '' }}"
         desc="{{ $item->supplier->supplier_address ?? '' }}"
-        desc-icon="{{ isset($item->supplier->supplier_address) ? 'fa-location-dot' : '' }}" /> 
-    {{-- <x-organisms.ui.table.td 
-        text="{{ $item->item_qty ?? 0 }}" 
-        desc="Reserved: {{ $item->item_buffer ?? 0 }}"/> --}}
+        desc-icon="{{ isset($item->supplier->supplier_address) ? 'fa-location-dot' : '' }}" />
     <x-organisms.ui.table.td>
         <div class="ui icon right pointing floating dropdown" margin-left:0; margin-right:0; padding-left:0; padding:right:0" x-init="$('.ui.top.icon').dropdown()">
-            <i class="dropdown icon" style="margin-left:0;"></i>
+            <i class="dropdown icon {{ $lowStocks ? 'inverted red' : '' }}" style="margin-left:0;"></i>
             <span>
-                {{ $item->item_qty ?? 0 }}
-                @if ($this->lowStocks($item->id))
-                    <span class="ui text red" style="margin-left: 0.3em;">
-                        <i class="fa-solid fa-circle-exclamation"></i>
-                    </span>
-                @endif
+                <span class="ui text {{ $lowStocks ? 'red' : '' }}">
+                    {{ empty($item->item_qty) ? '0' : $item->item_qty  }}
+                </span>
             </span>
             <div class="menu" style="">
                 <form wire:submit.prevent="inItem({{ $item->id }})" class="x-flex x-flex-column" style="padding:0.7em; gap:0.5em; max-width: 13em;">
@@ -51,7 +49,7 @@
                 <div class="menu" style="z-index: 2"><div class="item"></div></div>
             </div>
         </div><br>
-        <small style="opacity: 0.6">Reserved: {{ $item->item_buffer ?? 0 }}</small>
+        <small style="opacity: 0.6">Low level: <b>{{ $item->item_buffer ?? 0 }}</b></small>
     </x-organisms.ui.table.td>
     <x-organisms.ui.table.td
         text="{{ number_format($item->item_price) }}" 

@@ -32,11 +32,14 @@ class PageInventory extends Component
 
     public $subPage = 1;
 
+
     public $sort = 'asc', $status = 'all';
 
-    public $filter = [
-        'lowStocks' => false,
-    ];
+    public $showInOut = false;
+
+    public $filterLowStocks = false;
+
+    public $countLowStocks;
 
     public $modal = [
         'show'           => false,
@@ -97,7 +100,6 @@ class PageInventory extends Component
         'category'  => false,
     ];
 
-
     public 
         // $su_sortDirection = 'asc',
         $item_sortDirection = 'asc',
@@ -123,8 +125,7 @@ class PageInventory extends Component
 
     public $showDropdown = false;
 
-    public $pageNumber = 50;
-
+    public $pageNumber = 10;
 
 
 
@@ -163,29 +164,47 @@ class PageInventory extends Component
     
     public function render()
     { 
-        $data;
+        $data = [];
+        $items;
 
         switch ($this->subPage) {
             case 1:
+                $countLowStocksArray = [];
                 $this->colName = 'item_name';
                 $searchItem = $this->searchItem . '%';
-                if ($this->onDisplayItemType == 'all') {
-                    $items = Item::with(['supplier','category'])
-                        ->where('item_name', 'like', $searchItem)
-                        ->orderBy($this->colName, $this->direction)
-                        ->paginate($this->pageNumber);
-                } else {
-                    $items = Item::with(['supplier', 'category'])
-                        ->where('item_name', 'like', $searchItem)
-                        ->where('category_id', $this->onDisplayItemType)
-                        ->orderBy($this->colName, $this->direction)
-                        ->paginate($this->pageNumber);        
-                }
+                $suppliers = Supplier::select(['supplier_address', 'supplier_branch'])->get();
+                $items = Item::select([
+                    'id',
+                    'category_id',
+                    'item_image',
+                    'item_name',
+                    'item_desc',
+                    'item_qty',
+                    'item_size',
+                    'item_type',
+                    'item_price',
+                    'item_buffer',
+                    'item_cost',
+                    'supplier_id',
+                ])->with(['supplier','category']);
+
+                $this->onDisplayItemType == 'all'
+                    ? $items->where('item_name', 'like', $searchItem)
+                    : $items->where('item_name', 'like', $searchItem)->where('category_id', $this->onDisplayItemType);
+
+                $this->filterLowStocks
+                    ? $items->whereColumn('item_qty', '<=', 'item_buffer') 
+                    : '';
 
                 $data = [   
-                        'suppliers' => Supplier::all(),
-                        'items' => $items,
-                    ];
+                    'suppliers' => $suppliers,
+                    'items' => $items->orderBy($this->colName, $this->direction)->paginate($this->pageNumber),
+                ];
+
+                foreach ($items->whereColumn('item_qty', '<=', 'item_buffer')->get() as $countLowStock) {
+                    $countLowStocksArray[] = $countLowStock; }
+
+                $this->countLowStocks = count($countLowStocksArray);
                 break;
 
             case 2:
@@ -209,23 +228,16 @@ class PageInventory extends Component
 
             case 3:
 
-                $in_out_of_items = In_item::with('item');
+                $items = Item::all();
 
-                if ($this->status == 'in') {
-                    $in_out_of_items->where('status', true);
-                } elseif ($this->status == 'out') {
-                    $in_out_of_items->where('status', false);
-                }
-
-                $data = ['in_out_items' => $in_out_of_items->orderBy('created_at', $this->sort)->paginate($this->pageNumber)];
+                $data = [
+                    'show_in_out_of_item' => In_item::select(['created_at', 'status', 'qty'])->where('item_id', $this->item['id'])->orderBy('id', $this->sort)->paginate($this->pageNumber),
+                    'item_in_out' => Item::select(['id', 'item_name', 'item_desc', 'item_qty', 'created_at',])->with(['latestInOut'])->paginate($this->pageNumber),
+                    'items' => $items,
+                ];
                 break;
             case 4:
                 $data = [];
-                break;
-            case 5:
-                $data = [
-                    'categories' => Category::all() 
-                ];
                 break;
             default:
         }
@@ -247,6 +259,16 @@ class PageInventory extends Component
     public function mount()
     {
         // 
+    }
+
+    public function showInOut($itemId)
+    {
+        $item = Item::select(['item_name', 'item_desc'])->find($itemId);
+        
+        $this->item['id'] = $itemId;
+        $this->showInOut = true;
+        $this->item['name'] = $item->item_name;
+        $this->item['desc'] = $item->item_desc;
     }
 
 
@@ -295,6 +317,8 @@ class PageInventory extends Component
     public function orderBy($colName, $direction)
     {
         $this->resetPage();
+
+        $this->reset(['colName', 'direction']);
 
         $this->colName = $colName;
         $this->direction = $direction;
@@ -556,6 +580,15 @@ class PageInventory extends Component
     }
 
 
+    public function totalIn($itemId)
+    {
+        return In_item::select(['id'])->where('item_id', $itemId)->where('status', true)->count();
+    }
+
+    public function totalOut($itemId)
+    {
+        return In_item::select(['id'])->where('item_id', $itemId)->where('status', false)->count();
+    }
 
 
     public function inItem($itemId)
@@ -567,48 +600,22 @@ class PageInventory extends Component
             'item.buffer' => 'nullable|integer'
         ]);
 
-        if (empty($this->item['in']))
-            $this->item['in'] = 0;
+        if (!empty($this->item['in']) || !empty($this->item['buffer'])) {
+            
+            $item = Item::findOrFail($this->item['id']);
 
-        if (empty($this->item['buffer']))
-            $this->item['buffer'] = 0;
-        // $lastBalance = 0;
+            if (empty($this->item['in'])) {
+                $item->update(['item_buffer' => $this->item['buffer']]);}
 
+            if (empty($this->item['buffer']) && ($this->item['in'] != 0)) {
+                $item->update(['item_qty' => DB::raw('item_qty + ' . $this->item['in'])]);
+                In_item::create([
+                    'item_id' => $this->item['id'], 
+                    'status' => true, 
+                    'qty' => $this->item['in']
+                ]);}
 
-
-        // $newBalance = $this->item['in'];
-
-        // $lastBalance = In_item::where('item_id', $this->item['id'])->latest()->first()->balance ?? 0;
-
-
-
-        // foreach (In_item::where('item_id', $this->item['id'])->where('status', true)->get() as $in_out) {
-        //     $lastBalance += $in_out->qty;
-        // }
-
-        // $newBalance += $lastBalance;
-
-        if ($this->item['in'] != 0)
-            $in_out = In_item::create([
-                'item_id' => $this->item['id'],
-                'status' => true,
-                'qty' => $this->item['in'],
-                // 'balance' => $newBalance,
-            ]);
-
-
-        $item = Item::find($this->item['id'])->update([
-            'item_qty' => DB::raw('item_qty + ' . $this->item['in']),
-            'item_buffer' => $this->item['buffer'],
-        ]);
-
-        dd($item->id);
-
-        $this->dispatchBrowserEvent('toast', [
-            'title' => 'Success',
-            'class' => 'success',
-            'message'=> $this->item['name'] . ' has in ' . $this->item['in'] . ' pcs.'
-        ]);
+        } else {}
 
         $this->reset(['item']);
     }
@@ -715,6 +722,7 @@ class PageInventory extends Component
     {
         $this->resetFields();
         $this->confirm_dialog_modal_close();
+        $this->reset(['searchItem']);
     }
     
 
@@ -774,7 +782,6 @@ class PageInventory extends Component
 
     public function stocks($itemId) 
     {
-
         $stocks = 0;
 
         $in_out_items = In_item::where('item_id', $itemId)->where('status',true)->get();
@@ -788,15 +795,12 @@ class PageInventory extends Component
 
     public function lowStocks($itemId)
     {
-        $item = Item::find($itemId);
-        $buffer = $item->item_buffer;
-        $stocks = $this->stocks($itemId);
+        $item = Item::select(['item_buffer','item_qty'])->find($itemId);
 
-        if ($stocks <= $buffer) {
+        if ($item->item_qty <= $item->item_buffer)
             return true;
-        } else {
+        else
             return false;
-        }
     }
 
     // public function storage($disk, $url) 

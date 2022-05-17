@@ -16,7 +16,7 @@ class CreatePurchasedItemsTable extends Migration
         Schema::create('purchased_items', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('purchase_id');
-            $table->unsignedBigInteger('item_id')->nullable();
+            $table->unsignedBigInteger('item_id');
             $table->integer('item_price')->nullable();
             $table->integer('qty')->nullable();
 
@@ -27,7 +27,7 @@ class CreatePurchasedItemsTable extends Migration
             $table->foreign('item_id')
                 ->references('id')
                 ->on('items')
-                ->nullOnDelete();
+                ->onDelete();
         });
     }
 

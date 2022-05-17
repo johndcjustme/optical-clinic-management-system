@@ -503,7 +503,7 @@ class PageAppointments extends Component
             $this->dispatchBrowserEvent('toast',[
                 'title' => null,
                 'class' => 'error',
-                'message' => 'Sorry, unable to send a message. Please try to check phone number.',
+                'message' => 'Sorry, unable to send a message. Please check phone number.',
             ]);
         }
     }

@@ -41,33 +41,35 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        switch ($request->role) {
-            case 1:
-                $request->validate([
-                    'passcode' => ['required', 'string', 'max:255'],
-                ]);
-                $user = User::where('passcode' , $request->passcode)
-                    ->update([
-                        'avatar' => 'default-avatar-user.png',
-                        'name' => $request->name,
-                        'email' => $request->email,
-                        'password' => Hash::make($request->password),
-                    ]);
-                if (!$user) { 
-                    return back()->with('passcode_err', 'passcode not found.'); 
-                }
-                break;
-            case 2:
-                $user = User::create([
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'password' => Hash::make($request->password),
-                ]);
-                $user->attachRole('3'); // parameter can be a Role object, array, id or the role string name
-                notify('newUser', 'new user', 'Hello there! you have a newly registered user ' . Str::title($user->name) . ' ' . $user->email . '.');
-                break;
-            default:
-        }
+        // switch ($request->role) {
+        //     case 1:
+        //         $request->validate([
+        //             'passcode' => ['required', 'string', 'max:255'],
+        //         ]);
+        //         $user = User::where('passcode' , $request->passcode)
+        //             ->update([
+        //                 'avatar' => 'default-avatar-user.png',
+        //                 'name' => $request->name,
+        //                 'email' => $request->email,
+        //                 'password' => Hash::make($request->password),
+        //             ]);
+        //         if (!$user) { 
+        //             return back()->with('passcode_err', 'passcode not found.'); 
+        //         }
+        //         break;
+        //     case 2:
+        //         break;
+        //         default:
+        //     }
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        
+        $user->attachRole('3'); // parameter can be a Role object, array, id or the role string name
+        notify('newUser', 'new user', 'Hello there! you have a newly registered user ' . Str::title($user->name) . ' ' . $user->email . '.');
 
         
 

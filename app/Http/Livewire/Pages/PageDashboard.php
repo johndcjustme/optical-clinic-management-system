@@ -11,7 +11,6 @@ use App\Models\Appointment;
 use App\Models\Appointment_category as Ac;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
 use Carbon\Carbon;
-
 use Asantibanez\LivewireCharts\Models\ColumnChartModel;
 use Asantibanez\LivewireCharts\Models\LineChartModel;
 use Asantibanez\LivewireCharts\Models\PieChartModel;
@@ -32,15 +31,11 @@ class PageDashboard extends Component
 
     public $year = 2022;
 
-
     public $days = [];
-
-    public $subscribers = [30,36,42,78,88,109,205,325,349,480,556];
 
     public $recentSubscribers = 556;
 
     public $pageNumber = 7;
-
 
     public $count = 0;
 
@@ -75,8 +70,6 @@ class PageDashboard extends Component
         'product' => ['except' => 'empty'],
     ];
 
-
-
     
     public function mount()
     {
@@ -104,7 +97,6 @@ class PageDashboard extends Component
             for ($i = 1; $i <= 12; $i++)
                 $areaChartModel->addPoint(date('M', mktime(0, 0, 0, $i, 1, $this->year)), $this->getMonth($i));
 
-            
            
         return view('livewire.pages.page-dashboard', [
                 'columnChartModel' => $columnChartModel,

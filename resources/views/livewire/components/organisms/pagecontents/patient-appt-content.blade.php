@@ -1,8 +1,8 @@
 <x-layout.page-content>
     @section('section-page-title')
-        <x-atoms.ui.header 
+        {{-- <x-atoms.ui.header 
             title="Book"
-            desc="Hello {{ Auth::user()->name }}"/>
+            desc="Hello {{ Auth::user()->name }}"/> --}}
     @endsection
 
     @section('section-links')
@@ -15,7 +15,7 @@
                     My Information
                 </div>
                 <div class="link item @if ($step == 2) active @endif" wire:click.prevent="step(2)">
-                    Booking
+                    Date
                 </div>
                 <div class="link item @if ($step == 3) active @endif" wire:click.prevent="step(3)">
                     Appointments
@@ -23,7 +23,6 @@
             </div>
         </div>
     @endsection
-
     @section('section-heading-left')
     @endsection
 

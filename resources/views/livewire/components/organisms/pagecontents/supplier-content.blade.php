@@ -50,7 +50,7 @@
                     <x-organisms.ui.table.th-checkbox/>
                     <x-organisms.ui.table.th label="Name" order-by="supplier_name" />
                     <x-organisms.ui.table.th label="Contact"/>
-                    <x-organisms.ui.table.th label="Account"/>
+                    <x-organisms.ui.table.th label="Bank Account"/>
                     <x-organisms.ui.table.th-more/>
                 </x-slot>
                 <x-slot name="tbody">

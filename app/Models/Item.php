@@ -51,4 +51,9 @@ class Item extends Model
     {
         return $this->hasMany(In_out_of_item::class);
     }
+
+    public function latestInOut()
+    {
+        return $this->hasOne(In_out_of_item::class)->latestOfMany();
+    }
 }

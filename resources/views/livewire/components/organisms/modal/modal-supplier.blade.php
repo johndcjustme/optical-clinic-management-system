@@ -62,7 +62,7 @@
                         <x-atoms.ui.input wire-model="su.branch" type="text" class="mb_7" placeholder="Enter branch..."/>
                     </div>
                     <div class="field">
-                        <x-atoms.ui.label class="">Bank Name</x-atoms.ui.label>
+                        <x-atoms.ui.label class="">Account Name</x-atoms.ui.label>
                         <x-atoms.ui.input wire-model="su.bank" type="text" class="mb_7" placeholder="Enter bank name..."/>
                         <x-atoms.ui.label class="">Account Number</x-atoms.ui.label>
                         <x-atoms.ui.input wire-model="su.acc" type="text" class="mb_7" placeholder="Enter account number..."/>

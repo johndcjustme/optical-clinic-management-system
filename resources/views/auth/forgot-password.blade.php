@@ -6,14 +6,20 @@
             </a>
         </x-slot>
 
-        <div class="">
-            <p>
-                {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-            </p>
-        </div>
+
+        <x-auth-card-title>
+            <x-slot name="title">
+                Forgot Password
+            </x-slot>
+            <x-slot name="description">
+                Enter your email address and we'll send you a link to reset your password.
+            </x-slot>
+        </x-auth-card-title>
+
+
 
         <!-- Session Status -->
-        <x-auth-session-status class="mb-4" :status="session('status')" />
+        <x-auth-session-status class="" :status="session('status')" />
 
         <!-- Validation Errors -->
         <x-auth-validation-errors class="mb-4" :errors="$errors" />
@@ -23,14 +29,14 @@
 
             <!-- Email Address -->
             <div class="mt_10">
-                <x-label for="email" :value="__('Email')" />
+                <x-label for="email" :value="__('Email Address')" />
 
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
+                <x-input id="email" class="block mt-1 w-full" type="email" name="email" placeholder="Enter email address..." :value="old('email')" required autofocus />
             </div>
 
-            <div class="flex flex_x_end mt_7">
-                <x-button>
-                    {{ __('Send to my email') }}
+            <div class="flex flex_x_end" style="margin-top: 1.5em;">
+                <x-button style="width:100%;">
+                    {{ __('Send link') }}
                 </x-button>
             </div>
         </form>

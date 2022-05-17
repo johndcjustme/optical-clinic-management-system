@@ -50,7 +50,7 @@
                     <a class="item">Careers</a> --}}
                     <div class="right item">
                         <a href="/login" class="ui inverted button">Log in</a>
-                        <a href="/register" class="ui inverted button">Sign Up</a>
+                        {{-- <a href="/register" class="ui inverted button">Sign Up</a> --}}
                     </div>
                 </div>
             </div>
@@ -59,8 +59,8 @@
                 <h1 class="ui inverted header">
                     Dango Optical Clinic
                 </h1>
-                <h2 style="color: rgb(236, 236, 236)">See clear. See better.</h2>
-                <div class="ui huge primary button">Book Now <i class="right arrow icon"></i></div>
+                <h2 style="margin:1em 0; color: rgb(236, 236, 236)">See clear. See better.</h2>
+                <a href="{{ route('register') }}" class="ui huge primary button">Book Now <i class="right arrow icon"></i></a>
             </div>
 
         </div>

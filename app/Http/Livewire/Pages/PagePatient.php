@@ -468,21 +468,21 @@ class PagePatient extends Component
 
     }
 
-    public function outItemIncrementOrDecrementQuantity($action, $purchaseItemId)
-    {
-        $OUT_ITEM = Out_item::where('purchased_item_id', $purchaseItemId)->first();
+    // public function outItemIncrementOrDecrementQuantity($action, $purchaseItemId)
+    // {
+    //     $OUT_ITEM = Out_item::where('purchased_item_id', $purchaseItemId)->first();
 
-        if ($action == 'increment') {
-            $query = ['qty' => DB::raw('qty + 1'), 'balance' => DB::raw('balance - 1')];
-            $this->updateItemQty($OUT_ITEM->item_id); } 
-        else {
-            $query = ['qty' => DB::raw('qty - 1'), 'balance' => DB::raw('balance + 1')];
-            $this->updateItemQty($OUT_ITEM->item_id); }
+    //     if ($action == 'increment') {
+    //         $query = ['qty' => DB::raw('qty + 1'), 'balance' => DB::raw('balance - 1')];
+    //         $this->updateItemQty($OUT_ITEM->item_id); } 
+    //     else {
+    //         $query = ['qty' => DB::raw('qty - 1'), 'balance' => DB::raw('balance + 1')];
+    //         $this->updateItemQty($OUT_ITEM->item_id); }
 
 
-        $OUT_ITEM->update($query);
+    //     $OUT_ITEM->update($query);
 
-    }
+    // }
 
     public function outItemDelete($purchaseItemId)
     {
@@ -521,70 +521,76 @@ class PagePatient extends Component
             'qty'          => '1',
         ]);    
 
-        $this->outItem($itemId, $purchased_item->id);
+        Item::select(['item_qty'])->where('id', $itemId)->decrement('item_qty');
 
-        $this->decrementItem($itemId, 1);
+        Out_item::create([
+            'item_id' => $itemId, 
+            'purchased_item_id' => $purchased_item->id,
+            'status' => false, 
+            'qty' => 1]);
 
         $this->searchItem = '';
     }
 
-    public function inc_dec_item($data, $itemId) 
+    public function inc_dec_item($data, $purchasedItemId) 
     {
-        $purchasedItem = Purchased_item::with('item')->where('id', $itemId)->first();
+        $purchasedItem = Purchased_item::where('id', $purchasedItemId)->first();
+
+        $item = Item::where('id', $purchasedItem->item_id)->first();
 
         if ($data == 'inc') {
-            $this->outItemIncrementOrDecrementQuantity('increment', $purchasedItem->id);
+            $purchasedItem->increment('qty');
+            $item->decrement('item_qty'); }
 
-            $DB_RAW = 'qty + 1';
-            $this->decrementItem($purchasedItem->item_id, 1);}
         elseif ($data == 'dec') {
-            $this->outItemIncrementOrDecrementQuantity('decrement', $purchasedItem->id);
-
-            $DB_RAW = 'qty - 1';
-            $this->incrementItem($purchasedItem->item_id, 1);}
-
-        $purchasedItem->update(['qty' => DB::raw($DB_RAW)]);
+            $purchasedItem->decrement('qty');
+            $item->increment('item_qty'); }
     }
 
-    public function removeItem($itemId) 
+    public function removeItem($purchasedItemId) 
     { 
-        $purchasedItem = Purchased_item::with('item')->where('id', $itemId)->first();
+        $purchasedItem = Purchased_item::findOrFail($purchasedItemId);
 
-        $this->incrementItem($purchasedItem->item_id, $purchasedItem->qty);
-
-        $this->outItemDelete($purchasedItem->id);
-
+        $out_item = Out_item::where('status', false)
+            ->where('purchased_item_id', $purchasedItemId)
+            ->where('item_id', $purchasedItem->item_id)
+            ->first();
+        
+        Item::select(['item_qty'])->where('id', $purchasedItem->item_id)->increment('item_qty', $out_item->qty);
+        
+        $out_item->delete();
+        
         $purchasedItem->delete();
     }
 
-    public function decrementItem($itemId, $decrementValue)
-    {
-        $item = Item::findOrFail($itemId);
+    // public function decrementItem($itemId, $decrementValue)
+    // {
+    //     $item = Item::findOrFail($itemId);
 
-        if ($item->item_qty == $item->item_buffer) 
-            $this->dispatchBrowserEvent('toast',[
-                'title'   => 'Warning',
-                'class'   => 'error',
-                'message' => 'Running out of stocks. ' . $item->item_qty . ' items left',
-            ]);
+    //     if ($item->item_qty == $item->item_buffer) 
+    //         $this->dispatchBrowserEvent('toast',[
+    //             'title'   => 'Warning',
+    //             'class'   => 'error',
+    //             'message' => 'Running out of stocks. ' . $item->item_qty . ' items left',
+    //         ]);
 
-        if ($item->item_qty == 1) 
-            $this->dispatchBrowserEvent('toast',[
-                'title'   => 'Hey',
-                'class'   => 'error',
-                'message' => 'You run out of stocks.',
-            ]);
+    //     if ($item->item_qty == 1) 
+    //         $this->dispatchBrowserEvent('toast',[
+    //             'title'   => 'Hey',
+    //             'class'   => 'error',
+    //             'message' => 'You run out of stocks.',
+    //         ]);
 
-        $DB_RAW = 'item_qty - ' . $decrementValue;
-        $item->update(['item_qty' => DB::raw($DB_RAW)]);
-    }
+    //     $DB_RAW = 'item_qty - ' . $decrementValue;
+    //     $item->update(['item_qty' => DB::raw($DB_RAW)]);
+    // }
 
-    public function incrementItem($itemId, $incrementValue)
-    {
-        $DB_RAW = 'item_qty + ' . $incrementValue;
-        $item = Item::findOrFail($itemId);
-        $item->update(['item_qty' => DB::raw($DB_RAW)]);
-    }
+    // public function incrementItem($itemId, $incrementValue)
+    // {
+    //     $DB_RAW = 'item_qty + ' . $incrementValue;
+    //     $item = Item::findOrFail($itemId);
+    //     $item->update(['item_qty' => DB::raw($DB_RAW)]);
+    // }
 
 
 

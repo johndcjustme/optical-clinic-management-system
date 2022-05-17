@@ -22,94 +22,18 @@ class ItemsSeeder extends Seeder
         $faker = Faker\Factory::create();
 
 
-        $item = Item::create([
-            'item_name' => Str::random(10),
-            'category_id' => 1,
-            'item_desc' => 'Item description and description',
-            'item_size' => '234x453',
-            'item_type' => 'le',
-            'item_price' => '1500',
-            'supplier_id' => 1,
-        ]);
-
-        $item = Item::create([
-            'item_name' => Str::random(10),
-            'category_id' => 1,
-            'item_desc' => 'Item description and description',
-            'item_size' => '234x453',
-            'item_type' => 'le',
-            'item_price' => '1500',
-            'supplier_id' => 1,
-        ]);
-
-        $item = Item::create([
-            'item_name' => Str::random(10),
-            'category_id' => 1,
-            'item_desc' => 'Item description and description',
-            'item_size' => '234x453',
-            'item_type' => 'le',
-            'item_price' => '1500',
-            'supplier_id' => 1,
-        ]);
-
-        $item = Item::create([
-            'item_name' => Str::random(10),
-            'category_id' => 1,
-            'item_desc' => 'Item description and description',
-            'item_size' => '234x453',
-            'item_type' => 'fr',
-            'item_price' => '1500',
-            'supplier_id' => 1,
-        ]);
-
-        $item = Item::create([
-            'item_name' => Str::random(10),
-            'category_id' => 1,
-            'item_desc' => 'Item description and description',
-            'item_size' => '234x453',
-            'item_type' => 'fr',
-            'item_price' => '1500',
-            'supplier_id' => 1,
-        ]);
-
-        $item = Item::create([
-            'item_name' => Str::random(10),
-            'category_id' => 1,
-            'item_desc' => 'Item description and description',
-            'item_size' => '234x453',
-            'item_type' => 'fr',
-            'item_price' => '1500',
-            'supplier_id' => 1,
-        ]);
-
-        $item = Item::create([
-            'item_name' => Str::random(10),
-            'category_id' => 1,
-            'item_desc' => 'Item description and description',
-            'item_size' => '234x453',
-            'item_type' => 'ac',
-            'item_price' => '1500',
-            'supplier_id' => 1,
-        ]);
-
-        $item = Item::create([
-            'item_name' => Str::random(10),
-            'category_id' => 1,
-            'item_desc' => 'Item description and description',
-            'item_size' => '234x453',
-            'item_type' => 'ac',
-            'item_price' => '1500',
-            'supplier_id' => 1,
-        ]);
-
-        $item = Item::create([
-            'item_name' => Str::random(10),
-            'category_id' => 1,
-            'item_desc' => 'Item description and description',
-            'item_size' => '234x453',
-            'item_type' => 'ac',
-            'item_price' => '1500',
-            'supplier_id' => 1,
-        ]);
+        for($i = 0; $i < 13; $i++) {
+            Item::create([
+                'item_name' => Str::random(10),
+                'category_id' => 1,
+                'item_desc' => 'Item description and description',
+                'item_size' => '234x453',
+                'item_type' => 'le',
+                'item_price' => '1500',
+                'supplier_id' => 1,
+                'item_qty' => 0,
+                'item_buffer' => 0,
+            ]);
+        }
     }
 }

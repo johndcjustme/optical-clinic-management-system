@@ -1,19 +1,19 @@
 @props(['errors'])
 
 @if ($errors->any())
-    <div {{ $attributes }}>
-        <div class="font-medium text-red-600">
+    <div class="ui error message" {{ $attributes }}>
+        <div class="header">
             {{ __('Whoops! Something went wrong.') }}
         </div>
 
-        <ul class="mt-3 list-disc list-inside text-sm text-red-600">
+        <ul class="list">
             @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
             @endforeach
         </ul>
     </div>
 @endif
-
+{{-- 
 
 @if(session('passcode_err'))
     <div class="mb_10">
@@ -21,4 +21,4 @@
             {{ session('passcode_err') }}
         </p>
     </div>
-@endif
+@endif --}}

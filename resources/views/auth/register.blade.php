@@ -4,53 +4,38 @@
 
 <x-guest-layout>
     <x-auth-card>
-        <x-slot name="logo">
+        {{-- <x-slot name="logo">
             <a href="/">
                 <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
             </a>
-        </x-slot>
+        </x-slot> --}}
 
+        <x-auth-card-title>
+            <x-slot name="title">
+                Let's get stated
+            </x-slot>
+            <x-slot name="description">
+                Create an Account to get all features
+            </x-slot>
+        </x-auth-card-title>
 
-        <div class="flex gap_1 mb_10">
-            <x-atom.tab-links.link tab-title="Patient" wire-click="inventoryChangeTable(1)" sub-page=""/>
-            <x-atom.tab-links.link tab-title="User" wire-click="inventoryChangeTable(1)" sub-page=""/>
-        </div>
 
         <!-- Validation Errors -->
         <x-auth-validation-errors class="mb-4" :errors="$errors" />
 
-
-        {{-- <div class="flex gap_1"> --}}
-                {{-- <x-atom.tab-links.link tab-title="Items" wire-click="inventoryChangeTable(1)" sub-page="{{ $this->myTab() == 1 }}"/> --}}
-
-        {{-- </div> --}}
-
         <form method="POST" action="{{ route('register') }}">
             @csrf
-
-            <input type="hidden" name="role" value="{{ $role }}">
-            <!-- Name -->
-            @if ($role == 1)
-            <div>
-                <x-label for="passcode" :value="__('Passcode')" />
-
-                <x-input id="passcode" class="block mt-1 w-full" type="text" name="passcode" :value="old('passcode')" required autofocus />
-            </div>
-
-            @endif
-
-
             <div>
                 <x-label for="name" :value="__('Name')" />
 
-                <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus />
+                <x-input id="name" class="block mt-1 w-full" type="text" name="name" placeholder="Enter your name..." :value="old('name')" required autofocus />
             </div>
 
             <!-- Email Address -->
             <div class="mt-4">
                 <x-label for="email" :value="__('Email')" />
 
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required />
+                <x-input id="email" class="block mt-1 w-full" type="email" name="email" placeholder="Enter email address..." :value="old('email')" required />
             </div>
 
             <!-- Password -->
@@ -60,7 +45,9 @@
                 <x-input id="password" class="block mt-1 w-full"
                                 type="password"
                                 name="password"
-                                required autocomplete="new-password" />
+                                placeholder="Enter password..."
+                                required 
+                                autocomplete="new-password" />
             </div>
 
             <!-- Confirm Password -->
@@ -69,18 +56,26 @@
 
                 <x-input id="password_confirmation" class="block mt-1 w-full"
                                 type="password"
-                                name="password_confirmation" required />
+                                name="password_confirmation" 
+                                placeholder="Confirm password..."
+                                required />
             </div>
 
-            <div class="flex flex_y_center flex_x_between mt_10">
-                <a class="font_m" href="{{ route('login') }}">
-                    {{ __('Already registered?') }}
-                </a>
-
-                <x-button class="ml-4">
+            <div class="flex flex_y_center flex_x_between" style="margin-top: 2em;">
+                <div></div>
+                <x-button style="width:100%;">
                     {{ __('Register') }}
                 </x-button>
             </div>
         </form>
+
     </x-auth-card>
+    <div class="extra content" style="margin-top: 1em;">
+        <center>
+            <p class="ui text grey" style="font-size: 0.95rem">
+                Registered already? 
+                <a class="" href="{{ route('login') }}" style="font-size: 0.95rem"> <span class="ui text blue"> Login Here</span></a>
+            </p>
+        </center>
+    </div>
 </x-guest-layout>

@@ -1,10 +1,21 @@
 <x-guest-layout>
     <x-auth-card>
-        <x-slot name="logo">
+        {{-- <x-slot name="logo">
             <a href="/">
                 <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
             </a>
-        </x-slot>
+        </x-slot> --}}
+
+
+        <x-auth-card-title>
+            <x-slot name="title">
+                Reset password
+            </x-slot>
+            <x-slot name="description">
+                Enter your new password below, we're just being extra safe.
+            </x-slot>
+        </x-auth-card-title>
+
 
         <!-- Validation Errors -->
         <x-auth-validation-errors class="mb-4" :errors="$errors" />
@@ -26,7 +37,7 @@
             <div class="mt-4">
                 <x-label for="password" :value="__('Password')" />
 
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required />
+                <x-input id="password" class="block mt-1 w-full" type="password" name="password" placeholder="Enter new password..." required />
             </div>
 
             <!-- Confirm Password -->
@@ -35,12 +46,14 @@
 
                 <x-input id="password_confirmation" class="block mt-1 w-full"
                                     type="password"
-                                    name="password_confirmation" required />
+                                    name="password_confirmation"
+                                    placeholder="Confirm new password..."
+                                    required />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <x-button>
-                    {{ __('Reset Password') }}
+            <div class="x-flex x-flex-xend" style="margin-top:1.5em;">
+                <x-button style="width: 100%;">
+                    {{ __('Reset Password Now') }}
                 </x-button>
             </div>
         </form>
