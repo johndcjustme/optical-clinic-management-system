@@ -65,9 +65,9 @@ style="
 
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js" integrity="sha512-dqw6X88iGgZlTsONxZK9ePmJEFrmHwpuMrsUChjAw1mRUhUITE5QU9pkcSox+ynfLhL15Sv2al5A0LVyDCmtUw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> --}}
 
-<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{-- <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script> --}}
+{{-- <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script> --}}
+{{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
 {{-- <script src="{{ asset('js/analytic_stats.js') }}"></script> --}}
 
 
@@ -85,7 +85,6 @@ style="
 
 
 
-{{-- <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script> --}}
 
 
 @livewireScripts
@@ -93,6 +92,9 @@ style="
 
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+
+<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
 
 
 @stack('js')

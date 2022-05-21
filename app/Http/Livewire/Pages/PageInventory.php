@@ -133,7 +133,8 @@ class PageInventory extends Component
         'searchItem' => ['except' => ''],
         'onDisplayItemType',
         'subPage' => '1',
-        'status'
+        'status',
+        'filterLowStocks' => ['except' => false]
     ];
 
     protected $listeners = ['updatedPhoto'];

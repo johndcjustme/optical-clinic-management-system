@@ -61,10 +61,10 @@ function notifyOnPost()
 
 function is_read($notificationId)
 {
-    Notification::findOrFail($notificationId)->update(['is_read' => true]);
+    Notification::select(['id','is_read'])->findOrFail($notificationId)->update(['is_read' => true]);
 }
 
 function read_all()
 {
-    Notification::findOrFail(Auth::user()->id)->where('is_read', false)->update(['is_read' => true]);
+    Notification::select(['id','is_read'])->findOrFail(Auth::user()->id)->where('is_read', false)->update(['is_read' => true]);
 }

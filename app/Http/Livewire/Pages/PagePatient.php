@@ -14,6 +14,7 @@ use App\Models\Order_detail;
 use App\Models\Appointment;
 use App\Models\In_out_of_item as Out_item;
 use App\Models\Purchased_item;
+use App\Models\Cash_type;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -94,6 +95,7 @@ class PagePatient extends Component
         $deposit  = 0,
         $cash     = 0,
         $change   = 0,
+        $payment_type,
         $duedate;
 
 
@@ -137,6 +139,7 @@ class PagePatient extends Component
         'deposit'   => 0,
         'balance'   => 0,
         'total'     => 0,
+        'type'      => '',
         'date'      => '',
     ];
 
@@ -203,7 +206,7 @@ class PagePatient extends Component
         $this->total();
         
         $searchItem = '%' . $this->searchItem . '%';
-        $items = Item::where('item_name', 'like', $searchItem)->get();
+        $items = Item::select(['id', 'item_name', 'item_desc', 'item_price'])->where('item_name', 'like', $searchItem)->get();
 
         $searchPatient = $this->searchPatient . '%';
 
@@ -211,26 +214,34 @@ class PagePatient extends Component
         switch ($this->filter) {
             case 'DATE_RANGE':
                 // $results = Patient::whereDate('created_at', '>=', $this->date_from)->whereDate('created_at', '<=', $this->date_to);
-                $results = Patient::whereBetween('created_at', [$this->date_from, $this->date_to]);
+                $results = Patient::select(['created_at'])->whereBetween('created_at', [$this->date_from, $this->date_to]);
                 $this->filterResults = $results->count();
                 $pts = $results->orderBy($this->colName, $this->direction)->paginate($this->pageNumber);
                 break;
 
             case 'DATE_SINGLE':
-                $results = Patient::whereDate('created_at', $this->DATE_SINGLE);
+                $results = Patient::select(['created_at'])->whereDate('created_at', $this->DATE_SINGLE);
                 $this->filterResults = $results->count();
                 $pts = $results->orderBy($this->colName, $this->direction)->paginate($this->pageNumber);
                 break;
 
             default:
-                $pts = Patient::where('patient_fname', 'like', $searchPatient)
-                    ->orWhere('patient_lname', 'like', $searchPatient)
-                    ->orWhere('patient_mname', 'like', $searchPatient)
-                    ->orderBy($this->colName, $this->direction)
-                    ->paginate($this->pageNumber);
+                $pts = Patient::select([
+                            'id',
+                            'patient_fname',
+                            'patient_lname',
+                            'patient_mname',
+                            'patient_address',
+                            'created_at'
+                        ])->where('patient_fname', 'like', $searchPatient)
+                            ->orWhere('patient_lname', 'like', $searchPatient)
+                            ->orWhere('patient_mname', 'like', $searchPatient)
+                            ->orderBy($this->colName, $this->direction)
+                            ->paginate($this->pageNumber);
         }
 
 
+        
         
 
         $render = [
@@ -238,15 +249,16 @@ class PagePatient extends Component
             'selectedItems' => Purchased_item::with(['item'])->where('purchase_id', $this->purchase['id'])->orderBy('id', 'desc')->get(),
             'items' => $items,
             'purchases' => Purchase::with(['patient'])->latest('id')->get(),
-            'inqueue' => Patient::where('patient_queue', true)->orderByDesc('updated_at')->paginate($this->pageNumber),
-            'allPurchases' => Purchase::with(['patient'])->where('total', '>', 0)->orderBy('balance', 'desc')->get(),
+            'inqueue' => Patient::select([
+                            'id',
+                            'patient_fname', 
+                            'patient_lname', 
+                            'patient_mname', 
+                            'patient_address', 
+                            'created_at'
+                        ])->where('patient_queue', true)->orderByDesc('updated_at')->paginate($this->pageNumber),
         ];
-        
-        // if ($this->subPage == 2) {
-        //     $render += [
-        //         'allPurchases' => Purchase::with('patient')->where('total', '>', 0)->orderBy('balance', 'desc')->get(),
-        //     ];
-        // }
+    
 
         if ($this->historyPage > 0) 
             $render += [
@@ -373,7 +385,7 @@ class PagePatient extends Component
 
     public function addToQueue($patientId)
     {
-        $patientInQueue = Patient::findOrFail($patientId);
+        $patientInQueue = Patient::select(['patient_queue', 'patient_exam_status'])->findOrFail($patientId);
         $patientInQueue->update(['patient_queue' => true, 'patient_exam_status' => true]);
         $patientInQueue
             ? $this->dispatchBrowserEvent('toast',[
@@ -388,7 +400,7 @@ class PagePatient extends Component
 
     public function removeFromQueue($patientId)
     {
-        $patientInQueue = Patient::findOrFail($patientId);
+        $patientInQueue = Patient::select(['patient_queue'])->findOrFail($patientId);
         $patientInQueue->update(['patient_queue' => false]);
         $patientInQueue
             ? $this->dispatchBrowserEvent('toast',[
@@ -403,18 +415,18 @@ class PagePatient extends Component
 
     public function batchRemoveFromQueue()
     {
-        $patientInQueue = Patient::where('id', $this->selectedPatients)->update(['patient_queue' => false]);
+        $patientInQueue = Patient::select(['id', 'patient_queue'])->where('id', $this->selectedPatients)->update(['patient_queue' => false]);
     }
 
     public function doneExam($patientId)
     {
-        Patient::where('id', $patientId)
+        Patient::select(['id', 'patient_exam_status'])->where('id', $patientId)
             ->update(['patient_exam_status' => false]);
     }
 
     public function revertExam($patientId) 
     {
-        Patient::where('id', $patientId)
+        Patient::select(['patient_exam_status'])->where('id', $patientId)
             ->update(['patient_exam_status' => true]);
     }
 
@@ -440,7 +452,7 @@ class PagePatient extends Component
 
     public function updateItemQty($itemId)
     {
-        $newBalance = Out_item::where('item_id', $itemId)->latest()->first()->balance;
+        $newBalance = Out_item::select(['balance'])->where('item_id', $itemId)->latest()->first()->balance;
         DB::table('items')->where('id', $itemId)->update(['item_qty' => $newBalance]);
     }
 
@@ -453,7 +465,7 @@ class PagePatient extends Component
 
     public function outItem($itemId, $purchaseItemId)
     {
-        $lastBalance = Out_item::where('item_id', $itemId)->latest()->first()->balance;
+        $lastBalance = Out_item::select(['balance'])->where('item_id', $itemId)->latest()->first()->balance;
         $newBalance = $lastBalance - 1;
 
         $this->updateItemQty($itemId);
@@ -666,6 +678,7 @@ class PagePatient extends Component
                 'balance'   => $this->balance ?? 0,
                 'discount'  => $this->discount ?? 0,
                 'duedate'   => $this->duedate ?? NULL,
+                'payment_type' => $this->payment_type,
             ]);
         session()->flash('savedPayment', 'Saved');
     }
@@ -1210,13 +1223,13 @@ class PagePatient extends Component
 
     public function fullName($patientId)
     {
-        $findPt = Patient::findOrFail($patientId);
+        $findPt = Patient::select(['patient_lname', 'patient_fname', 'patient_mname'])->findOrFail($patientId);
         return $this->pt['fullname'] = $findPt->patient_lname . ', ' . $findPt->patient_fname . ' ' . $findPt->patient_mname;
     }
 
     public function AGE_ADDR($patientId)
     {
-        $patient = Patient::findOrFail($patientId);
+        $patient = Patient::select(['patient_age', 'patient_address'])->findOrFail($patientId);
         return $patient->patient_age . ' • ' . $patient->patient_address;
     }
 
@@ -1238,16 +1251,16 @@ class PagePatient extends Component
 
     public function patientTotal()
     {
-        return Patient::all()->count();
+        return Patient::select(['id'])->get()->count();
     }
 
-    public function countExam($patientId) { return Exam::where('patient_id', $patientId)->count(); }
+    public function countExam($patientId) { return Exam::select(['patient_id'])->where('patient_id', $patientId)->count(); }
 
-    public function countPurchase($patientId) { return Purchase::where('patient_id', $patientId)->count(); }
+    public function countPurchase($patientId) { return Purchase::select(['patient_id'])->where('patient_id', $patientId)->count(); }
 
     public function examListIndicator($patientId)
     {
-        $patient = Patient::where('id', $patientId)->where('patient_queue', true)->first();
+        $patient = Patient::select(['id', 'patient_queue'])->where('id', $patientId)->where('patient_queue', true)->first();
         return $patient ? true : false;
     }
 

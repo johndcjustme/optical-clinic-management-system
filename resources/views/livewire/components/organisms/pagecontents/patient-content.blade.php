@@ -11,7 +11,7 @@
             <div class="ui compact tiny menu">
                 <div wire:click.prevent="subPage(1)" class="link item @if($subPage == 1) active @endif">Exam List</div>
                 <div wire:click.prevent="subPage(4)" class="link item @if($subPage == 4) active @endif">Patient List</div>
-                <div wire:click.prevent="subPage(2)" class="link item @if($subPage == 2) active @endif">Purchase</div>
+                {{-- <div wire:click.prevent="subPage(2)" class="link item @if($subPage == 2) active @endif">Purchase</div> --}}
             </div>
         @endif
 
@@ -217,7 +217,7 @@
 
                 {{-- @break
             @case(2) --}}
-                <div style="display: {{ $subPage == 2 ? 'block' : 'none'}}">
+                {{-- <div style="display: {{ $subPage == 2 ? 'block' : 'none'}}">
 
                     <x-organisms.ui.table class="selectable">
                         <x-slot name="thead">
@@ -260,7 +260,7 @@
                             @endforelse
                         </x-slot>
                     </x-organisms.ui.table>
-                </div>
+                </div> --}}
                 {{-- @break
             @case(3) --}}
                 {{-- <div style="n --}}

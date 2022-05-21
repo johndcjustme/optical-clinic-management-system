@@ -86,7 +86,7 @@
                                                 </form>
                                             @endif
                                             <ol class="ui suffixed list" style="padding-left: 20px; margin-top:1em;">
-                                                @foreach(App\Models\Rule::all() as $rule)
+                                                @foreach(App\Models\Rule::select(['id','rule'])->get() as $rule)
                                                     <li>
                                                         @if (Auth::user()->hasRole('admin'))
                                                             <a wire:click.prevent="deleteRule({{ $rule->id }})">
@@ -113,7 +113,7 @@
                                     
                                     <div class="content">
                                         <i class="users icon"></i> 
-                                        People <span style="opacity: 0.5; margin-left:0.3em;">({{ count(App\Models\Member::all()) }})</span>
+                                        People <span style="opacity: 0.5; margin-left:0.3em;">({{ count(App\Models\Member::select(['id'])->get()) }})</span>
                                         {{-- <div class="description">Updated 34 mins ago</div> --}}
                                         <div x-show="showPeople" x-transition>
                                             <div>
@@ -182,14 +182,8 @@
 
 
                             <div class="flex flex_x_between flex_y_end py_7" x-bind:style="createPost && { display: 'none' }">
-                                <div style="opacity:0.5">
-                                    {{-- {{ $this->countPosts() }} --}}
-                                </div>
+                                <div style="opacity:0.5"></div>
                                 <div>
-                                    {{-- <button wire:click.prevent="$toggle('newPost')" class="ui button primary">
-                                        <i class="edit icon"></i>
-                                        Create Post
-                                    </button> --}}
                                     <button @click="createPost = ! createPost" class="ui button icon primary">
                                         <i class="edit icon"></i>
                                         Post
@@ -199,25 +193,28 @@
 
 
 
-                            <form x-show="createPost" x-transition class="ui reply form" wire:submit.prevent="createPost">
+                            <form x-show="createPost" x-transition class="ui form" wire:submit.prevent="createPost">
                                 <div class="field">
                                     <textarea wire:model.defer="postContent" placeholder="Write a post..." style="height:100px;"></textarea>
                                 </div>
-                                <input class="ui input" type="file" wire:model="photos" style="margin-bottom:1em;" multiple>
-                                <div class="flex flex_x_end">
-                                    <div class="mr_3">
-                                        {{-- <button wire:click.prevent="$toggle('newPost')" class="ui button tiny basic">Cancel</button> --}}
-                                        <button @click="createPost = false" class="ui button tiny basic">Cancel</button>
-                                    </div>
-                                    <div>
-                                        <button type="submit" class="ui primary animated button tiny" tabindex="0">
-                                            <div class="visible content">
-                                                Post
-                                            </div>
-                                            <div class="hidden content">
-                                                <i class="share icon"></i>
-                                            </div>
-                                        </button>
+                                <div class="field">
+                                    <input class="ui input" type="file" wire:model="photos" style="margin-bottom:1em;" multiple>
+                                </div>
+                                <div class="field">
+                                    <div class="flex flex_x_end">
+                                        <div class="mr_3">
+                                            <button @click="createPost = false" class="ui button tiny basic">Cancel</button>
+                                        </div>
+                                        <div>
+                                            <button type="submit" class="ui primary animated button tiny" tabindex="0">
+                                                <div class="visible content">
+                                                    Post
+                                                </div>
+                                                <div class="hidden content">
+                                                    <i class="share icon"></i>
+                                                </div>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </form>
@@ -289,7 +286,7 @@
                                             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                                             grid-gap: 15px;
                                         ">
-                                            @foreach (App\Models\Post_photo::where('post_id', $post->id)->get() as $photo)
+                                            @foreach (App\Models\Post_photo::select(['post_id', 'name',])->where('post_id', $post->id)->get() as $photo)
                                                 <img wire:click.prevent="viewPhoto({{ $post->id }})" src="{{ storage('items', $photo->name) }}" style="width:100%; min-width:500px; min-width:50px; border-radius:0.2em; border:1px solid #ebebeb">
                                             @endforeach
                                         </div>

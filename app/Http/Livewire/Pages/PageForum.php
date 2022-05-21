@@ -73,11 +73,11 @@ class PageForum extends Component
     public function render()
     {
         return view('livewire.pages.page-forum', [
-            'posts' => Post::with(['user'])->latest()->limit($this->limit)->get(),
-            'comments' => Comment::with(['user'])->latest()->get(),
-            'commentcomments' => Commentcomment::with(['user'])->latest()->get(),
-            'chatrooms' => Chatroom::with(['user'])->latest('updated_at')->limit(50)->get(),
-            'members' => Member::with(['user'])->get(),
+            'posts' => Post::select(['id', 'user_id', 'post_content', 'updated_at'])->with(['user'])->latest()->limit($this->limit)->get(),
+            'comments' => Comment::select(['id', 'post_id', 'user_id', 'comment_content', 'updated_at'])->with(['user'])->latest()->get(),
+            'commentcomments' => Commentcomment::select(['user_id', 'comment_id', 'comment', 'updated_at'])->with(['user'])->latest()->get(),
+            // 'chatrooms' => Chatroom::with(['user'])->latest('updated_at')->limit(50)->get(),
+            'members' => Member::select(['user_id'])->with(['user'])->get(),
         ])
             ->extends('layouts.app')
             ->section('content');
@@ -114,7 +114,7 @@ class PageForum extends Component
 
     public function viewPhoto($postId)
     {
-        $photo = Post_photo::where('post_id', $postId)->first()->name;
+        $photo = Post_photo::select(['name'])->where('post_id', $postId)->first()->name;
         $this->displayPhoto = storage('items', $photo);
         $this->viewPhoto = true;
     }
@@ -142,14 +142,14 @@ class PageForum extends Component
     public function subPage($value)
     {        
         $value == 2 
-            ? Message::where('receiver_id', Auth::user()->id)->update(['is_read' => true])
+            ? Message::select(['is_read'])->where('receiver_id', Auth::user()->id)->update(['is_read' => true])
             : '';
         $this->subPage = $value;
     }
 
     public function room($patientId)
     {   
-        Message::where('receiver_id', Auth::user()->id)->update(['is_read' => true]);
+        Message::select(['is_read'])->where('receiver_id', Auth::user()->id)->update(['is_read' => true]);
 
         $chatroom = Chatroom::where('user_id', $patientId)->first();
         $chatroom->update(['new_message' => 0]);
@@ -174,7 +174,7 @@ class PageForum extends Component
     }
 
 
-    public function checkMember($userId)        { return Member::where('user_id', $userId)->first(); }
+    public function checkMember($userId) { return Member::select(['id'])->where('user_id', $userId)->first(); }
 
 
     public function createPost()
@@ -253,7 +253,7 @@ class PageForum extends Component
 
     public function deletePost()
     {
-        $photos = Post_photo::where('post_id', $this->deleteId);
+        $photos = Post_photo::select(['id', 'name'])->where('post_id', $this->deleteId);
         
         if ($photos) {
             foreach ($photos->get() as $photo) {
@@ -296,7 +296,7 @@ class PageForum extends Component
     public function likePost($postId, $userId)
     {
         // dd($postId, $userId);
-        $like = Like::where('post_comment_id', $postId)
+        $like = Like::select(['id', 'post_comment_id', 'user_id', 'post_type'])->where('post_comment_id', $postId)
                 ->where('user_id', $userId)
                 ->where('post_type', 1)->first();
 
@@ -312,7 +312,7 @@ class PageForum extends Component
     public function likeComment($commentId, $userId, $postType)
     {
         // dd($postId, $userId);
-        $like = Like::where('post_comment_id', $commentId)
+        $like = Like::select(['id', 'user_id', 'post_type'])->where('post_comment_id', $commentId)
                 ->where('user_id', $userId)
                 ->where('post_type', $postType)->first();
 
@@ -337,7 +337,7 @@ class PageForum extends Component
 
     public function liked($postId, $userId, $postType)
     {
-        return Like::where('post_comment_id', $postId)
+        return Like::select(['id', 'post_comment_id', 'user_id', 'post_type'])->where('post_comment_id', $postId)
                 ->where('user_id', $userId)
                 ->where('post_type', $postType)->first();
     }
@@ -345,48 +345,48 @@ class PageForum extends Component
 
     public function countPostLikes($postId)              
     { 
-        return Like::where('post_comment_id', $postId)->where('post_type', 1)->count();
+        return Like::select(['id'])->where('post_comment_id', $postId)->where('post_type', 1)->count();
     }
 
     public function countCommentLikes($commentId, $postType)    
     { 
-        return Like::where('post_comment_id', $commentId)->where('post_type', $postType)->count(); 
+        return Like::select(['id'])->where('post_comment_id', $commentId)->where('post_type', $postType)->count(); 
     }
 
     public function countPostComments($postId)                  
     { 
-        return Comment::where('post_id', $postId)->count(); 
+        return Comment::select(['id'])->where('post_id', $postId)->count(); 
     }
 
     public function countCommentComments($commentId)            
     { 
-        return Commentcomment::where('comment_id', $commentId)->count(); 
+        return Commentcomment::select(['id'])->where('comment_id', $commentId)->count(); 
     }
 
     public function countPosts()
     {
-        $posts = Post::count();
+        $posts = Post::select(['id'])->count();
         return $posts > 1 ? $posts . ' Posts' : $posts . ' Post';
     }
 
     public function countMembers()
     {
-        $members = Member::count();
+        $members = Member::select(['id'])->count();
         return $members > 1 
                     ? $members . ' Members' 
                     : $members . ' Member';
     }
 
 
-    public function displayMessage($patientId) 
-    {
-        return Message::with('user')->where('sender_id', $patientId)->orWhere('receiver_id', $patientId)->latest()->limit(50)->get();
-    }
+    // public function displayMessage($patientId) 
+    // {
+    //     return Message::with('user')->where('sender_id', $patientId)->orWhere('receiver_id', $patientId)->latest()->limit(50)->get();
+    // }
 
 
     public function newMessage($userId)
     {
-        $count = Message::where('receiver_id', $userId)->where('is_read', false)->count();
+        $count = Message::select(['id'])->where('receiver_id', $userId)->where('is_read', false)->count();
 
         return $count > 0 
                     ? '• ' . $count 

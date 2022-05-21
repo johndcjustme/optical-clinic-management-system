@@ -11,14 +11,13 @@ class Purchase extends Model
 
     protected $fillable = [
         'patient_id',
-        // 'item_id',
-        // 'item_type',
         'qty',
         'total',
         'discount',
         'balance',
         'deposit',
         'duedate',
+        'payment_type',
     ];
     
     public function purchased_item()

@@ -2,11 +2,13 @@
 
 namespace App\Http\Livewire\Pages;
 
+use Illuminate\Support\Str;
 use Livewire\Component;
 use App\Models\User;
 use App\Models\Patient;
 use App\Models\Item;
 use App\Models\Category;
+use App\Models\In_out_of_item as Out_item;
 use App\Models\Appointment;
 use App\Models\Appointment_category as Ac;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
@@ -29,7 +31,9 @@ class PageDashboard extends Component
     // public $mysessionid;
     public $patient;
 
-    public $year = 2022;
+    public $year, $weeklyPatients = 0;
+
+    public $monthlyPatients;
 
     public $days = [];
 
@@ -41,9 +45,13 @@ class PageDashboard extends Component
 
     public $mar;
 
+    public $countLowStocks;
+
     public $stat = 'patients';
 
     public $product = 'top';
+
+    public $productYearlyDemand = 2022;
 
     public $months = [
         'JAN',
@@ -68,11 +76,18 @@ class PageDashboard extends Component
     protected $queryString = [
         'stat' => ['except' => 'empty'],
         'product' => ['except' => 'empty'],
+        'weeklyPatients' => ['except' => ''],
+        'monthlyPatients' => ['except' => ''],
+
+        
     ];
 
     
     public function mount()
     {
+        $this->year = date('Y');
+        $this->monthlyPatients = Str::upper(date('M'));
+
         $this->days = collect(range(13,24))->map(function ($number) {
             return 'Jan' . $number;
         });
@@ -80,30 +95,51 @@ class PageDashboard extends Component
     
     public function render()
     {
-        $this->getMonth(4);
-        $columnChartModel = (new ColumnChartModel());
-            foreach (Category::all() as $category) {
-                $columnChartModel->addColumn($category->name, $this->totalOfItems($category->id), $category->cvalue);
-            }
+        // $this->getMonth(4);
 
-        $pieChartModel = (new PieChartModel())
-            ->setTitle('Inventory Items')
-            ->addSlice('Lenses', $this->totalOfItems('le'), '#008080')
-            ->addSlice('Frames', $this->totalOfItems('fr'), '#B413EC')
-            ->addSlice('Accessories', $this->totalOfItems('ac'), '#FE9A76');
+        $columnChartModel = (new ColumnChartModel());
+            $columnChartModel->addColumn('Week 1', $this->weeklyPatients($this->weeklyPatients), '#21ba45');
+            $columnChartModel->addColumn('Week 2', $this->weeklyPatients($this->weeklyPatients + 1), '#21ba45');
+            $columnChartModel->addColumn('Week 3', $this->weeklyPatients($this->weeklyPatients + 2), '#21ba45');
+            $columnChartModel->addColumn('Week 4', $this->weeklyPatients($this->weeklyPatients + 3), '#21ba45');
+
+            // foreach (Category::select(['name', 'id', 'cvalue'])->get() as $category) {
+            //     $columnChartModel->addColumn($category->name, $this->totalOfItems($category->id), $category->cvalue);}
+
+        $itemsColumnChartModel = (new ColumnChartModel());
+            for ($i = 1; $i <= 12; $i++) {
+                $itemsColumnChartModel->addColumn(date('M', mktime(0, 0, 0, $i, 1, $this->productYearlyDemand)), $this->getMonthlyItemSales($i), '#2185d0');}
+
+        $pieChartModel = (new PieChartModel());
+            foreach (Category::select(['name', 'id', 'cvalue'])->get() as $category) {
+                $pieChartModel->addSlice($category->name, $this->totalOfItems($category->id), $category->cvalue); }
+              
 
 
         $areaChartModel = (new AreaChartModel());
-            for ($i = 1; $i <= 12; $i++)
-                $areaChartModel->addPoint(date('M', mktime(0, 0, 0, $i, 1, $this->year)), $this->getMonth($i));
+            for ($i = 1; $i <= 12; $i++) {
+                $areaChartModel->addPoint(date('M', mktime(0, 0, 0, $i, 1, $this->year)), $this->getMonth($i)); }
+
+
+        $outStocks = Item::whereColumn('item_qty', '<=', 'item_buffer')->get();
+
+
+        foreach ($outStocks as $countLowStock) {
+            $countLowStocksArray[] = $countLowStock; }
+
+        $this->countLowStocks = count($countLowStocksArray);
+
+
 
            
         return view('livewire.pages.page-dashboard', [
-                'columnChartModel' => $columnChartModel,
-                'pieChartModel' => $pieChartModel,
-                'areaChartModel' => $areaChartModel,
-                'patients' => Patient::all(),
-                'items' => Item::with('category')->paginate($this->pageNumber),
+                'columnChartModel' => $columnChartModel->withoutLegend()->setHorizontal(true)->setAnimated(true),
+                'pieChartModel' => $pieChartModel->withDataLabels()->setAnimated(true),
+                'areaChartModel' => $areaChartModel->setAnimated(true),
+                'itemsColumnChartModel' => $itemsColumnChartModel->withoutLegend()->setAnimated(true),
+                // 'patients' => Patient::all(),
+                'items' => Item::select(['id', 'item_name', 'item_desc', 'item_price'])->with('category')->paginate($this->pageNumber),
+                'outStocks' => $outStocks,
             ])
             ->extends('layouts.app')
             ->section('content');
@@ -122,37 +158,70 @@ class PageDashboard extends Component
     //     $this->emit('refreshChart', ['seriesData' => $subscribers]);
     // }
 
+    public function getMonthlyItemSales($monthValue)
+    {
+        $countItem = 0;
+        $totalDaysOfMonth = date('t', mktime(0, 0, 0, $monthValue, 1, $this->year));
+
+        $out_items = Out_item::select(['qty'])
+                        ->whereMonth('created_at', $monthValue)
+                        ->whereYear('created_at', $this->productYearlyDemand)
+                        ->get();
+
+        foreach ($out_items as $out_item) {
+            $countItem += $out_item->qty;
+        }
+    
+        return $countItem;
+    }
+
+
+    public function setMonthlyPatients($firstWeekValue, $ofMonth)
+    {
+        $this->weeklyPatients = $firstWeekValue;
+        $this->monthlyPatients = $ofMonth;
+    }
+
+    public function weeklyPatients($weekValue)
+    {
+    
+        $date = Carbon::now();
+
+        $date->setISODate($this->year,$weekValue);
+
+        return $patients = Patient::select(['id'])
+                        ->whereBetween('created_at', [
+                            $date->startOfWeek()->format('Y-m-d'), 
+                            $date->endOfWeek()->format('Y-m-d')
+                        ])->count();
+    }
 
     public function getMonth($monthValue)
     {
-
-        $count = 0;
+        $count = [];
         $totalDaysOfMonth = date('t', mktime(0, 0, 0, $monthValue, 1, $this->year));
 
-        for ($i = 1; $i <= $totalDaysOfMonth; $i++) {
-            $count += Patient::whereDate('created_at', date('Y-m-d', mktime(0, 0, 0, $monthValue, $i, $this->year)))->count();
+        foreach (Patient::select(['id'])->whereMonth('created_at', $monthValue)->whereYear('created_at', $this->year)->get() as $pt) {
+            $count[] = $pt->id; 
         }
 
-        return $this->count = $count;
-        // echo date('t', mktime(0,0,0,2,1,2022));
-
-        // return Patient::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()]);
+        return count($count);
     }
 
     public function totalOfPatients($kind)
     {
         switch ($kind) {
             case 'all':
-                return Patient::count() ?? 0;
+                return Patient::select(['id'])->count() ?? 0;
                 break;
             case 'today':
-                return Patient::whereDate('created_at', date('Y-m-d'))->count() ?? 0;
+                return Patient::select(['id'])->whereDate('created_at', date('Y-m-d'))->count() ?? 0;
                 break;
             case 'yesterday':
-                return Patient::whereDate('created_at', getYesterday())->count() ?? 0;
+                return Patient::select(['id'])->whereDate('created_at', getYesterday())->count() ?? 0;
                 break;
             case 'thisWeek':
-                return Patient::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count() ?? 0;
+                return Patient::select(['id'])->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count() ?? 0;
                 break;
             default:
         }
@@ -160,12 +229,12 @@ class PageDashboard extends Component
 
     public function yearlyPatients($year)
     {
-        return Patient::whereYear('created_at', $year)->count();
+        return Patient::select(['id'])->whereYear('created_at', $year)->count();
     }
 
     public function totalOfItems($categoryId)
     {
-        return Item::where('category_id', $categoryId)->count();
+        return Item::select(['id'])->where('category_id', $categoryId)->count();
     }
 
 
@@ -178,14 +247,14 @@ class PageDashboard extends Component
 
         switch ($value) {
             case 'today':
-                return Appointment::whereDate('appt_date', getToday())->count() ?? 0;
+                return Appointment::select(['id'])->whereDate('appt_date', getToday())->count() ?? 0;
                 break;
             case 'tomorrow':
-                return Appointment::whereDate('appt_date', getTomorrow())->count() ?? 0;
+                return Appointment::select(['id'])->whereDate('appt_date', getTomorrow())->count() ?? 0;
                 break;
             case 'forApproval':
                 $ac = Ac::where('status', true)->first();
-                return Appointment::where('appointment_category_id', $ac->id)->count() ?? 0;
+                return Appointment::select(['id'])->where('appointment_category_id', $ac->id)->count() ?? 0;
                 break;
             case 'ongoing':
                 return 0;
@@ -194,79 +263,4 @@ class PageDashboard extends Component
         }
 
     }
-
-
-
-    public function topdf()
-    {
-        $pdfContent = PDF::loadView('view', ['patients' => Patient::all()])->output();
-            return response()->streamDownload(
-                fn () => print($pdfContent),
-                "filename.pdf"
-            );
-    }
-
-
-
-
-    public function pdf()
-    {
-
-        return response()->streamDownload(function () {
-            $pdf = \App::make('dompdf.wrapper');
-            $pdf->loadHTML($this->convert_customer_data_to_html());
-            echo $pdf->stream();
-        }, 'test.pdf');
-
-
-
-
-    //  return $pdf->stream();
-    }
-
-
-
-
-    
-    function convert_customer_data_to_html()
-    {
-        $patients = Patient::all();
-        $output = '
-        <h3 align="center">Customer Data</h3>
-        <table width="100%" style="border-collapse: collapse; border: 0px;">
-            <tr>
-                <th style="border: 1px solid; padding:12px;" width="20%">Name</th>
-                <th style="border: 1px solid; padding:12px;" width="30%">Address</th>
-                <th style="border: 1px solid; padding:12px;" width="15%">City</th>
-                <th style="border: 1px solid; padding:12px;" width="15%">Postal Code</th>
-                <th style="border: 1px solid; padding:12px;" width="20%">Country</th>
-            </tr>
-        ';  
-        foreach($patients as $patient)
-        {
-            $output .= '
-            <tr>
-                <td style="border: 1px solid; padding:12px;">'.$patient->patient_fname.'</td>
-                <td style="border: 1px solid; padding:12px;">'.$patient->patient_lname.'</td>
-                <td style="border: 1px solid; padding:12px;">'.$patient->patient_address.'</td>
-                <td style="border: 1px solid; padding:12px;">'.$patient->patient_age.'</td>
-                <td style="border: 1px solid; padding:12px;">'.$patient->patient_mname.'</td>
-            </tr>
-            ';
-        }
-        $output .= '</table>';
-        return $output;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
 }

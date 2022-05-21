@@ -15,12 +15,12 @@
         <div class="inner_content">
             @include('livewire.components.organisms.pagecontents.ledger-content')      
         </div>
-{{-- 
+
         @if ($modal['show'])
-            @include('livewire.components.organisms.modal.modal-inventory')
+            @include('livewire.components.organisms.modal.modal-ledger')
         @endif
 
-        @if ($modal['show_image'])
+        {{-- @if ($modal['show_image'])
             @include('livewire.components.organisms.modal.modal-inventory-image')
         @endif --}}
 

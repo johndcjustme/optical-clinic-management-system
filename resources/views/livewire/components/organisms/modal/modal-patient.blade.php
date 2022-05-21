@@ -519,7 +519,7 @@
                                                     @if (session()->has('orderSave'))
                                                         {{ session('orderSave') }}<i class="fa-solid fa-circle-check ml_3"></i>
                                                     @else
-                                                        Save to order
+                                                        Save order
                                                     @endif
                                                 </button>
                                             </div>
@@ -618,14 +618,17 @@
 
                         @if (count($selectedItems) > 0)
 
-                            <div class="pt_10">
-                                <select name="" id="">
-                                    <option value="" selected hidden>Payment Type</option>
-                                    <option value="">On Hand</option>
-                                    <option value="">GCash</option>
-                                </select>
-                            </div><br>
+                            <div class="ui divider"></div>
+
                             <form wire:submit.prevent="savePayment({{ $purchase['id'] }})" id="submit_payment">
+                                <div class="pt_10">
+                                    <x-atoms.ui.select wire:model.defer="payment_type" class="mb_7">
+                                        <option value="None">None</option>
+                                        @foreach (App\Models\Cash_type::select(['type', 'id'])->get() as $cash)
+                                            <option value="{{ $cash->type }}">{{ $cash->type }}</option>
+                                        @endforeach
+                                    </x-atoms.ui.select>
+                                </div><br>
                                 <div class="grid grid_col_2 gap_1">
                                     <div>
                                         <label for="">Deposit</label>

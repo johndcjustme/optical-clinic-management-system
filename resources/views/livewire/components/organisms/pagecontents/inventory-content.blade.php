@@ -40,7 +40,7 @@
                     </div>
                 </div>
             </div>
-            <div wire:click.prevent="$set('subPage', 3)" class="item {{ $this->activePage(3) }}">In Out</div>
+            <div wire:click.prevent="$set('subPage', 3)" class="item {{ $this->activePage(3) }}">In-Out</div>
             <div wire:click.prevent="$set('subPage', 5)" class="item {{ $this->activePage(5) }}">Categories</div>
             <div wire:click.prevent="$set('subPage', 4)" class="item {{ $this->activePage(4) }}">Purchase</div>
         </div>
