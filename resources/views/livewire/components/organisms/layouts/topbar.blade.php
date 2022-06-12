@@ -9,7 +9,7 @@
         border-radius: 50px;
         display:flex;
         align-items:center;
-        gap:0.5em;
+        gap:0.6em;
         z-index:1000;
     ">
 {{--         
