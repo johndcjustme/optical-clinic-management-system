@@ -625,12 +625,23 @@ class PageOrders extends Component
         $today = Str::replace('-', '_', getToday() . '_' . date('h:i:sa'));
         $filename = 'patient_orders_' . $today . '.pdf';
 
+        // return $this->savePdf($filename);
         return response()->streamDownload(function () {
             $pdf = \App::make('dompdf.wrapper');
             $pdf->loadHTML($this->convert_customer_data_to_html());
             echo $pdf->stream();
         }, $filename);
     }
+
+
+    // public function savePdf($filename)
+    // {
+    //     return response()->streamDownload(function () {
+    //         $pdf = \App::make('dompdf.wrapper');
+    //         $pdf->loadHTML($this->convert_customer_data_to_html());
+    //         echo $pdf->stream();
+    //     }, $filename);
+    // }
 
     public function confirmSendingEmail()
     {
@@ -652,20 +663,19 @@ class PageOrders extends Component
             ]
         );
 
-
         $this->statusChanged(2);
 
-        // $data = [
-        //     'email'     => 'johndecastro.604@gmail.com',
-        //     'subject'   => $this->subject,
-        //     'body'      => $this->body];
+        $data = [
+            'email'     => 'johndecastro.604@gmail.com',
+            'subject'   => $this->subject,
+            'body'      => $this->body];
 
-        // $file = public_path('patient-orders.pdf');
+        $file = public_path('patient-orders.pdf');
 
-        // Browsershot::html($this->convert_customer_data_to_html())
-        //     ->margins('1', '1', '1', '1', 'cm')
-        //     ->format('letter')
-        //     ->save($file);
+        Browsershot::html($this->convert_customer_data_to_html())
+            ->margins('1', '1', '1', '1', 'cm')
+            ->format('letter')
+            ->save($file);
   
         // Mail::send('send-patient-orders', $data, function($message) use ($data, $file) {
         //     $message->to($data["email"])
@@ -688,7 +698,6 @@ class PageOrders extends Component
     {
 
         $html = '
-        <center style="margin-bottom:20px; font-size:20px;"><h3>DANGO OPTICAL CLINIC</h3></center>
             <style>
                 html {
                     font-family: Arial, Helvetica, sans-serif;
@@ -710,9 +719,10 @@ class PageOrders extends Component
                 .text-right {
                     text-align: right;
                 }
-            </style>';
+            </style>
+            <center style="margin-bottom:20px; font-size:20px;"><h3>DANGO OPTICAL CLINIC</h3></center>';
 
-            foreach (Order_detail::with('patient')->with('exam')->orderByDesc('created_at')->get() as $order) {
+            foreach (Order_detail::with(['exam','patient'])->orderByDesc('created_at')->get() as $order) {
                 foreach ($this->selectedOrders as $selected) {
                     if ($order->id == $selected) {
                         $html .= '
@@ -764,22 +774,17 @@ class PageOrders extends Component
                                 <tr>
                                     <td colspan="7" style="padding-top:12px; padding-bottom:12px;"><b style="margin-right:8px;">REMARKS: </b>' . $order->exam->exam_remarks . '</td>
                                 </tr>
-
                                 <tr>
                                     <th class="text-center">LENSE</th>
-                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">' . $order->lense . '</td>
+                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">' . $order->exam->exam_lense . '</td>
                                 </tr>
                                 <tr>
                                     <th class="text-center">FRAME</th>
-                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">' . $order->frame . '</td>
+                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">' . $order->exam->exam_frame . '</td>
                                 </tr>
                                 <tr>
                                     <th class="text-center">TINT</th>
-                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">' . $order->tint . '</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-center">OTHERS</th>
-                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">' . $order->others . '</td>
+                                    <td colspan="6" style="padding-top:12px; padding-bottom:12px;">' . $order->exam->exam_tint . '</td>
                                 </tr>
                             </table>
                         </div>';
@@ -790,6 +795,5 @@ class PageOrders extends Component
 
         return $html;
     }
-
 
 }

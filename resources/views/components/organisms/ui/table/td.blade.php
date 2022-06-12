@@ -1,34 +1,29 @@
 <td {{ $attributes->merge(['style'=>''])->merge(['class' => '']) }}>
-    <div class="flex flex_y_center">
+    @if (!empty($checkbox))
         <div>
-            @if (!empty($checkbox))
-                <div class="ui child checkbox tiny">
-                    <input wire:model="{{ $checkbox }}" type="checkbox" class="pointer" value="{{ $checkboxValue }}">
-                    <label></label>
-                </div>
-            @endif
+            <label>
+                <input wire:model="{{ $checkbox }}" value="{{ $checkboxValue }}" type="checkbox" class="checkbox checkbox-sm" />
+            </label>
         </div>
-        <div>
-            @if (!empty($avatar) || ($avatar != null))
-                <div style="margin-right:1em">
-                    <x-atom.profile-photo size="2.5em" path="{{ $avatar }}" />
-                </div>
-            @endif
-        </div>
-        <div>
-            <div>
+    @endif
+    <div class="flex align-center">
+        @if (!empty($avatar) || ($avatar != null))
+            <div class="mr-3 flex align-center" @if(!empty($viewPhoto)) wire:click.prevent="{{ $viewPhoto }}" @endif>
+                <x-atom.profile-photo size="3.5em" path="{{ $avatar }}" />
+            </div>
+        @endif
+        <div class="flex flex-col justify-center">
+            <div class="font-bold">
                 @if ($textIcon) 
                     <i class="fa-solid {{ $textIcon }}" style="margin-right: 3px"></i> 
                 @endif 
                 {{ $text }}
             </div>
-            <div>
-                <small style="opacity:0.6">
-                    @if ($descIcon) 
-                        <i class="fa-solid {{ $descIcon }}" style="margin-right: 3px"></i> 
-                    @endif 
-                    {{ $desc }}
-                </small>
+            <div class="text-sm opacity-50">
+                @if ($descIcon) 
+                    <i class="fa-solid {{ $descIcon }}" style="margin-right: 3px"></i> 
+                @endif 
+                {{ $desc }}
             </div>
         </div>
     </div>

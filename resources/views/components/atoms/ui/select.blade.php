@@ -1,4 +1,4 @@
-<select {{ $attributes->merge(['class' => 'ui dropdown selection select_dropdown_modal'])->merge(['style'=>'']) }} x-init="$('.select_dropdown_modal').dropdown();">
+<select {{ $attributes->merge(['class' => 'input input-bordered w-full'])->merge(['style'=>'']) }}>
     {{ $slot }}
 </select>
 

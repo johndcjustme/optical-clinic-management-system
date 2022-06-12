@@ -47,10 +47,10 @@
     @section('modal_title')
 
         <div class="x-flex x-flex-ycenter x-gap-1">
-            @if ($modal['add'] || $modal['update'])
-                <label for="item_image" class="ui button tiny icon"><i class="icon add"></i> {{ !empty($item['image']) || !empty($item['preview']) ? 'Change Photo' : 'Add Photo'}}</label>
-            @endif
-            @if ($modal['inItem'])                
+            {{-- @if ($modal['add'] || $modal['update'])
+                <label for="item_image" class="btn"><i class="fa-solid fa-add mr-2"></i> {{ !empty($item['image']) || !empty($item['preview']) ? 'Change Photo' : 'Add Photo'}}</label>
+            @endif --}}
+            {{-- @if ($modal['inItem'])                
                 <div class="ui dropdown floating icon button tiny blue" x-init="$('.ui.dropdown').dropdown()" style="z-index: 400" title="Search item">
                     <i class="search icon"></i>
                     Choose Item
@@ -97,26 +97,26 @@
                         </x-atoms.ui.button-circular>
                     @endif
                 </div>
-            @endif
+            @endif --}}
         </div>
 
         <div>
-            <h5 class="ui header">
+            <x-atoms.ui.modal-title>
                 @if ($modal['inItem'])                
                     IN ITEM
                 @elseif ($modal['add'])
                     ADD ITEM
                 @elseif ($modal['update'])
-                    EDIT ITEM   
+                    EDIT ITEM
                 @endif
-            </h5>
+            </x-atoms.ui.modal-title>
         </div>
         <div class="">
-            <x-atoms.ui.button wire:click.prevent="closeModal" class="tiny">Close</x-atoms.ui.button>
+            <x-atoms.ui.btn-close-modal/>
             @if ($modal['add'] || $modal['update'])
-                <label class="ui button secondary tiny" for="createOrUpdateItem">Save</label>
+                <label class="btn btn-primarym ml-2" for="createOrUpdateItem">Save</label>
             @elseif($modal['category'])
-                <label for="1001" class="ui button secondary tiny" >Save</label>
+                <label for="1001" class="btn btn-primarym ml-2" >Save</label>
             @endif
         </div>
 
@@ -126,79 +126,82 @@
 
     @section('modal_body')
         @if ($modal['add'] || $modal['update'])
-            <br>
-            <form id="{{ $formId }}" wire:submit.prevent="updateOrCreateItem" class="ui form"><br>
-                <div class="ui form">
-                    <div class="field">
-                        <div class="x-flex x-flex-center x-gap-1">
-                            <div>
-                                @if ($item['preview'])
-                                    <x-atoms.ui.avatar src="{{ $item['preview']->temporaryUrl() }}" size="5em"/>
-                                @else
-                                    <x-atom.profile-photo size="5em" path="{{ storage('items', $item['image']) }}" />
-                                @endif
-                            </div>
-                            <div>
-                                <div>
-                                    @error('item.preview') <span class="error">{{ $message }}</span> @enderror
-                                    <input id="item_image" type="file" wire:model="item.preview" style="opacity:0; display:none" hidden>
-                                </div>
-                            </div>
-                        </div>
+            <form id="{{ $formId }}" wire:submit.prevent="updateOrCreateItem" class="ui form">
+                <x-molecules.ui.field class="justify-items-center">
+                    <label  for="item_image">
+                        @if ($item['preview'])
+                            <x-atoms.ui.avatar src="{{ $item['preview']->temporaryUrl() }}" size="5em"/>
+                        @else
+                            <x-atom.profile-photo size="5em" path="{{ storage('items', $item['image']) }}" />
+                        @endif
+                    </label>
+                    <div>
+                        @error('item.preview') <span class="error">{{ $message }}</span> @enderror
+                        <input id="item_image" type="file" wire:model="item.preview" style="opacity:0; display:none; width:0; height:0;" hidden>
                     </div>
-                    <div class="field">
+                </x-molecules.ui.field>
+                <x-molecules.ui.field class="grid-cols-1">
+                    <div>
                         <x-atoms.ui.label>Category @error('item.type') <span class="ui text error">{{ $message }}</span> @enderror</x-atoms.ui.label>
                         <x-atoms.ui.select wire:model.defer="item.cat" class="">
                             <option value="" selected hidden>Select</option>
-                            <option value="">--None--</option>
+                            <option value="None">--None--</option>
                             @foreach ($categories as $category)
                                 <option class="item" value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
                         </x-atoms.ui.select>
                     </div>
-                    <div class="two fields">
-                        <div class="field">
-                            <x-atoms.ui.label>Item Name <x-atoms.ui.required/> @error('item.name') <span class="error">{{ $message }}</span> @enderror</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="item.name" type="text" class="mb_7" placeholder="Enter item name..."/>
-                            <x-atoms.ui.label>Item Size</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="item.size" type="text" class="mb_7" placeholder="Enter item size..."/>
-                            <x-atoms.ui.label>Low Stock Level/Reserved</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="item.buffer" type="text" class="mb_7" placeholder="Enter low stock level..."/>
-                        </div>
-                        <div class="field">
-                            <x-atoms.ui.label>Supplier</x-atoms.ui.label>
-                            <x-atoms.ui.select wire:model.defer="item.supplier" class="fluid mb_7" tabindex="0">
-                                <option value="" selected hidden>Select</option>
-                                <option value="null" >--None--</option>
-                                @foreach ($suppliers as $supplier)
-                                    <option class="item" value="{{ $supplier->id }}">
-                                        {{ $supplier->supplier_name }}
-                                    </option>
-                                @endforeach
-                            </x-atoms.ui.select>
-                            {{-- <x-atoms.ui.label>Item Quantity</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="item.qty" type="number" class="mb_7"/> --}}
-                            <x-atoms.ui.label>Item Price</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="item.price" type="number" class="mb_7" placeholder="Enter price..."/>
-                            <x-atoms.ui.label>Item Cost</x-atoms.ui.label>
-                            <x-atoms.ui.input wire-model="item.cost" type="number" class="mb_7" placeholder="Enter cost..."/>
-                        </div>
+                </x-molecules.ui.field>
+
+
+                <x-molecules.ui.field class="grid-cols-2">
+                    <div>
+                        <x-atoms.ui.label>Item Name <x-atoms.ui.required/> @error('item.name') <span class="error">{{ $message }}</span> @enderror</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="item.name" type="text" class="mb-3" placeholder="Enter item name..."/>
+
+                        <x-atoms.ui.label>Item Desc</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="item.desc" type="text" class="mb-3" placeholder="Enter item name..."/>
+                        
+                        <x-atoms.ui.label>Item Size</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="item.size" type="text" class="mb-3" placeholder="Enter item size..."/>
+
+                        <x-atoms.ui.label>Low Stock Level/Reserved</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="item.buffer" type="text" class="mb-3" placeholder="Enter low stock level..."/>
                     </div>
-                    <div class="field">
+                    <div>
+                        <x-atoms.ui.label>Supplier</x-atoms.ui.label>
+                        <x-atoms.ui.select wire:model.defer="item.supplier" class="mb-3">
+                            <option value="null" selected>--None--</option>
+                            @foreach ($suppliers as $supplier)
+                                <option value="{{ $supplier->id }}">
+                                    {{ $supplier->supplier_name }}
+                                </option>
+                            @endforeach
+                        </x-atoms.ui.select>
+                        <x-atoms.ui.label>Item Price</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="item.price" type="number" class="mb-3" placeholder="Enter price..."/>
+
+                        <x-atoms.ui.label>Item Quantity</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="item.qty" type="number" class="mb-3" placeholder="Enter quantity..."/>
+
+                        <x-atoms.ui.label>Item Cost</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="item.cost" type="number" class="mb-3" placeholder="Enter cost..."/>
+                    </div>
+                </x-molecules.ui.field>
+                
+                {{-- <x-molecules.ui.field class="grid-cols-1">
+                    <div>
                         <x-atoms.ui.label>Item Description</x-atoms.ui.label>
-                        <div class="ui input">
-                            <textarea wire:model.defer="item.desc" name="" id="" rows="2" placeholder="Enter description..."></textarea>
-                        </div>
-                        {{-- <x-atoms.ui.input wire-model="item.desc" type="text" class="mb_7"/> --}}
+                        <textarea class="input input-bordered w-full" wire:model.defer="item.desc" name="" id="" rows="2" placeholder="Enter description..."></textarea>
                     </div>
-                </div>
-                <input id="createOrUpdateItem" type="submit" value="" style="opacity: 0" hidden>
+                </x-molecules.ui.field> --}}
+                <input id="createOrUpdateItem" type="submit" value="" style="opacity: 0; width:0; height:0;" hidden>
             </form>
         @endif
 
 
 
-        @if ($modal['inItem'])
+        {{-- @if ($modal['inItem'])
             @if ($modal['displayItem'])
                 <br>
                 <form wire:submit.prevent="inItem" class="">`
@@ -207,7 +210,6 @@
                             <div class="ui input {{ $disabledInputIn }} {{ $modal['edit_in_inItem'] ? 'disabled' : '' }}">
                                 <input wire:model.lazy="item.in" type="number" min="0" laceholder="Enter In-Item Quantity...">
                             </div>
-                            {{-- <x-atoms.ui.input wire-model="item.in" type="number" min="0" class="{{ $disabled }} {{ $modal['edit_in_inItem'] ? 'disabled' : '' }}" placeholder="Enter In-Item Quantity..."/> --}}
                         </div>
                         <div>
                             <label for="inItem" class="ui button icon right labeled {{ $disabledBtnIn }} {{ $modal['edit_in_inItem'] ? 'disabled' : '' }}">In <i class="icon right arrow"></i></label>
@@ -305,24 +307,29 @@
                     class="warning"
                     header="Choose item first."
                     message="Lorem ipsum, dolor sit amet consectetur adipisicing elit."/>
-            @endif
-        @endif
+            @endif 
+        @endif--}}
         @if ($modal['category'])
-                <br>
-                <form wire:submit.prevent="updateOrCreateCategory" class="ui form">
-                    <div class="field">
-                        <x-atoms.ui.label>Name <x-atoms.ui.required/></x-atoms.ui.label>
-                        <x-atoms.ui.input wire-model="cat.name" type="text" placeholder="Enter Name..." class="fluid mb_7"/>
-                    </div>
-                    <div class="field">
-                        <x-atoms.ui.label>Description</x-atoms.ui.label>
-                        <div class="ui input">
-                            <textarea wire:model.defer="cat.desc" placeholder="Enter Description..." cols="30" rows="6"></textarea>
+                <form wire:submit.prevent="updateOrCreateCategory">
+                    <x-molecules.ui.field>
+                        <div>
+                            <x-atoms.ui.label>Name <x-atoms.ui.required/></x-atoms.ui.label>
+                            <x-atoms.ui.input wire-model="cat.name" type="text" placeholder="Enter Name..." class="mb-3"/>
                         </div>
-                    </div>
-                    <div class="x-flex x-flex-xend x-flex-ycenter">
-                        <input id="1001" type="submit" value="" style="opacity: 0;" hidden>
-                    </div>
+                    </x-molecules.ui.field>
+
+                    <x-molecules.ui.field>
+                        <div>
+                            <x-atoms.ui.label>Description</x-atoms.ui.label>
+                            <textarea wire:model.defer="cat.desc" class="input input-bordered w-full" placeholder="Enter Description..." style="height: 5em"></textarea>
+                        </div>
+                    </x-molecules.ui.field>
+
+                    <x-molecules.ui.field>
+                        <div>
+                            <input id="1001" type="submit" value="" style="opacity:0; width:0; height:0;" hidden>
+                        </div>
+                    </x-molecules.ui.field>
                 </form>
             @endif
 

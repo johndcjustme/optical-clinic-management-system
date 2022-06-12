@@ -39,13 +39,13 @@ Route::middleware(['auth', 'role:admin|staff'])->group(function() {
 });
 
 Route::middleware(['auth', 'role:admin|user|staff'])->group(function() {
-    Route::get('/forum', App\Http\Livewire\Pages\PageForum::class);
+    // Route::get('/forum', App\Http\Livewire\Pages\PageForum::class);
     Route::get('/account', App\Http\Livewire\Pages\AccountSettings::class);
 });
 
-Route::middleware(['auth', 'role:user'])->group(function() {
-    Route::get('/book', App\Http\Livewire\Pages\PagePatientAppt::class)->name('book');
-});
+// Route::middleware(['auth', 'role:user'])->group(function() {
+//     Route::get('/book', App\Http\Livewire\Pages\PagePatientAppt::class)->name('book');
+// });
 
 
 

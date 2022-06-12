@@ -24,10 +24,11 @@ class CreatePurchasedItemsTable extends Migration
                 ->references('id')
                 ->on('purchases')
                 ->onDelete('cascade');
+
             $table->foreign('item_id')
                 ->references('id')
                 ->on('items')
-                ->onDelete();
+                ->onDelete('cascade');
         });
     }
 

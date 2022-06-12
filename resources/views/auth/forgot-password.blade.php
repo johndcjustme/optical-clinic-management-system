@@ -22,20 +22,18 @@
         <x-auth-session-status class="" :status="session('status')" />
 
         <!-- Validation Errors -->
-        <x-auth-validation-errors class="mb-4" :errors="$errors" />
+        <x-auth-validation-errors :errors="$errors" />
 
         <form method="POST" action="{{ route('password.email') }}">
             @csrf
-
             <!-- Email Address -->
-            <div class="mt_10">
+            <div class="form-control w-full max-w-xs mt-3">
                 <x-label for="email" :value="__('Email Address')" />
-
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" placeholder="Enter email address..." :value="old('email')" required autofocus />
+                <x-input id="email" type="email" name="email" placeholder="Enter email address..." :value="old('email')" required autofocus />
             </div>
 
-            <div class="flex flex_x_end" style="margin-top: 1.5em;">
-                <x-button style="width:100%;">
+            <div class="mt-7">
+                <x-button>
                     {{ __('Send link') }}
                 </x-button>
             </div>

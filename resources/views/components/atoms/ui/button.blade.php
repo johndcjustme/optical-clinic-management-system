@@ -1,1 +1,1 @@
-<button form="{{ $form }}" {{ $attributes->merge(['class' => 'ui button'])->merge(['type'=>'button']) }}>{{ $slot }}</button>
+<button form="{{ $form }}" {{ $attributes->merge(['class' => 'btn'])->merge(['type'=>'button']) }}>{{ $slot }}</button>

@@ -18,6 +18,8 @@ class PageReports extends Component
 
     public $order = 'patient_lname';
 
+    public $selectedItems = [];
+
     protected $queryString = [
         'date_from',
         'date_to',

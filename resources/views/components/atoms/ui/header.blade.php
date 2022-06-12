@@ -9,7 +9,7 @@
  --}}
 
 
-<h2 class="ui header" onclick="location.window.assign('{{ $link }}')">
+<h2 class="text-3xl font-bold" onclick="location.window.assign('{{ $link }}')">
         <div class="x-flex x-flex-ycenter">
                 @if (!empty($icon))
                         <ion-icon name="{{ $icon }}" style="margin-right: 0.3em"></ion-icon>
@@ -18,5 +18,8 @@
                         {{ $title }}
                 </span>
         </div>
-        <p style="opacity:0.6">{{ $desc }}</p>
 </h2>
+{{-- <p class="font-bold opacity-50">{{ $desc ?? null }}</p> --}}
+<div>
+        {{ $slot }}
+</div>

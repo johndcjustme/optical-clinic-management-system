@@ -2,11 +2,7 @@
     $forApprovalCount = $appts
         ->where('appt_confirmed', null)
         ->where('appt_confirmed', 0)
-        ->count();
-
-
-
-   
+        ->count();   
 @endphp
 
 <x-layout.page-content>
@@ -18,23 +14,28 @@
     @endsection
 
     @section('section-links')
-        <div class="ui tiny menu" style="z-index:1;">
-            <div class="ui floating labeled icon dropdown item">
-                <i class="filter icon" style="margin-right:0.8em;"></i>
-                {{ $this->categoryName($activeMenu) }} 
-                <span style="margin-left:0.4em; opacity:0.5">{{ $this->categoryCount($activeMenu) }}</span>
-                <div class="menu">
-                    <div wire:click.prevent="$set('activeMenu', 'all')" class="vertical item">
-                        <span class="text">All <span style="margin-left:0.4em; opacity:0.5;">{{ $this->categoryDesc('all') }}</span></span>
-                    </div>
-                    @foreach (\App\Models\Appointment_category::all() as $ac)
-                        <div wire:click.prevent="$set('activeMenu', {{ $ac->id }})" class="vertical item {{ $this->categoryDesc($ac->id) == 0 ? 'disabled' : '' }}">
-                            <span class="text">{{ $ac->title }} <span style="margin-left:0.4em; opacity:0.5;">{{ $this->categoryDesc($ac->id) }}</span></span>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
+        <x-organisms.ui.tabs>
+            <x-organisms.ui.tabs.tab class="tab-active">
+                <div class="dropdown">{{ $this->categoryName($activeMenu) }} 
+                    <span style="margin-left:0.4em; opacity:0.5">{{ $this->categoryCount($activeMenu) }}</span>
+                    <label tabindex="0" class="ml-2"><i class="fa-solid fa-caret-down"></i></label>
+                    <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg rounded-box w-52 mt-3 bg-neutral">
+                        <li>
+                            <a wire:click.prevent="$set('activeMenu', 'all')" class="text-white">All
+                                <span class="badge bg-info-content badge-md">{{ $this->categoryDesc('all') }}</span>
+                            </a>
+                        </li>
+                        @foreach (\App\Models\Appointment_category::all() as $ac)
+                            <li class="{{ $this->categoryDesc($ac->id) == 0 ? 'tab-disabled' : '' }}">
+                                <a wire:click.prevent="$set('activeMenu', {{ $ac->id }})" class="text-white">{{ $ac->title }}
+                                    <span class="badge bg-info-content badge-md">{{ $this->categoryDesc($ac->id) }}</span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>   
+            </x-organisms.ui.tabs.tab>
+        </x-organisms.ui.tabs>
     @endsection
 
     @section('section-heading-left')
@@ -45,7 +46,7 @@
                 </x-slot>
                 <x-slot name="menu">
                     {{-- <div wire:click.prevent="approveAppts" class="item"><i class="check icon"></i> Approve</div> --}}
-                    <div wire:click.prevent="deletingAppts" class="item"><i class="delete icon"></i> Delete</div>
+                    <li wire:click.prevent="deletingAppts" class="item"><a><i class="delete icon"></i> Delete</a></li>
                 </x-slot>
             </x-atoms.ui.header-dropdown-menu>
         @else
@@ -57,50 +58,20 @@
         @if (count($appts) > 0)
             <x-atoms.ui.search wire-model="searchAppt" placeholder="Search..." />
         @endif
-        <x-atoms.ui.header-dropdown-menu class="right pointing tiny">
-            <x-slot name="menu">
-                <div class="item">
-                    <x-molecules.ui.dropdown.icon />
-                    <span class="text">Filter</span>
-                    <x-molecules.ui.dropdown.menu>
-                        <div wire:click.prevent="$set('filter', 'DATE_RANGE')" class="item">
-                            Date Range
-                        </div>
-                        <div wire:click.prevent="$set('filter', 'DATE_SINGLE')" class="item">
-                            Single Date
-                        </div>
-                        <div class="header">
-                            Filter by tag
-                        </div>
-                        <div class="divider"></div>
-                        <div class="item">
-                            Today
-                        </div>
-                        <div class="item">
-                            This Week
-                        </div>
-                        <div class="item">
-                            This Month
-                        </div>
-                    </x-molecules.ui.dropdown.menu>
-                </div>
-                <div class="item">
-                    <x-molecules.ui.dropdown.icon />
-                    <span class="text">Showing {{ $pageNumber }} Entries</span>
-                    <x-molecules.ui.dropdown.menu>
-                        <x-organisms.ui.paginator-number />
-                    </x-molecules.ui.dropdown.menu>
-                </div>
-                <div class="ui divider"></div>
-                <div wire:click.prevent="apptShowModal('settings', null)" class="item icon">
-                    <i class="icon settings"></i>
+        <x-organisms.ui.dropdown-end>
+            <x-organisms.ui.dropdown-entries :pagenumber="$pageNumber"/>
+            <div class="ui divider"></div>
+            <li wire:click.prevent="apptShowModal('settings', null)">
+                <a>
+                    <i class="fa-solid fa-gear"></i>
                     Settings
-                </div>
-            </x-slot>
-        </x-atoms.ui.header-dropdown-menu>
+                </a>
+            </li>
+        </x-organisms.ui.dropdown-end>
     @endsection
 
     @section('section-main')
+
         @if ($this->myTab == 1)
             @if (count($appts) > 0)
                 <x-organisms.ui.table class="selectable unstackable">
@@ -109,6 +80,7 @@
                         <x-organisms.ui.table.th style="width:0.5em; padding:0" />
                         <x-organisms.ui.table.th label="Status" order-by="appointment_category_id" style="width:10em" />
                         <x-organisms.ui.table.th label="Appointment" order-by="appt_date" style="width:12em" />
+                        <x-organisms.ui.table.th label="" style="width:2em" />
                         <x-organisms.ui.table.th label="Patient Name" order-by="patient_name" />
                         <x-organisms.ui.table.th label="Phone Number" style="width:14em" />
                         <x-organisms.ui.table.th label="Date Created" order-by="created_at" style="width:10em" />

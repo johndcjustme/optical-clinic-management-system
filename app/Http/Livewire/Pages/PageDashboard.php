@@ -10,6 +10,7 @@ use App\Models\Item;
 use App\Models\Category;
 use App\Models\In_out_of_item as Out_item;
 use App\Models\Appointment;
+use App\Models\Order_detail;
 use App\Models\Appointment_category as Ac;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
 use Carbon\Carbon;
@@ -97,6 +98,8 @@ class PageDashboard extends Component
     {
         // $this->getMonth(4);
 
+        $countLowStocksArray = [];
+
         $columnChartModel = (new ColumnChartModel());
             $columnChartModel->addColumn('Week 1', $this->weeklyPatients($this->weeklyPatients), '#21ba45');
             $columnChartModel->addColumn('Week 2', $this->weeklyPatients($this->weeklyPatients + 1), '#21ba45');
@@ -123,11 +126,12 @@ class PageDashboard extends Component
 
         $outStocks = Item::whereColumn('item_qty', '<=', 'item_buffer')->get();
 
-
-        foreach ($outStocks as $countLowStock) {
-            $countLowStocksArray[] = $countLowStock; }
-
-        $this->countLowStocks = count($countLowStocksArray);
+        if ($outStocks) {
+            foreach ($outStocks as $countLowStock) {
+                $countLowStocksArray[] = $countLowStock; }
+    
+            $this->countLowStocks = count($countLowStocksArray);
+        }
 
 
 
@@ -253,14 +257,21 @@ class PageDashboard extends Component
                 return Appointment::select(['id'])->whereDate('appt_date', getTomorrow())->count() ?? 0;
                 break;
             case 'forApproval':
-                $ac = Ac::where('status', true)->first();
-                return Appointment::select(['id'])->where('appointment_category_id', $ac->id)->count() ?? 0;
+                // $ac = Ac::where('status', true)->first();
+                return Appointment::select(['id'])->where('appointment_category_id', 22)->count() ?? 0;
                 break;
             case 'ongoing':
+                return Appointment::select(['id'])->where('appointment_category_id', 33)->count() ?? 0;
                 return 0;
                 break;
             default;
         }
 
+    }
+
+
+    public function orderStats($status)
+    {
+        return Order_detail::select(['order_status'])->where('order_status', $status)->count();
     }
 }

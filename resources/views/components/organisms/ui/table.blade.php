@@ -1,4 +1,4 @@
-<table {{ $attributes->merge(['class' => 'ui single line table']) }}>
+<table {{ $attributes->merge(['class' => 'table w-full']) }}>
   <thead>
     <tr>
       {{ $thead }}

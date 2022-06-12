@@ -9,10 +9,14 @@
 
 <x-layout.main-page>
 
-    <div class="full_w main_content_inner overflow_y_scroll">
-        <div class="inner_content">
+
+
+    {{-- <div class="overflow_y_scroll"> --}}
+        {{-- <div class=""> --}}
             @include('livewire.components.organisms.pagecontents.patient-content')      
-        </div>
+        {{-- </div> --}}
+
+
 
         @if ($modal['show'])
             @include('livewire.components.organisms.modal.modal-patient');
@@ -20,12 +24,10 @@
 
         {{-- <x-alert type="error" message="{{ session('message') }}" /> --}}
 
-        <x-organisms.ui.confirm-dialog 
-            wire-confirm="confirm"
-            content="Confirm Delete?"
-        />
+        <x-organisms.ui.confirm-dialog wire-confirm="confirm"/>
 
-    </div>
+    {{-- </div> --}}
+
 
 
 </x-layout.main-page>

@@ -2,13 +2,13 @@
 
     @section('section-page-title')
         <x-atoms.ui.header 
-            title="Reports"
+            title="Report"
             desc="Lorem ipsum dolor sit amet"/>
     @endsection
 
 
     @section('section-links')
-        <div class="ui compact tiny menu" style="z-index:300;">
+        {{-- <div class="ui compact tiny menu" style="z-index:300;">
             <div class="ui floating labeled icon dropdown item">
                 <i class="icon file alternate" style="margin-right:0.8em;"></i>
                 <span class="text">
@@ -20,12 +20,12 @@
                     <div wire:click.prevent="subPage(3)" class="item">{{ $this->reportCategory(3) }}</div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     @endsection
 
     @section('section-heading-left')
-        <button class="ui button tiny circular secondary icon"  onclick="window.print()">
-            <i class="icon print"></i>
+        <button class="btn btn-circle"  onclick="window.print()">
+            <i class="fa-solid fa-print"></i>
         </button>
     @endsection
 
@@ -34,112 +34,133 @@
 
         @if ($filter == 'DATE_RANGE')
             <div class="x-flex x-gap-1 x-flex-ycenter">
-                <div class="ui right tiny labeled input @if(!empty($date_to) && empty($date_from)) error @endif">
+
+                {{-- <div class="form-control"> --}}
+                <label class="input-group">
+                    <span>From</span>
+                    <input wire:model="date_from" type="date" placeholder="info@site.com" class="input input-bordered {{ !empty($date_to) && empty($date_from) ? 'input-error' : ''}}" />
+                </label>
+
+                <label class="input-group">
+                    <span>To</span>
+                    <input wire:model="date_to" type="date" placeholder="info@site.com" class="input input-bordered {{ $date_to < $date_from ? 'input-error' : ''}}" />
+                </label>
+                {{-- </div> --}}
+
+                {{-- <div class="ui right tiny labeled input @if(!empty($date_to) && empty($date_from)) error @endif">
                     <div class="ui dropdown label">
                         <div class="text">From</div>
                     </div>
                     <input wire:model="date_from" type="date">
-                </div>
+                </div> --}}
 
-                <div class="ui right tiny labeled input @if (($date_to < $date_from)) error @endif">
-                    <div class="ui dropdown label">
-                        <div class="text">To</div>
-                    </div>
-                    <input wire:model="date_to" type="date">
-                </div>
+                {{-- // <div class="ui right tiny labeled input @if (($date_to < $date_from)) error @endif">
+                //     <div class="ui dropdown label">
+                //         <div class="text">To</div>
+                //     </div>
+                //     <input wire:model="date_to" type="date">
+                // </div> --}}
             </div>
         @elseif ($filter == 'SINGLE_DATE')
-            <div class="ui right tiny input">
-                <input wire:model="date" type="date">
-            </div>
+
+            <label class="input-group">
+                <span><i class="fa-solid fa-calendar"></i></span>
+                <input wire:model="date" type="date" placeholder="info@site.com" class="input input-bordered" />
+            </label>
         @endif
       
 
 
-        <x-atoms.ui.header-dropdown-menu class="right pointing tiny">
-            <x-slot name="menu"> 
-                <div class="header">
-                    <i class="icon filter"></i>
-                    Filter By
-                </div>
-                <div wire:click.prevent="$set('filter', 'ALL')" class="item">
+        <x-organisms.ui.dropdown-end class="fa-filter">
+            <li class="menu-title">
+                <span>Filter</span>
+            </li>
+            <li wire:click.prevent="$set('filter', 'ALL')" class="item">
+                <a>
                     All
-                </div>
-                <div wire:click.prevent="$set('filter', 'DATE_RANGE')" class="item">
+                </a>
+            </li>
+            <li wire:click.prevent="$set('filter', 'DATE_RANGE')" class="item">
+                <a>
                     Date Range
-                </div>
-                <div wire:click.prevent="$set('filter', 'SINGLE_DATE')" class="item">
+                </a>
+            </li>
+            <li wire:click.prevent="$set('filter', 'SINGLE_DATE')" class="item">
+                <a>
                     Single Date
-                </div>
-            </x-slot>
-        </x-atoms.ui.header-dropdown-menu>
+                </a>
+            </li>
+        </x-organisms.ui.dropdown-end>
      
     @endsection
 
     @section('section-main')
-    {{-- <hr> --}}
-    <br>
-    <div id="print-me" style="width:100%">
+    <div id="print-me" class="mt-10" style="width:100%">
 
-        <center>
-            <h1 class="ui header">
+        <center class="mb-10">
+            <h1 class="text-lg mb-2 font-bold" style="font-size:1.5em;">
                 {{ $this->reportCategory($subPage) }}
-                <p style="opacity:0.6">
-
-                    @switch($filter)
-                        @case('DATE_RANGE')
-                            From <span style="border-bottom:1px solid gray">{{ humanReadableDate($date_from) }}</span> to <span style="border-bottom:1px solid gray">{{ humanReadableDate($date_to) }}</span>
-                            @break
-                        @case('SINGLE_DATE')
-                            In {{ humanReadableDate($date) }}
-                            @break
-                        @case('ALL')
-                            All Records
-                            @break
-                        @default
-                            <i>Date(s) will appear here</i>
-                    @endswitch
-                    {{-- @if (!empty($date_from) && !empty($date_to))
-                        From <span style="border-bottom:1px solid gray">{{ humanReadableDate($date_from) }}</span> to <span style="border-bottom:1px solid gray">{{ humanReadableDate($date_to) }}</span>
-                    @elseif (!empty($date))
-                        In {{ humanReadableDate($date) }}
-                    @else
-                        <i>Date(s) will appear here</i>
-                    @endif --}}
-                    
-                </p>
             </h1>
+            <p class="text-lg">
+                @switch($filter)
+                    @case('DATE_RANGE')
+                        <span class="opacity-50 font-b">From</span>
+                        {{ humanReadableDate($date_from) }}
+                        <span class="opacity-50 font-b">To</span>
+                        {{ humanReadableDate($date_to) }}
+                        @break
+                    @case('SINGLE_DATE')
+                        In {{ humanReadableDate($date) }}
+                        @break
+                    @case('ALL')
+                        All Records
+                        @break
+                    @default
+                        <i>Date(s) will appear here</i>
+                @endswitch
+            </p>
         </center>
-        <br><br>
+        
         @switch($subPage)
             @case(1)
-                <center class="text-align:center;">
-                    <div class="ui tiny horizontal divided list">
-                        <div class="item">
+                <center class="mb-7">
+
+                    <div class="flex justify-center mb-2">
+                        <div class="font-bold">
                             Found {{ count($patients) }} Records
                         </div>
-                        <div class="item">
-                            Order By:
-                            <div class="ui floating icon dropdown">
-                                <i class="dropdown icon"></i>
-                                <span class="text">{{ $this->patientOrderBy($order) }}</span>
-                                <div class="menu">  
-                                    <div wire:click.prevent="$set('order', 'patient_lname')" class="item">
-                                        Name
-                                    </div>
-                                    <div wire:click.prevent="$set('order', 'created_at')" class="item">
-                                        Date Added
-                                    </div>
-                                    <div wire:click.prevent="$set('order', 'patient_age')" class="item">
-                                        Age
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
+
+                    <x-organisms.ui.dropdown class="dropdown-end">
+                        <x-organisms.ui.dropdown.dropdown-label>
+                            <span class="mr-2">
+                                Order By: 
+                            </span>
+                            {{ $this->patientOrderBy($order) }}
+                            <i class="ml-1 fa-solid fa-caret-down"></i>
+                        </x-organisms.ui.dropdown.dropdown-label>
+                        <x-organisms.ui.dropdown.dropdown-content class="ml-2">
+                            <li wire:click.prevent="$set('order', 'patient_lname')" class="item">
+                                <a>
+                                    Name
+                                </a>
+                            </li>
+                            <li wire:click.prevent="$set('order', 'created_at')" class="item">
+                                <a>
+                                    Date Added
+                                </a>
+                            </li>
+                            <li wire:click.prevent="$set('order', 'patient_age')" class="item">
+                                <a>
+                                    Age
+                                </a>
+                            </li>
+                        </x-organisms.ui.dropdown.dropdown-content>
+                    </x-organisms.ui.dropdown.dropdown-content>
+
                 </center>
 
-                {{-- @if (count($patients) > 0) --}}
+                @if (count($patients) > 0)
                     <x-organisms.ui.table class="fluid">
                         <x-slot name="thead">
                             <x-organisms.ui.table.th label="#" style="width:1em;"/>
@@ -169,13 +190,13 @@
                             @endforeach
                         </x-slot>
                     </x-organisms.ui.table>
-                {{-- @else
+                @else
                     <x-atoms.ui.message 
                         icon="frown open"
                         class="mt_20 warning"
                         header="Found Noting."
                         message="Please double check the selected date."/>
-                @endif --}}
+                @endif
 
                     @break
                     

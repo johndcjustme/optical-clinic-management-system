@@ -1,1 +1,1 @@
-<img src="{{ asset('images/dango-logo-nolabel.png')}}" alt="" width="60px">
+<img src="{{ asset('images/dango-logo-nolabel.png')}}" alt="" style="width:3.7em">

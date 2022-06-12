@@ -68,7 +68,7 @@ class RegisteredUserController extends Controller
         ]);
 
         
-        $user->attachRole('3'); // parameter can be a Role object, array, id or the role string name
+        $user->attachRole('1'); // parameter can be a Role object, array, id or the role string name
         notify('newUser', 'new user', 'Hello there! you have a newly registered user ' . Str::title($user->name) . ' ' . $user->email . '.');
 
         

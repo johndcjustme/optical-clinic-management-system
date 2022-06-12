@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePostsTable extends Migration
+class CreateOrderListsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,16 @@ class CreatePostsTable extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('order_lists', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->string('post_content');
-            $table->dateTime('created_at');
-            $table->dateTime('updated_at');
-            // $table->integer('role')->nullable();
+            $table->unsignedBigInteger('item_id');
+            $table->double('qty')->nullable();
 
-            $table->foreign('user_id')
+            $table->foreign('item_id')
                 ->references('id')
-                ->on('users')
+                ->on('items')
                 ->onDelete('cascade');
+            // $table->timestamps();
         });
     }
 
@@ -35,6 +33,6 @@ class CreatePostsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('order_lists');
     }
 }

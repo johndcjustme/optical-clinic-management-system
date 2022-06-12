@@ -1,8 +1,8 @@
-<div class="ui mini labeled button" tabindex="0">
-    <div class="ui basic button">
+<div class="btn-group">
+    <button class="btn">
         {{ $this->time($time->time) }}
-    </div>
-    <a class="ui left pointing blue label" wire:click.prevent="deleteTime({{ $time->id }})">
-    <i class="fas fa-close"></i>
-    </a>
+    </button>
+    <button wire:click.prevent="deleteTime({{ $time->id }})" class="btn btn-active">
+        <i class="fa-solid fa-close"></i>
+    </button>
 </div>

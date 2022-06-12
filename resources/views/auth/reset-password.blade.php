@@ -27,33 +27,26 @@
             <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
             <!-- Email Address -->
-            <div>
+            <div class="form-control w-full max-w-xs mt-3">
                 <x-label for="email" :value="__('Email')" />
-
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus />
+                <x-input id="email" type="email" name="email" :value="old('email', $request->email)" required autofocus />
             </div>
 
             <!-- Password -->
-            <div class="mt-4">
+            <div class="form-control w-full max-w-xs mt-3">
                 <x-label for="password" :value="__('Password')" />
-
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" placeholder="Enter new password..." required />
+                <x-input id="password" type="password" name="password" placeholder="Enter new password..." required />
             </div>
 
             <!-- Confirm Password -->
-            <div class="mt-4">
+            <div class="form-control w-full max-w-xs mt-3">
                 <x-label for="password_confirmation" :value="__('Confirm Password')" />
-
-                <x-input id="password_confirmation" class="block mt-1 w-full"
-                                    type="password"
-                                    name="password_confirmation"
-                                    placeholder="Confirm new password..."
-                                    required />
+                <x-input id="password_confirmation" type="password" name="password_confirmation" placeholder="Confirm new password..." required />
             </div>
 
-            <div class="x-flex x-flex-xend" style="margin-top:1.5em;">
-                <x-button style="width: 100%;">
-                    {{ __('Reset Password Now') }}
+            <div class="mt-7">
+                <x-button>
+                    {{ __('Reset Now') }}
                 </x-button>
             </div>
         </form>

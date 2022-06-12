@@ -13,17 +13,9 @@
     @section('section-heading-right')
         @if ($this->emptySupplier())
             <x-atoms.ui.search wire-model="searchSupplier" placeholder="Search..."/>
-            <x-atoms.ui.header-dropdown-menu class="right pointing tiny">
-                <x-slot name="menu"> 
-                    <div class="item">
-                        <x-molecules.ui.dropdown.icon/>
-                        <span class="text">Showing {{ $pageNumber }} Entries</span>
-                        <x-molecules.ui.dropdown.menu>
-                            <x-organisms.ui.paginator-number/>
-                        </x-molecules.ui.dropdown.menu>
-                    </div>
-                </x-slot>
-            </x-atoms.ui.header-dropdown-menu>
+            <x-organisms.ui.dropdown-end>
+                <x-organisms.ui.dropdown-entries :pagenumber="$pageNumber"/>
+            </x-organisms.ui.dropdown-end>
         @endif
     @endsection
 
@@ -34,7 +26,11 @@
                         {{ count($selectedSuppliers) }} Selected 
                     </x-slot>
                     <x-slot name="menu"> 
-                        <div class="item" wire:click.prevent="deletingSuppliers"><i class="delete icon"></i> Delete</div>
+                        <li class="item" wire:click.prevent="deletingSuppliers">
+                            <a href="">
+                                <i class="delete icon"></i> Delete
+                            </a>
+                        </li>
                     </x-slot>
                 </x-atoms.ui.header-dropdown-menu>
             @else

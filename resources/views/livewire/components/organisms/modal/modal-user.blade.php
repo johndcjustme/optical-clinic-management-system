@@ -18,20 +18,22 @@
         <div class="x-flex">
             <div>
                 @if (!$changePassword)
-                    <label wire:click.prevent="$toggle('modalRoleTab')" class="ui tiny button circular icon" for="updateItem_from_inItem" data-tooltip="{{ $modalRoleTab ? 'Back' : 'Edit Roles' }}" data-position="bottom left" data-inverted="" data-variation="mini"><i class="icon {{ $modalRoleTab ? 'left arrow' : 'user edit '}}"></i></label>
+                    {{-- <label wire:click.prevent="$toggle('modalRoleTab')" class="btn btn-circle"><i class="fa-solid {{ $modalRoleTab ? 'fa-arrow-left' : 'fa-edit'}}"></i></label> --}}
                 @endif
                 @if ($modal['update'] && !$modalRoleTab)
-                    <label wire:click.prevent="$toggle('changePassword', true)" for="" class="ui button tiny circular icon" data-tooltip="{{ $changePassword ? 'Back' : 'Change Password' }}" data-position="bottom left" data-inverted="" data-variation="mini"><i class="icon {{ $changePassword ? 'left arrow' : 'key' }}"></i></label>
+                    <div class="tooltip" data-tip="{{ $changePassword ? 'Back' : 'Change Password' }}">
+                        <label wire:click.prevent="$toggle('changePassword', true)" for="" class="btn btn-circle"><i class="fa-solid {{ $changePassword ? 'fa-arrow-left' : 'fa-key' }}"></i></label>
+                    </div>
                 @endif
             </div>
 
             <div style="margin-left: 0.5em">
                 @if ($modalRoleTab)
-                    <label wire:click.prevent="$toggle('confirmDeleteRole', true)" class="ui tiny button circular icon" for="updateItem_from_inItem" data-tooltip="{{ $confirmDeleteRole ? 'Cancel' : 'Remove roles' }}" data-position="bottom left" data-inverted="" data-variation="mini">
+                    <label wire:click.prevent="$toggle('confirmDeleteRole', true)" class="btn btn-circle btn-error" for="updateItem_from_inItem">
                         @if ($confirmDeleteRole)
-                            <i class="delete icon"></i>
+                            <i class="fa-solid fa-remove"></i>
                         @else
-                            <i class="trash icon"></i>
+                            <i class="fa-solid fa-trash"></i>
                         @endif
                     </label>
                 @endif
@@ -39,7 +41,7 @@
             
         </div>
         <div>
-            <h4>
+            <x-atoms.ui.modal-title>
                 @if (!$modalRoleTab)
                     @if ($modal['add'])
                         ADD USER
@@ -53,7 +55,7 @@
                 @else
                     ROLES
                 @endif
-            </h4>
+            </x-atoms.ui.modal-title>
         </div>
         <div>
             @if ($modalRoleTab)
@@ -65,10 +67,10 @@
                 </form>
             @else 
                 @if ($changePassword)
-                    <label class="ui button secondary tiny" for="change_password">Change</label>
+                    <label class="btn" for="change_password">Confirm Changes</label>
                 @else
-                    <x-atoms.ui.button wire:click.prevent="closeModal" class="tiny">Close</x-atoms.ui.button>
-                    <label class="ui button secondary tiny" for="create_or_update_user">Save</label>
+                    <x-atoms.ui.btn-close-modal/>
+                    <label class="btn ml-2" for="create_or_update_user">Save</label>
                 @endif
 
             @endif
@@ -76,7 +78,6 @@
     @endsection
     
     @section('modal_body')
-        <br><br>
         @if ($changePassword)
             @if (session()->has('passwordUnmatched'))
                 <div class="ui message tiny fluid red" style="width: 100%" x-init="$('.message .close').on('click', function() {$(this).closest('.message').transition('fade');});">
@@ -86,7 +87,7 @@
                 </div>  
             @endif
 
-            <form wire:submit.prevent="changePassword" class="ui form">
+            <form wire:submit.prevent="changePassword" class="mt-16">
                 <div class="two fields">
                     <div class="field">
                         <x-atoms.ui.label>New Password <x-atoms.ui.required>@error('user.password') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
@@ -102,24 +103,19 @@
 
         @else
             @if (!$modalRoleTab)
-                <form wire:submit.prevent="createOrUpdateUser" class="ui form">
-                    <div class="field">
-                        <div class="flex flex_y_center gap_1">
-                            <div>                        
+                <form wire:submit.prevent="createOrUpdateUser">
+                    <x-molecules.ui.field class="justify-items-center">
+                        <label for="user_photo">
+                            <div class="tooltip" data-tip="Click Avatar">                        
                                 @if ($avatar)                            
                                     <x-atoms.ui.avatar src="{{ $avatar->temporaryUrl() }}" size="5em"/>
                                 @else
                                     <x-atom.profile-photo size="5em" path="{{ avatar($user['avatar']) }}" />
                                 @endif
+                                <input type="file" wire:model="avatar" id="user_photo" style="opacity:0; height:0; width:0;">
                             </div>
-                            <div>
-                                <label for="user_photo"><span class="ui button tertiary blue">Choose Photo</span></label>
-                                <input wire:model="avatar" type="file" name="" id="user_photo" style="opacity: 0" hidden>
-                            </div>
-                        </div>
-                    </div>
-
-                    <br>
+                        </label>
+                    </x-molecules.ui.field>
 
                     @error('avatar')
                         <div class="ui message tiny fluid red" style="width: 100%" x-init="$('.message .close').on('click', function() {$(this).closest('.message').transition('fade');});">
@@ -147,34 +143,34 @@
                     @endif --}}
 
                     @if ($modal['add'])
-                        <div class="two fields">
-                            <div class="field">
+                        <x-molecules.ui.field class="grid-cols-2">
+                            <div>
                                 <x-atoms.ui.label>Name <x-atoms.ui.required>@error('user.name') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
                                 <x-atoms.ui.input wire-model="user.name" type="text" class="mb_7" placeholder="Enter Name..."/>
 
                                 <x-atoms.ui.label>Email Address <x-atoms.ui.required>@error('user.email') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
                                 <x-atoms.ui.input wire-model="user.email" type="email" class="mb_7" placeholder="Enter Email Address..."/>
                             </div>
-                            <div class="field">
+                            <div>
                                 <x-atoms.ui.label>Password <x-atoms.ui.required>@error('user.password') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
                                 <x-atoms.ui.input wire-model="user.password" type="password" class="mb_7" placeholder="Minimum of 6 characters..."/>
 
                                 <x-atoms.ui.label>Repeat Password <x-atoms.ui.required>@error('user.password_confirmation') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
                                 <x-atoms.ui.input wire-model="user.password_confirmation" type="password" class="mb_7" placeholder="Minimum of 6 characters... "/>
                             </div>
-                        </div>
+                        </x-molecules.ui.field>
                         
                     @elseif ($modal['update'])
-                        <div class="two fields">
-                            <div class="field">
+                        <x-molecules.ui.field class="grid-cols-2">
+                            <div>
                                 <x-atoms.ui.label>Name <x-atoms.ui.required>@error('user.name') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
                                 <x-atoms.ui.input wire-model="user.name" type="text" class="mb_7" placeholder="Enter Name..."/>
                             </div>
-                            <div class="field">
+                            <div>
                                 <x-atoms.ui.label>Email Address <x-atoms.ui.required>@error('user.email') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
                                 <x-atoms.ui.input wire-model="user.email" type="email" class="mb_7" placeholder="Enter Email Address..."/>
                             </div>
-                        </div>
+                        </x-molecules.ui.field>
                     @endif
 
 
@@ -182,7 +178,7 @@
                         <x-atoms.ui.label>Role <x-atoms.ui.required>@error('user.role') {{ $message }} @enderror</x-atoms.ui.required></x-atoms.ui.label>
                         <x-atoms.ui.select wire:model.defer="user.role" class="mb_7">
                             <option value="" selected hidden>Select</option>
-                            @foreach (App\Models\Role::all() as $role)
+                            @foreach (App\Models\Role::select(['id', 'display_name'])->get() as $role)
                                 <option class="item" value="{{ $role->id }}">{{ $role->display_name }}</option>
                             @endforeach
                         </x-atoms.ui.select>

@@ -10,11 +10,11 @@
 
 <x-layout.main-page>
 
-    <div class="full_w main_content_inner overflow_y_scroll">
+    {{-- <div class="full_w main_content_inner overflow_y_scroll"> --}}
 
-        <div class="inner_content">
+        {{-- <div class="inner_content"> --}}
             @include('livewire.components.organisms.pagecontents.inventory-content')      
-        </div>
+        {{-- </div> --}}
 
         @if ($modal['show'])
             @include('livewire.components.organisms.modal.modal-inventory')
@@ -24,10 +24,10 @@
             @include('livewire.components.organisms.modal.modal-inventory-image')
         @endif
 
-        <x-alert type="error" message="{{ session('message') }}" />
-
         <x-organisms.ui.confirm-dialog wire-confirm="confirm"/>
-    </div>
+        
+        <x-alert type="error" message="{{ session('message') }}" />
+    {{-- </div> --}}
 
 </x-layout.main-page>
 

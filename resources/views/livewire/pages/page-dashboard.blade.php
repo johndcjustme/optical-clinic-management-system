@@ -3,7 +3,7 @@
 
     
 {{-- active page  --}}
-@section('dashboard', 'active')
+@section('dashboard', 'text-primary')
 {{-- current page --}}
 @section('pageTitle', 'Dashboard')
 

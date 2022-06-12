@@ -33,6 +33,11 @@ class CreateExamsTable extends Migration
             $table->string('exam_ADD')->nullable();
             $table->string('exam_PD')->nullable();
             $table->string('exam_remarks')->nullable();
+            $table->string('exam_frame')->nullable();
+            $table->string('exam_lense')->nullable();
+            $table->string('exam_tint')->nullable();
+            $table->string('exam_others')->nullable();
+
             $table->timestamps();
             $table->foreign('patient_id')
                 ->references('id')

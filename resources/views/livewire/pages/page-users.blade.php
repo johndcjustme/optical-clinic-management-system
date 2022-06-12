@@ -18,10 +18,9 @@
 
         {{-- <x-alert type="error" message="{{ session('message') }}" /> --}}
 
-        <x-organisms.ui.confirm-dialog 
-            wire-confirm="confirm"
-            content="Confirm Delete?"
-        />
+        
+        <x-organisms.ui.confirm-dialog wire-confirm="confirm"/>
+
 
 
     </div>

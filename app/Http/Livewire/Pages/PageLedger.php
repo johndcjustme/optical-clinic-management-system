@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Cash_type;
 use App\Models\Purchase;
 use App\Models\Payment;
+use App\Models\Payment_record;
 
 class PageLedger extends Component
 {
@@ -16,10 +17,14 @@ class PageLedger extends Component
     public $startBal;
 
     public $selectedItems = [];
+    
+    // public $selectedCredits = [];
 
     public $otherCashType;
 
     public $cashTypeId;
+
+    public $viewPayments = false;
 
     public $paid = 'all', $all = false;
 
@@ -40,12 +45,14 @@ class PageLedger extends Component
         'partial' => '',
         'type' => '',
         'balance' => '',
+        'pay_amount' => 0,
     ];
 
     public $confirm = [
         'deleteCashType' => false,
         'batchdeleteCashType' => false,
         'deletePayment' => false,
+        'deletePayments' => false,
     ];
 
     public $cashTypes = [
@@ -81,8 +88,10 @@ class PageLedger extends Component
                 break;
 
             case 2:
-                $payments = Payment::select(['id', 'description', 'notify', 'payable', 'balance', 'payment_type', 'due']);
+                $payments = Payment::with(['records'])->select(['id', 'description', 'notify', 'payable', 'balance', 'payment_type', 'due']);
                 $cashtypes = Cash_type::select(['type'])->get();
+
+                $viewpayments = Payment_record::where('payment_id', $this->payment['id'])->orderByDesc('id')->get();
 
                 // if (($this->paid == true) || ($this->paid == false)) {
                 //     if ($this->paid == false) {
@@ -101,12 +110,14 @@ class PageLedger extends Component
                 }
 
                 $render = [
+                    'viewpayments' => $viewpayments, 
                     'payments' => $payments->orderBy('id', 'asc')->get(),
                     'cashtypes' => $cashtypes,
                 ];
                 break;
             case 3:
                 $purchases = Purchase::select([
+                    'id',
                     'patient_id',
                     'qty',
                     'total',
@@ -132,39 +143,100 @@ class PageLedger extends Component
     }
 
 
+    public function viewPaymentRecords($paymentId, $paymentDesc)
+    {
+        $this->viewPayments = true;
+        $this->payment['id'] = $paymentId;
+        $this->payment['desc'] = $paymentDesc;
+
+    }
+
 
     public function pay()
     {
 
-        $this->validate([
-            'payment.partial' => 'required',
-            'payment.type' => 'required',
-        ]);
+        // dd($this->payment['id'] . ', ' . $this->payment['amount']);
 
-        if ($this->payment['amount'] > $this->payment['balance']) {
-            $payment = [
-                'payment_type' => $this->payment['type']
+
+        $validate = [
+            'payment.partial' => 'required',
+        ];
+
+        if ($this->payment['partial'] == 'paid') {
+            $validate += [
+                'payment.partial' => 'required|numeric'
             ];
-    
-            if ($this->payment['partial'] == 'partial') 
-                $payment += [
-                    'balance' => $this->payment['balance']
-                ];
-            elseif ($this->payment['partial'] == 'paid') 
-                $payment += [
-                    'balance' => $this->payment['amount']
-                ];
-             
-            Payment::select(['id', 'balance', 'payment_type'])->findOrFail($this->payment['id'])->update($payment);
-    
-            $this->closeModal();
-        } else {
-            $this->dispatchBrowserEvent('toast', [
-                'class' => 'error',
-                'title' => 'Error',
-                'message' => 'Amount should not be greater than the total to be paid',
-            ]);
         }
+
+        $this->validate($validate);
+
+        if (empty($this->payment['type'])) {
+            $this->payment['type'] = 'None';
+        }
+
+
+        
+
+
+        $payment_record = Payment_record::where('payment_id', $this->payment['id'])->get();
+        $total_payment = $payment_record->sum('pay_amount') + $this->payment['pay_amount'];
+
+        if ($this->payment['partial'] == 'paid') {
+
+            if ($this->payment['amount'] == $total_payment) {
+                dd('paid already');
+            } else {
+                $this->payment['pay_amount'] = 0; 
+                $this->payment['pay_amount'] = $this->payment['amount'] - $total_payment;
+    
+                Payment_record::create([
+                    'payment_id' => $this->payment['id'],
+                    'pay_amount' => $this->payment['pay_amount'], 
+                    'payment_type' => $this->payment['type']
+                ]);
+            }
+
+        } elseif ($this->payment['partial'] == 'partial') {
+            // if ($this->payment['amount'] > $this->payment['pay_amount']) {
+
+            if (empty($this->payment['pay_amount'])) {
+                dd('Amount should not be empty.');
+            }
+                
+            if (($this->payment['amount'] > $total_payment) && ($this->payment['pay_amount'] != 0)) {
+                Payment_record::create([
+                    'payment_id' => $this->payment['id'],
+                    'pay_amount' => $this->payment['pay_amount'], 
+                    'payment_type' => $this->payment['type']
+                ]);         
+    
+                $this->reset(['payment']);
+                $this->closeModal();
+    
+            } elseif ($this->payment['amount'] == $total_payment) {
+                dd('paid anyway');
+            } else {
+                dd('payment greater than the total payment or payment is 0');
+            }
+        }
+
+
+            // Payment_record::create([
+            //     'payment_id' => $this->payment['id'],
+            //     'pay_amount' => $this->payment['balance'], 
+            //     'payment_type' => $this->payment['type']
+            // ]);
+             
+            // Payment::select(['id', 'balance', 'payment_type'])->findOrFail($this->payment['id'])->update($payment);
+
+          
+        // } else {
+        //     $this->dispatchBrowserEvent('toast', [
+        //         'class' => 'error',
+        //         'title' => 'Error',
+        //         'message' => 'Amount should not be greater than the total to be paid',
+        //     ]);
+        // }
     }
 
 
@@ -205,6 +277,28 @@ class PageLedger extends Component
             'title' => 'Success',
             'message' => $message . ' successfully',
         ]);
+    }
+
+    public function deletingPayments()
+    {
+        $this->confirm['deletePayments'] = true;
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Delete Payment',
+            'content' => 'Selected payments will be deleted. Procced?',
+        ]);
+    }
+
+    public function deletedPayments()
+    {
+        $deleted = Purchase::destroy($this->selectedItems);
+        if ($deleted) {
+            $this->dispatchBrowserEvent('confirm-dialog-close');
+            $this->dispatchBrowserEvent('toast', [
+                'class' => 'success',
+                'title' => 'Deleted',
+                'message' => 'Payments has been successfully removed.',
+            ]);
+        }
     }
 
     public function deletingPayment($paymentId) 
@@ -298,6 +392,9 @@ class PageLedger extends Component
         $this->confirm['deletePayment']
             ? $this->deletedPayment()
             : '';
+        $this->confirm['deletePayments']
+            ? $this->deletedPayments()
+            : '';
     }
 
     public function setPayment($payment)
@@ -311,9 +408,9 @@ class PageLedger extends Component
 
     public function showModal($action, $paymentId = null)
     {
-
         switch ($action) {
             case 'add':
+                $this->reset(['payment']);
                 $this->modal['add'] = true;
                 break;
 
@@ -337,7 +434,16 @@ class PageLedger extends Component
 
     public function closeModal()
     {
-        $this->reset(['modal', 'payment']);
+        // $this->reset(['modal', 'payment']);
+        $this->reset(['modal']);
         $this->resetErrorBag();
+    }
+
+    public function resetField()
+    {
+        $this->reset([
+            'modal',
+            'payment',
+        ]);
     }
 }

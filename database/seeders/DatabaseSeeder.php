@@ -9,6 +9,7 @@ use App\Models\Tab;
 use App\Models\Day;
 use App\Models\Category;
 use App\Models\Supplier;
+use App\Models\Appointment_category;
 use App\Models\Setting;
 use Illuminate\Support\Str;
 use Faker;
@@ -26,9 +27,20 @@ class DatabaseSeeder extends Seeder
 
         $this->call(LaratrustSeeder::class);
 
+
         Category::create([
             'name' => 'Lense',
         ]);
+
+        Category::create([
+            'name' => 'Frame',
+        ]);
+
+        Category::create([
+            'name' => 'Accessory',
+        ]);
+
+
 
         Supplier::create([
             'supplier_name' => $faker->name,
@@ -68,6 +80,45 @@ class DatabaseSeeder extends Seeder
             'day' => 'Sunday',
             'status' => false,
         ]);
+
+
+
+
+
+        Appointment_category::create([
+            'id' => 22,
+            'title' => 'For Approval', 
+        ]);
+
+        Appointment_category::create([
+            'id' => 33,
+            'title' => 'Approved', 
+        ]);
+
+        Appointment_category::create([
+            'id' => 44,
+            'title' => 'Fullfilled', 
+        ]);
+
+        Appointment_category::create([
+            'id' => 55,
+            'title' => 'Canceled', 
+        ]);
+
+        Appointment_category::create([
+            'id' => 66,
+            'title' => 'Rescheduled', 
+        ]);
+
+        Appointment_category::create([
+            'id' => 77,
+            'title' => 'Missed', 
+        ]);
+
+
+
+
+
 
 
         Setting::create([

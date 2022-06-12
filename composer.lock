@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c6bc1c786b144bf44a0122152e7c0cb7",
+    "content-hash": "04045751bd19417e54609d055db8e1d1",
     "packages": [
         {
             "name": "arielmejiadev/larapex-charts",
@@ -4055,16 +4055,16 @@
         },
         {
             "name": "spatie/browsershot",
-            "version": "3.52.6",
+            "version": "3.54.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/browsershot.git",
-                "reference": "2edcaa97fe3fdf960e246f3dec39cf26bdaf0ed9"
+                "reference": "038cfecb095c74b80a64c8daa9d2194f680c99c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/browsershot/zipball/2edcaa97fe3fdf960e246f3dec39cf26bdaf0ed9",
-                "reference": "2edcaa97fe3fdf960e246f3dec39cf26bdaf0ed9",
+                "url": "https://api.github.com/repos/spatie/browsershot/zipball/038cfecb095c74b80a64c8daa9d2194f680c99c1",
+                "reference": "038cfecb095c74b80a64c8daa9d2194f680c99c1",
                 "shasum": ""
             },
             "require": {
@@ -4109,7 +4109,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/browsershot/issues",
-                "source": "https://github.com/spatie/browsershot/tree/3.52.6"
+                "source": "https://github.com/spatie/browsershot/tree/3.54.0"
             },
             "funding": [
                 {
@@ -4117,7 +4117,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-04-06T14:12:39+00:00"
+            "time": "2022-05-19T13:37:26+00:00"
         },
         {
             "name": "spatie/image",

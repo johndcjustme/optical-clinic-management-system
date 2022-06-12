@@ -17,8 +17,9 @@ class Td extends Component
     public $descIcon;
     public $avatar;
     public $checkbox, $checkboxValue;
+    public $viewPhoto;
 
-    public function __construct($text = null, $textIcon = null, $desc = null, $descIcon = null, $avatar = null, $checkbox = null, $checkboxValue = null)
+    public function __construct($text = null, $textIcon = null, $desc = null, $descIcon = null, $avatar = null, $checkbox = null, $checkboxValue = null, $viewPhoto = null)
     {
         $this->text = $text;
         $this->textIcon = $textIcon;
@@ -27,6 +28,7 @@ class Td extends Component
         $this->avatar = $avatar;
         $this->checkbox = $checkbox; 
         $this->checkboxValue = $checkboxValue; 
+        $this->viewPhoto = $viewPhoto;
     }
 
     /**

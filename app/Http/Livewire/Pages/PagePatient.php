@@ -9,6 +9,7 @@ use App\Models\Patient;
 use App\Models\Exam;
 use App\Models\Lense;
 use App\Models\Item;
+use App\Models\Order;
 use App\Models\Purchase;
 use App\Models\Order_detail;
 use App\Models\Appointment;
@@ -184,6 +185,10 @@ class PagePatient extends Component
         'updated_at'   => '',
         'exam_PD'      => '',
         'exam_remarks' => '',
+        'exam_frame'   => '',
+        'exam_lense'   => '',
+        'exam_tint'    => '',
+        'exam_others'  => '',
     ];
 
     protected $queryString = [
@@ -226,12 +231,16 @@ class PagePatient extends Component
                 break;
 
             default:
-                $pts = Patient::select([
+                $pts = Patient::with(['appointment'])
+                        ->select([
                             'id',
                             'patient_fname',
+                            'patient_avatar',
                             'patient_lname',
                             'patient_mname',
                             'patient_address',
+                            'patient_gender',
+                            'patient_age',
                             'created_at'
                         ])->where('patient_fname', 'like', $searchPatient)
                             ->orWhere('patient_lname', 'like', $searchPatient)
@@ -246,17 +255,22 @@ class PagePatient extends Component
 
         $render = [
             'pts' => $pts,
-            'selectedItems' => Purchased_item::with(['item'])->where('purchase_id', $this->purchase['id'])->orderBy('id', 'desc')->get(),
-            'items' => $items,
+            'selectedItems' => Purchased_item::with(['item'])->where('purchase_id', $this->purchase['id'])->orderByDesc('id')->get(),
+            // 'items' => $items,
+            'appointments' => Appointment::with(['patient'])->where('appointment_category_id', '33')->get(),
             'purchases' => Purchase::with(['patient'])->latest('id')->get(),
             'inqueue' => Patient::select([
                             'id',
+                            'patient_avatar', 
                             'patient_fname', 
                             'patient_lname', 
                             'patient_mname', 
                             'patient_address', 
+                            'patient_queue',
+                            'patient_mobile',
+                            'patient_exam_status',
                             'created_at'
-                        ])->where('patient_queue', true)->orderByDesc('updated_at')->paginate($this->pageNumber),
+                        ])->where('patient_queue', true)->orderBy('updated_at')->paginate($this->pageNumber),
         ];
     
 
@@ -270,10 +284,6 @@ class PagePatient extends Component
             ->extends('layouts.app')
             ->section('content');
     }
-
-
-
-
 
 
     public function total() // called in render method
@@ -318,9 +328,16 @@ class PagePatient extends Component
     }
 
 
+    public function apptCompleted($patientId)
+    {
+        Patient::findOrFail($patientId)->update(['patient_queue' => false]);
+        Appointment::where('patient_id', $patientId)->where('appointment_category_id', 33)->update(['appointment_category_id' => 44]);
+    }
 
-
-
+    public function hasAppointment($patientId)
+    {
+        // Appointment::where('patient_id')
+    }
 
 
 
@@ -339,7 +356,7 @@ class PagePatient extends Component
             [
                 'pt.fname' => 'required|max:100',
                 'pt.lname' => 'required|max:100',
-                'pt.age' => 'required|integer|max:150',
+                // 'pt.age' => 'required|integer|max:150',
                 'pt.mname' => 'nullable',
                 'pt.no' => 'nullable',
                 'pt.gender' => 'nullable',
@@ -352,7 +369,7 @@ class PagePatient extends Component
             [
                 'pt.fname.required' => 'Required',  
                 'pt.lname.required' => 'Required',
-                'pt.age.required'   => 'Required',
+                // 'pt.age.required'   => 'Required',
                 'previewAvatar.max' => 'Avatar must not be greater than 1024 kilobytes.',
             ]
         );
@@ -385,28 +402,29 @@ class PagePatient extends Component
 
     public function addToQueue($patientId)
     {
-        $patientInQueue = Patient::select(['patient_queue', 'patient_exam_status'])->findOrFail($patientId);
+        $patientInQueue = Patient::select(['id','patient_lname', 'patient_fname', 'patient_queue', 'patient_exam_status'])->findOrFail($patientId);
         $patientInQueue->update(['patient_queue' => true, 'patient_exam_status' => true]);
         $patientInQueue
             ? $this->dispatchBrowserEvent('toast',[
-                'title'   => NULL,
+                'title'   => 'Added',
                 'class'   => 'success',
-                'message' => $patientInQueue->patient_lname . ' in queue.'])
+                'message' => $patientInQueue->patient_lname . ', ' . $patientInQueue->patient_fname . ' added in queue.'])
             : $this->dispatchBrowserEvent('toast',[
-                'title'   => NULL,
+                'title'   => 'Error',
                 'class'   => 'error',
                 'message' => 'Patient not added. an error has occured.']);
     }
 
     public function removeFromQueue($patientId)
     {
-        $patientInQueue = Patient::select(['patient_queue'])->findOrFail($patientId);
+
+        $patientInQueue = Patient::select(['id','patient_fname', 'patient_lname', 'patient_queue'])->findOrFail($patientId);
         $patientInQueue->update(['patient_queue' => false]);
         $patientInQueue
             ? $this->dispatchBrowserEvent('toast',[
-                'title'   => NULL,
+                'title'   => 'Removed',
                 'class'   => 'success',
-                'message' => $patientInQueue->patient_lname . ' has been removed from queue.'])
+                'message' => $patientInQueue->patient_lname . ', ' . $patientInQueue->patient_fname . ' has been removed from queue.'])
             : $this->dispatchBrowserEvent('toast',[
                 'title'   => NULL,
                 'class'   => 'error',
@@ -705,7 +723,10 @@ class PagePatient extends Component
     {
         $this->delete['patient'] = true;
         $this->pt['id'] = $patientId;
-        $this->dispatchBrowserEvent('confirm-dialog');
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Delete Patient',
+            'content' => 'Are you sure you want to delete this patient?'
+        ]);
     }
 
     public function deletePatient()
@@ -716,16 +737,19 @@ class PagePatient extends Component
         
         if ($deletePatient) 
             $this->dispatchBrowserEvent('toast',[
-                'title'   => NULL,
+                'title'   => 'Deleted',
                 'class'   => 'success',
-                'message' => 'Deleted successfully.',
+                'message' => 'Patient has been deleted successfully.',
             ]);
     }
 
     public function deletingPatients()
     {
         $this->delete['patients'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog');
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Delete Patients',
+            'content' => 'Are you sure want to delete selected patients?'
+        ]);
     }
     
     public function deletePatients()
@@ -736,9 +760,9 @@ class PagePatient extends Component
         
         if ($deletePatient) 
             $this->dispatchBrowserEvent('toast',[
-                'title'   => NULL,
+                'title'   => 'Patient Deleted',
                 'class'   => 'success',
-                'message' => 'Deleted successfully.',
+                'message' => 'Patient deleted successfully.',
             ]);
 
         $this->selectedPatients = [];
@@ -775,11 +799,13 @@ class PagePatient extends Component
             
         Patient::create($newPatient);
 
+        $this->reset(['pt']);
+
         $this->closeModal();
         $this->dispatchBrowserEvent('toast',[
-            'title'   => NULL,
+            'title'   => 'Patient Added',
             'class'   => 'success',
-            'message' => 'Added successfully.',
+            'message' => 'New patient has been added successfully.',
         ]);
     }
 
@@ -808,16 +834,16 @@ class PagePatient extends Component
                 : NULL;
 
             $updatePatient += ['patient_avatar' => $this->previewAvatar->hashName()];
-            $this->previewAvatar->store('/', 'avatars');         
+            $this->previewAvatar->store('/', 'avatars');
         }
 
         $THIS_PATIENT->update($updatePatient);
 
         $this->closeModal();
         $this->dispatchBrowserEvent('toast',[
-            'title'   => NULL,
+            'title'   => 'Patient Updated',
             'class'   => 'success',
-            'message' => 'Updated successfully.',
+            'message' => 'Patient has been updated successfully.',
         ]);
     }
 
@@ -826,27 +852,43 @@ class PagePatient extends Component
 
 
 
-    public function createOrder()
+    public function updatedCreateOrder($value)
     {
-        
-        $createOrder = Order_detail::updateOrCreate(
-        [
-            'patient_id'    => $this->pt['id'],
-            'exam_id'       => $this->exam ['id'],
-        ],
-        [
-            // 'patient_id'    => $this->pt['id'], 
-            // 'exam_id'       => $this->exam ['id'],
-            'lense'         => $this->orderLense,
-            'frames'        => $this->orderFrame,
-            'tint'          => $this->orderTint,
-            'others'        => $this->orderOthers,
-            'order_status'  => 1,
-        ]);
+        if ($value) {
+            $createOrder = Order_detail::updateOrCreate(
+            [
+                'patient_id'    => $this->pt['id'],
+                'exam_id'       => $this->exam ['id'],
+            ],
+            [
+                // 'patient_id'    => $this->pt['id'], 
+                // 'exam_id'       => $this->exam ['id'],
+                // 'lense'         => $this->orderLense,
+                // 'frames'        => $this->orderFrame,
+                // 'tint'          => $this->orderTint,
+                // 'others'        => $this->orderOthers,
+                'order_status'  => 1,
+            ]);
+    
+            if ($createOrder) {
+                // session()->flash('orderSave', 'Saved');
+                // $this->getOrder();
+                $this->dispatchBrowserEvent('toast',[
+                    'title'   => 'Order Created',
+                    'class'   => 'success',
+                    'message' => 'Order has been created successfully.',
+                ]);
+            }
 
-        if ($createOrder) {
-            session()->flash('orderSave', 'Saved');
-            $this->getOrder();
+        } else {
+            $deleteOrder = Order_detail::where('exam_id', $this->exam['id'])->where('patient_id', $this->pt['id'])->delete();
+            if ($deleteOrder) {
+                $this->dispatchBrowserEvent('toast',[
+                    'title'   => 'Order Removed',
+                    'class'   => 'success',
+                    'message' => 'Order has been removed successfully.',
+                ]);
+            }
         }
     }
 
@@ -956,6 +998,10 @@ class PagePatient extends Component
                 'exam_ADD'     => $this->exam['exam_ADD'],
                 'exam_PD'      => $this->exam['exam_PD'],
                 'exam_remarks' => $this->exam['exam_remarks'],
+                'exam_frame'   => $this->exam['exam_frame'],
+                'exam_lense'   => $this->exam['exam_lense'],
+                'exam_tint'    => $this->exam['exam_tint'],
+                'exam_others'  => $this->exam['exam_others']
             ]);
 
         session()->flash('savedExam', 'Saved');
@@ -977,43 +1023,43 @@ class PagePatient extends Component
 
 
 
-    public function deletingPurchase($purchaseId)
-    {   
-        $this->purchase['id'] = $purchaseId;
-        $this->delete['purchase'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog');
-    }
+    // public function deletingPurchase($purchaseId)
+    // {   
+    //     $this->purchase['id'] = $purchaseId;
+    //     $this->delete['purchase'] = true;
+    //     $this->dispatchBrowserEvent('confirm-dialog');
+    // }
 
-    public function deletingExam($examId)
-    {
-        $this->exam['id'] = $examId;
-        $this->delete['exam'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog'); 
-    }
+    // public function deletingExam($examId)
+    // {
+    //     $this->exam['id'] = $examId;
+    //     $this->delete['exam'] = true;
+    //     $this->dispatchBrowserEvent('confirm-dialog'); 
+    // }
 
-    public function deletePurchaseFromHistory()
-    {
-        Purchase::destroy($this->purchase['id']);
-        $this->dispatchBrowserEvent('confirm-dialog-close');
-        $this->dispatchBrowserEvent('toast',[
-            'title'   => NULL,
-            'class'   => 'success',
-            'message' => 'Deleted successfully.',
-        ]);
-    }
+    // public function deletePurchaseFromHistory()
+    // {
+    //     Purchase::destroy($this->purchase['id']);
+    //     $this->dispatchBrowserEvent('confirm-dialog-close');
+    //     $this->dispatchBrowserEvent('toast',[
+    //         'title'   => NULL,
+    //         'class'   => 'success',
+    //         'message' => 'Deleted successfully.',
+    //     ]);
+    // }
 
 
-    public function deleteExamFromHistoryPage()
-    {
-        Exam::destroy($this->exam['id']);
-        $this->dispatchBrowserEvent('confirm-dialog-close');
+    // public function deleteExamFromHistoryPage()
+    // {
+    //     Exam::destroy($this->exam['id']);
+    //     $this->dispatchBrowserEvent('confirm-dialog-close');
 
-        $this->dispatchBrowserEvent('toast',[
-            'title'   => NULL,
-            'class'   => 'success',
-            'message' => 'Deleted successfully.',
-        ]);
-    }
+    //     $this->dispatchBrowserEvent('toast',[
+    //         'title'   => NULL,
+    //         'class'   => 'success',
+    //         'message' => 'Deleted successfully.',
+    //     ]);
+    // }
 
 
 
@@ -1040,6 +1086,10 @@ class PagePatient extends Component
         $this->exam['exam_ADD']      = $exam->exam_ADD;
         $this->exam['exam_PD']       = $exam->exam_PD;
         $this->exam['exam_remarks']  = $exam->exam_remarks;
+        $this->exam['exam_frame']    = $exam->exam_frame;
+        $this->exam['exam_lense']    = $exam->exam_lense;
+        $this->exam['exam_tint']     = $exam->exam_tint;
+        $this->exam['exam_others']   = $exam->exam_others;
     }
 
     private function setPurchase($purchase) 
@@ -1076,6 +1126,7 @@ class PagePatient extends Component
     //         $this->exam['last'] = false; 
     //     }
     // }
+
 
     public function setPatient($patient)
     {
@@ -1149,8 +1200,14 @@ class PagePatient extends Component
         if ($LAST_EXAM) {
             $this->setExam($LAST_EXAM);
             $this->modal['tab_hasExam'] = true;
+
+            $hasOrder = Order_detail::select(['patient_id', 'exam_id'])->where('patient_id', $patientId)->where('exam_id', $LAST_EXAM->id)->first();
+            $hasOrder
+                ? $this->createOrder = true
+                : $this->createOrder = false;
+
         } else { 
-            $this->modal['tab_hasExam'] = false; 
+            $this->modal['tab_hasExam'] = false;
         }
 
         //check if last exam has order, if there is, then view it.
@@ -1192,7 +1249,7 @@ class PagePatient extends Component
     public function closeModal()
     {
         $this->modal['show'] = false;
-        $this->reset(['pt','modal', 'searchItem', 'previewAvatar']);
+        $this->reset(['modal', 'searchItem', 'previewAvatar']);
         $this->resetErrorBag();
     }
 
@@ -1267,6 +1324,12 @@ class PagePatient extends Component
     public function currentlyInPaientList($patientId)
     {
         return Patient::where('id', $patientId)->where('patient_queue', true)->first();
+    }
+
+    public function isBooked($patientId)
+    {
+        $booked = Appointment::select(['patient_id', 'appointment_category_id'])->where('patient_id', $patientId)->where('appointment_category_id', 33)->first();
+        if ($booked) return true; else return false;
     }
 
     public function makeOrder()
@@ -1374,7 +1437,18 @@ class PagePatient extends Component
                         <td colspan="3">' . $this->exam['exam_PD'] . '</td>
                     </tr>
                     <tr>
-                        <td colspan="7" style="padding-top:12px; padding-bottom:12px;"><b style="margin-right:8px;">REMARKS: </b> ' . $this->exam['exam_remarks'] . '</td>
+                        <th>LENSE</th>
+                        <td colspan="2">' . $this->exam['exam_lense'] . '</td>
+                        <th>TINT</th>
+                        <td colspan="3">' . $this->exam['exam_tint'] . '</td>
+                    </tr>
+                    <tr>
+                        <th>FRAME</th>
+                        <td colspan="6">' . $this->exam['exam_frame'] . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="1" style="padding-top:12px; padding-bottom:12px; text-align:center;"><b style="margin-right:8px;">REMARKS: </b></td>
+                        <td colspan="6">' . $this->exam['exam_remarks'] . '</td>
                     </tr>
                 </table>
             </div>';

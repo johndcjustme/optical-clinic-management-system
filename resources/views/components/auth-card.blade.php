@@ -1,13 +1,17 @@
-<div class="" style="max-width: 300px; width:100%; margin-top:2em;">
-    <div class="flex flex_x_center">
+{{-- <div class="" style="max-width: 300px; width:100%; margin-top:2em;"> --}}
+    <div class="w-full">
         <a href="/">
-            <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+            <x-application-logo class=""/>
         </a>
     </div>
 
-    <div class="card mt_15">
+    <div class="mt-5">
         {{ $slot }}
     </div>
+
+    <div class="card-actions justify-center">
+        {{ $footer ?? null }}
+    </div>
     
-</div>
+{{-- </div> --}}
 

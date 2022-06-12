@@ -1,0 +1,1 @@
+<a wire:click.prevent="closeModal" {{ $attributes->merge(['class' => 'btn btn-ghost btn-active'])}} rel="modal:close">Close</a>

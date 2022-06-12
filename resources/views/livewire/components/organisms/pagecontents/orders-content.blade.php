@@ -7,12 +7,21 @@
     @endsection
 
     @section('section-links')
-        <div class="ui compact tiny menu">
-            <div wire:click.prevent="$set('subPage', 1)" class="link item @if($subPage == 1) active @endif {{ $this->orderCategoryDesc(1) == 0 ? 'disabled' : '' }}">To order <span style="opacity: 0.5; margin-left:0.4em">{{ $this->orderCategoryDesc(1) }}</span></div>
-            <div wire:click.prevent="$set('subPage', 2)" class="link item @if($subPage == 2) active @endif {{ $this->orderCategoryDesc(2) == 0 ? 'disabled' : '' }}">Pending <span style="opacity: 0.5; margin-left:0.4em">{{ $this->orderCategoryDesc(2) }}</span></div>
-            <div wire:click.prevent="$set('subPage', 3)" class="link item @if($subPage == 3) active @endif {{ $this->orderCategoryDesc(3) == 0 ? 'disabled' : '' }}">Recieved <span style="opacity: 0.5; margin-left:0.4em">{{ $this->orderCategoryDesc(3) }}</span></div>
-            <div wire:click.prevent="$set('subPage', 4)" class="link item @if($subPage == 4) active @endif {{ $this->orderCategoryDesc(4) == 0 ? 'disabled' : '' }}">Claimed <span style="opacity: 0.5; margin-left:0.4em">{{ $this->orderCategoryDesc(4) }}</span></div>
-        </div>
+
+    <x-organisms.ui.tabs>
+        <x-organisms.ui.tabs.tab wire:click.prevent="$set('subPage', 1)" class="{{ $subPage == 1 ? 'tab-active' : '' }}">
+            To Order <span class="opacity-50 ml-3">{{ $this->orderCategoryDesc(1) != 0 ? $this->orderCategoryDesc(1) : '' }}</span>
+        </x-organisms.ui.tabs.tab>
+        <x-organisms.ui.tabs.tab wire:click.prevent="$set('subPage', 2)" class="{{ $subPage == 2 ? 'tab-active' : '' }}">
+            Pending <span class="opacity-50 ml-3">{{ $this->orderCategoryDesc(2) != 0 ? $this->orderCategoryDesc(2) : '' }}</span>
+        </x-organisms.ui.tabs.tab>
+        <x-organisms.ui.tabs.tab wire:click.prevent="$set('subPage', 3)" class="{{ $subPage == 3 ? 'tab-active' : '' }} disabled">
+            Recieved <span class="opacity-50 ml-3">{{ $this->orderCategoryDesc(3) != 0 ? $this->orderCategoryDesc(3) : '' }}</span>
+        </x-organisms.ui.tabs.tab>
+        <x-organisms.ui.tabs.tab wire:click.prevent="$set('subPage', 4)" class="{{ $subPage == 4 ? 'tab-active' : '' }}">
+            Claimed <span class="opacity-50 ml-3">{{ $this->orderCategoryDesc(4) != 0 ? $this->orderCategoryDesc(4) : '' }}</span>
+        </x-organisms.ui.tabs.tab>
+    </x-organisms.ui.tab>
 
 {{-- 
         <div class="ui compact tiny menu" style="z-index:300;"> 
@@ -45,60 +54,60 @@
                 <x-slot name="menu"> 
                     @switch($subPage)
                         @case(1)
-                            <div wire:click.prevent="showModal('viewOrder', null)" class="item"><i class="eye icon"></i> View</div>
+                            <li wire:click.prevent="showModal('viewOrder', null)" class="item"><a><i class="eye icon"></i> View</a></li>
 
                             <div class="ui divider"></div>
 
-                            <div class="header">update status</div>
-                            <div wire:click.prevent="changeStatus(2)" class="item"><i class="share icon"></i> Pending</div>
+                            <li class="menu-title"><span>update status</span></li>
+                            <li wire:click.prevent="changeStatus(2)" class="item"><a><i class="share icon"></i> Pending</a></li>
 
                             <div class="ui divider"></div>
 
-                            <div wire:click.prevent="sendMail" class="item"><i class="cart icon"></i> Order Now</div>
-                            <div wire:click.prevent="downloadPdf" class="item"><i class="download icon"></i> Download pdf</div>
+                            <li wire:click.prevent="sendMail" class="item"><a><i class="cart icon"></i> Order Now</a></;o>
+                            <li wire:click.prevent="downloadPdf" class="item"><a><i class="download icon"></i> Download pdf</a></li>
 
                             <div class="ui divider"></div>
 
-                            <div wire:click.prevent="deletingOrders" class="item"><i class="delete icon"></i> Remove</div>
+                            <li wire:click.prevent="deletingOrders" class="item"><a><i class="delete icon"></i> Remove</a></li>
                             @break
 
                         @case(2)
-                            <div wire:click.prevent="showModal('viewOrder', null)" class="item"><i class="eye icon"></i> View</div>
+                            <li wire:click.prevent="showModal('viewOrder', null)" class="item"><a><i class="eye icon"></i> View</a></li>
 
                             <div class="ui divider"></div>
 
-                            <div class="header">update status</div>
-                            <div wire:click.prevent="changeStatus(1)" class="item"><i class="reply icon"></i> To order</div>
-                            <div wire:click.prevent="changeStatus(3)" class="item"><i class="share icon"></i> Received</div>
+                            <li class="menu-title"><span>update status</span></li>
+                            <li wire:click.prevent="changeStatus(1)" class="item"><a><i class="reply icon"></i> To order</a></li>
+                            <li wire:click.prevent="changeStatus(3)" class="item"><a><i class="share icon"></i> Received</a></li>
 
                             <div class="ui divider"></div>
 
-                            <div wire:click.prevent="downloadPdf" class="item"><i class="download icon"></i> Download pdf</div>
+                            <li wire:click.prevent="downloadPdf" class="item"><a><i class="download icon"></i> Download pdf</a></li>
 
                             <div class="ui divider"></div>
 
-                            <div wire:click.prevent="deletingOrders" class="item"><i class="delete icon"></i> Remove</div>
+                            <li wire:click.prevent="deletingOrders" class="item"><a><i class="delete icon"></i> Remove</a></li>
                             @break
                     
                         @case(3)
-                            <div wire:click.prevent="showModal('viewOrder', null)" class="item"><i class="eye icon"></i> View</div>
+                            <li wire:click.prevent="showModal('viewOrder', null)" class="item"><a><i class="eye icon"></i> View</a></li>
 
                             <div class="ui divider"></div>
 
-                            <div class="header">update status</div>
-                            <div wire:click.prevent="changeStatus(2)" class="item"><i class="reply icon"></i> Pending</div>
-                            <div wire:click.prevent="changeStatus(4)" class="item"><i class="share icon"></i> Claimed</div>
+                            <li class="header"><span>update status</span></li>
+                            <li wire:click.prevent="changeStatus(2)" class="item"><a><i class="reply icon"></i> Pending</a></li>
+                            <li wire:click.prevent="changeStatus(4)" class="item"><a><i class="share icon"></i> Claimed</a></li>
 
                             <div class="ui divider"></div>
                             @break
 
                         @case(4)
-                            <div wire:click.prevent="showModal('viewOrder', null)" class="item"><i class="eye icon"></i> View</div>
+                            <li wire:click.prevent="showModal('viewOrder', null)" class="item"><a><i class="eye icon"></i> View</a></li>
 
                             <div class="ui divider"></div>
 
-                            <div class="header">update status</div>
-                            <div wire:click.prevent="changeStatus(3)" class="item"><i class="reply icon"></i> Received</div>
+                            <div class="menu-title"><span>update status</span></div>
+                            <li wire:click.prevent="changeStatus(3)" class="item"><a><i class="reply icon"></i> Received</a></li>
                             @break
 
                         @default
@@ -171,21 +180,29 @@
                                             text="{{ $order->patient->patient_mobile}}"
                                             desc="{{ $order->patient->patient_email }}"
                                             desc-icon="{{ !empty($order->patient->patient_email) ? 'fa-envelope' : '';}}"/>
-                                        <x-organisms.ui.table.td>
-                                            <div>
-                                                <div x-init="$('.showItems').popup({on: 'click'});" class="showItems"><a><i class="icon eye mr_3"></i> View</a></div>
-                                                <div class="ui flowing popup top right transition hidden">
-                                                <div class="ui one column divided left aligned grid">
-                                                    <div class="column">
-                                                        <h4 class="ui header">Orders</h4>
-                                                        <p><b>Frame:</b> {{ $order->frame }}</p>
-                                                        <p><b>Lense:</b> {{ $order->lense }}</p>
-                                                        <p><b>Tint:</b> {{ $order->tint }}</p>
-                                                        <p><b>Others:</b> {{ $order->others }}</p> 
+                                        <x-organisms.ui.table.td class="disabled">
+                                            <x-organisms.ui.dropdown class="dropdown-left">
+                                                <x-organisms.ui.dropdown.dropdown-label>
+                                                    View
+                                                    <i class="fa-solid fa-caret-down"></i>
+                                                </x-organisms.ui.dropdown.dropdown-label>
+                                                <x-organisms.ui.dropdown.dropdown-content class="ml-2 p-6">
+                                                    <div>
+                                                        <div class="mb-2 {{ empty($order->exam->exam_frame) ? 'hidden' : '' }}">
+                                                            <div class="text-sm opacity-50">Frame</div>
+                                                            <div>{{ $order->exam->exam_frame }}</div>
+                                                        </div>
+                                                        <div class="mb-2 {{ empty($order->exam->exam_lense) ? 'hidden' : '' }}">
+                                                            <div class="text-sm opacity-50">Lense</div>
+                                                            <div>{{ $order->exam->exam_lense }}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div class="text-sm opacity-50 {{ empty($order->exam->exam_tint) ? 'hidden' : '' }}">Tint</div>
+                                                            <div>{{ $order->exam->exam_tint }}</div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                </div>
-                                            </div>
+                                                </x-organisms.ui.dropdown.dropdown-content>
+                                            </x-organisms.ui.dropdown.dropdown-content>
                                         </x-organisms.ui.table.td>
                                         {{-- <x-organisms.ui.table.td 
                                             text="{{ App\Models\Ordered_item::where('order_detail_id', $order->id)->sum('ordered_item_price') }}"
@@ -209,7 +226,7 @@
                         {{ $orders->links('livewire.components.paginator') }}
                     @else
                         <x-atoms.ui.message 
-                            icon="frown open"
+                            icon="fa-solid fa-face-meh"
                             class="mt_20"
                             header="No ongoing orders."
                             message="This section will contain all ongoing orders."/>
@@ -322,7 +339,29 @@
                                             desc="{{ $order->patient->patient_email }}"
                                             desc-icon="{{ !empty($order->patient->patient_email) ? 'fa-envelope' : '';}}"/>
                                         <x-organisms.ui.table.td>
-                                            <div>
+                                            <x-organisms.ui.dropdown class="dropdown-left">
+                                                <x-organisms.ui.dropdown.dropdown-label>
+                                                    View
+                                                    <i class="fa-solid fa-caret-down"></i>
+                                                </x-organisms.ui.dropdown.dropdown-label>
+                                                <x-organisms.ui.dropdown.dropdown-content class="ml-2 p-6">
+                                                    <div>
+                                                        <div class="mb-2 {{ empty($order->exam->exam_frame) ? 'hidden' : '' }}">
+                                                            <div class="text-sm opacity-50">Frame</div>
+                                                            <div>{{ $order->exam->exam_frame }}</div>
+                                                        </div>
+                                                        <div class="mb-2 {{ empty($order->exam->exam_lense) ? 'hidden' : '' }}">
+                                                            <div class="text-sm opacity-50">Lense</div>
+                                                            <div>{{ $order->exam->exam_lense }}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div class="text-sm opacity-50 {{ empty($order->exam->exam_tint) ? 'hidden' : '' }}">Tint</div>
+                                                            <div>{{ $order->exam->exam_tint }}</div>
+                                                        </div>
+                                                    </div>
+                                                </x-organisms.ui.dropdown.dropdown-content>
+                                            </x-organisms.ui.dropdown.dropdown-content>
+                                            {{-- <div>
                                                 <div x-init="$('.showItems').popup({on: 'click'});" class="showItems"><a><i class="icon eye mr_3"></i> View</a></div>
                                                 <div class="ui flowing popup top right transition hidden">
                                                 <div class="ui one column divided left aligned grid">
@@ -335,7 +374,7 @@
                                                     </div>
                                                 </div>
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                         </x-organisms.ui.table.td>
                                         {{-- <x-organisms.ui.table.td 
                                             text="{{ App\Models\Ordered_item::where('order_detail_id', $order->id)->sum('ordered_item_price') }}"

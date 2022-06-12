@@ -1,6 +1,14 @@
-<form wire:submit.prevent="updateExam({{ $this->exam['id'] }})" id="saveExam">
+<style>
+    table.tbl-exam tr, table.tbl-exam td {
+        padding: 0.4em;
+        margin: 0;
+        border-bottom: none;
+    }
+</style>
+
+<form wire:submit.prevent="updateExam({{ $this->exam['id'] }})" id="saveExam" style="{{ ! Auth::user()->hasRole(['sadmin', 'admin']) ? 'pointer-events: none' : '' }}">
     <div style="overflow-y: auto; padding-bottom:1em">
-        <table class="full_w noformat" style="min-width: 300px; width:100%;">
+        <table class="tbl-exam" style="min-width: 300px; width:100%;">
             <thead>
                 <tr>
                     <td>RX</td>
@@ -14,62 +22,80 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>OD</td>
+                    <td class="font-bold">OD</td>
                     <td>
-                        <x-atoms.ui.input wire-model="exam.exam_OD_SPH" type="text" style="width: 70px;"/></td>
+                        <x-atoms.ui.input wire-model="exam.exam_OD_SPH" type="text" class="w-full mb-3"/></td>
                     <td>
-                        <x-atoms.ui.input wire-model="exam.exam_OD_CYL" type="text" style="width: 70px"/></td>
+                        <x-atoms.ui.input wire-model="exam.exam_OD_CYL" type="text" class="w-full mb-3"/></td>
                     <td>
-                        <x-atoms.ui.input wire-model="exam.exam_OD_AXIS" type="text" style="width: 70px"/></td>
+                        <x-atoms.ui.input wire-model="exam.exam_OD_AXIS" type="text" class="w-full mb-3"/></td>
                     <td>
-                        <x-atoms.ui.input wire-model="exam.exam_OD_NVA" type="text" style="width: 70px"/></td>
+                        <x-atoms.ui.input wire-model="exam.exam_OD_NVA" type="text" class="w-full mb-3"/></td>
                     <td>
-                        <x-atoms.ui.input wire-model="exam.exam_OD_PH" type="text" style="width: 70px"/></td>
+                        <x-atoms.ui.input wire-model="exam.exam_OD_PH" type="text" class="w-full mb-3"/></td>
                     <td>
-                        <x-atoms.ui.input wire-model="exam.exam_OD_CVA" type="text" style="width: 70px"/></td>
+                        <x-atoms.ui.input wire-model="exam.exam_OD_CVA" type="text" class="w-full mb-3"/></td>
                 </tr>
                 <tr>
-                    <td>OS</td>
+                    <td class="font-bold">OS</td>
                     <td>
-                        <x-atoms.ui.input wire-model="exam.exam_OS_SPH" type="text" style="width: 70px; margin-top:3px; margin-bottom:3px"/></td>
+                        <x-atoms.ui.input wire-model="exam.exam_OS_SPH" type="text" class=""/></td>
                     <td>
-                        <x-atoms.ui.input wire-model="exam.exam_OS_CYL" type="text" style="width: 70px"/></td>
+                        <x-atoms.ui.input wire-model="exam.exam_OS_CYL" type="text" class="w-full"/></td>
                     <td>
-                        <x-atoms.ui.input wire-model="exam.exam_OS_AXIS" type="text" style="width: 70px"/></td>
+                        <x-atoms.ui.input wire-model="exam.exam_OS_AXIS" type="text" class="w-full"/></td>
                     <td>
-                        <x-atoms.ui.input wire-model="exam.exam_OS_NVA" type="text" style="width: 70px"/></td>
+                        <x-atoms.ui.input wire-model="exam.exam_OS_NVA" type="text" class="w-full"/></td>
                     <td>
-                        <x-atoms.ui.input wire-model="exam.exam_OS_PH" type="text" style="width: 70px"/></td>
+                        <x-atoms.ui.input wire-model="exam.exam_OS_PH" type="text" class="w-full"/></td>
                     <td>
-                        <x-atoms.ui.input wire-model="exam.exam_OS_CVA" type="text" style="width: 70px"/>
+                        <x-atoms.ui.input wire-model="exam.exam_OS_CVA" type="text" class="w-full"/>
                     </td>
                 </tr>
-                <tr class="mt_7">
+                <tr>
                     <td></td>
                     <td colspan="3">
-                        <label>ADD</label>
-                        <x-atoms.ui.input wire-model="exam.exam_ADD" type="text" style="width:100%"/></td>
+                        <x-atoms.ui.label>ADD</x-atoms.ui.lab>
+                        <x-atoms.ui.input wire-model="exam.exam_ADD" type="text" class="w-full"/></td>
                     <td colspan="3">
-                        <label for="">P.D.</label>
-                        <x-atoms.ui.input wire-model="exam.exam_PD" type="text" style="width:100%"/></td>
+                        <x-atoms.ui.label for="">P.D.</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="exam.exam_PD" type="text" class="w-full"/></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td colspan="3">
+                        <x-atoms.ui.label>LENSE</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="exam.exam_lense" type="text" placeholder="Enter lense..." class="w-full"/>
+                    </td>
+                    <td colspan="3">
+                        <x-atoms.ui.label>TINT</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="exam.exam_tint" type="text" placeholder="Enter tint..." class="w-full"/>
+                    </td>
+                   
+                </tr>
+                <tr>
+                    <td></td>
+                    <td colspan="6">
+                        <x-atoms.ui.label>FRAME</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="exam.exam_frame" type="text" placeholder="Enter frame..." class="w-full"/>
+                    </td>
+                    {{-- <td colspan="3">
+                        <x-atoms.ui.label>OTHERS</x-atoms.ui.label>
+                        <x-atoms.ui.input wire-model="exam.exam_others" type="text" placeholder="Please specify..." class="w-full"/>
+                    </td> --}}
                 </tr>
                 <tr>
                     <td></td>
                     <td colspan="8">
-                        <div class="mt_15">
-                            <label>REMARKS</label>
-
-                            {{-- <div class="ui fluid icon input"> --}}
-                            <div class="ui input fluid">
-                                <textarea wire:model.defer="exam.exam_remarks" placeholder="Enter remarks..." rows="2" style="width: 100%"></textarea>
-                            </div>
-                                {{-- <x-atoms.ui.input wire-model="exam.exam_remarks" placeholder="Enter remarks..." type="text" style="width: 100%"/>
-                                <i class="check icon"></i> --}}
-                            {{-- </div> --}}
-                        </div>
+                        <x-atoms.ui.label>REMARKS</x-atoms.ui.label>
+                        <textarea class="input input-bordered w-full" wire:model.defer="exam.exam_remarks" placeholder="Enter remarks..." rows="2"></textarea>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
 </form>
+
+
+
+

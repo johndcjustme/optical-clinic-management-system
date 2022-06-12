@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Tab;
 use App\Models\Patient;
+use App\Models\Order_list;
 use App\Models\In_out_of_item as In_item;
 // use App\Models\Lense;
 // use App\Models\Frame;
@@ -19,6 +20,9 @@ use App\Models\Supplier;
 use App\Models\Category;
 use App\Models\Item;
 use Livewire\WithPagination;
+use Dompdf\Dompdf;
+
+use PDF;
 
 use DateTime;
 
@@ -40,6 +44,8 @@ class PageInventory extends Component
     public $filterLowStocks = false;
 
     public $countLowStocks;
+
+    public $orderItemQty;
 
     public $modal = [
         'show'           => false,
@@ -125,7 +131,7 @@ class PageInventory extends Component
 
     public $showDropdown = false;
 
-    public $pageNumber = 10;
+    public $pageNumber = 25;
 
 
 
@@ -134,7 +140,8 @@ class PageInventory extends Component
         'onDisplayItemType',
         'subPage' => '1',
         'status',
-        'filterLowStocks' => ['except' => false]
+        'filterLowStocks' => ['except' => false],
+        'showInOut' => ['except' => false],
     ];
 
     protected $listeners = ['updatedPhoto'];
@@ -173,7 +180,7 @@ class PageInventory extends Component
                 $countLowStocksArray = [];
                 $this->colName = 'item_name';
                 $searchItem = $this->searchItem . '%';
-                $suppliers = Supplier::select(['supplier_address', 'supplier_branch'])->get();
+                $suppliers = Supplier::select(['id', 'supplier_name', 'supplier_address', 'supplier_branch'])->get();
                 $items = Item::select([
                     'id',
                     'category_id',
@@ -238,7 +245,9 @@ class PageInventory extends Component
                 ];
                 break;
             case 4:
-                $data = [];
+                $data = [
+                    'orders' => Order_list::all(),
+                ];
                 break;
             default:
         }
@@ -290,7 +299,7 @@ class PageInventory extends Component
 
     public function updatedSearchItem() { $this->resetPage(); }
 
-    public function resetFields() { $this->reset(['modal', 'item', 'cat']); }
+    public function resetFields() { $this->reset(['modal', 'cat']); }
 
     public function itemType($itemType)
     {
@@ -370,14 +379,14 @@ class PageInventory extends Component
 
             $category 
                 ? $this->dispatchBrowserEvent('toast',[
-                    'title' => null,
+                    'title' => 'Category Updated',
                     'class' => 'success',
-                    'message' => 'Category successfully updated.',
+                    'message' => 'Category has been uccessfully updated.',
                 ])
                 : $this->dispatchBrowserEvent('toast',[
-                    'title' => null,
+                    'title' => 'Error',
                     'class' => 'error',
-                    'message' => 'An error has occured.',
+                    'message' => 'An error has occured. Please try again',
                 ]);
 
         } else {
@@ -390,9 +399,9 @@ class PageInventory extends Component
         
             $category 
                 ? $this->dispatchBrowserEvent('toast',[
-                    'title' => null,
+                    'title' => 'Category Added',
                     'class' => 'success',
-                    'message' => 'Category successfully added.',
+                    'message' => 'Category has been added successfully.',
                 ])
                 : $this->dispatchBrowserEvent('toast',[
                     'title' => null,
@@ -409,16 +418,30 @@ class PageInventory extends Component
 
     public function updateOrCreateItem()
     {
+        $this->validate([
+            // 'category_id'   => 'required',
+            // 'item_image'    => 'required',
+            'item.name'     => 'required',
+            // 'item_desc'     => 'required',
+            // 'item_qty'      => 'required',
+            // 'item_size'     => 'required',
+            // 'item_type'     => 'required',
+            // 'item_price'    => 'required',
+            // 'item_buffer'   => 'required',
+            // 'item_cost'     => 'required',
+            // 'supplier_id'   => 'required',
+        ]);
+
+
+        
         !empty($this->item['id'])
             ? $this->updateItem()
             : $this->addItem();
     }
 
 
-    public function addItem() 
+    public function addItem()
     {    
-        $this->validate();
-
         $createItem = $this->setItem();
 
         if ($this->item['image']) {
@@ -428,12 +451,14 @@ class PageInventory extends Component
 
         Item::create($createItem);
 
+        $this->reset(['item']);
+
         $this->closeModal();
 
         $this->dispatchBrowserEvent('toast',[
-            'title' => null,
+            'title' => 'Item Added',
             'class' => 'success',
-            'message' => 'Uploaded.',
+            'message' => 'Item has been added successfully.',
         ]);
     }
 
@@ -446,6 +471,8 @@ class PageInventory extends Component
         $item->update($this->setItem());
 
         $this->modal['edit_in_inItem'] = false;
+
+        $this->reset(['item']);
 
         session()->flash('hey', 'Item Successfully updated.');
         // $this->dispatchBrowserEvent('toast', [
@@ -472,12 +499,14 @@ class PageInventory extends Component
 
         $item->update($updateItem);
 
+        $this->reset(['item']);
+
         $this->closeModal();
         
         $this->dispatchBrowserEvent('toast', [
-            'title' => null,
+            'title' => 'Item Updated',
             'class' => 'success',
-            'message' => 'Item updated successfully.',
+            'message' => 'Item has been updated successfully.',
         ]);
     }
 
@@ -500,8 +529,8 @@ class PageInventory extends Component
         $this->delete['category'] = true;
         $this->cat['id'] = $catId;
         $this->dispatchBrowserEvent('confirm-dialog', [
-            'title' => 'Confirm',
-            'content' => 'Are you sure you want to delete this category? "' . $catName . '"'
+            'title' => 'Delete Category',
+            'content' => 'Are you sure you want to delete "' . $catName . '"?'
         ]);
     }
 
@@ -511,7 +540,7 @@ class PageInventory extends Component
         $this->reset(['cat']);
         $this->dispatchBrowserEvent('confirm-dialog-close');
         $this->dispatchBrowserEvent('toast', [
-            'title' => 'Success',
+            'title' => 'Category Deleted',
             'class' => 'success',
             'message' => 'Category has been deleted successfully.',
         ]);
@@ -532,13 +561,12 @@ class PageInventory extends Component
         $this->delete['items'] = true;
         $this->dispatchBrowserEvent('confirm-dialog', [
             'title' => 'Confirm',
-            'content' => 'Are you sure you want to delete this item(s)?'
+            'content' => 'Are you sure you want to delete selected items?'
         ]); 
     }
 
     public function deleteItem()
     {
-
         $deleteItem = Item::find($this->item['id']);
 
         if (isset($deleteItem->item_image)) {
@@ -547,10 +575,13 @@ class PageInventory extends Component
         }
 
         $deleteItem->delete();
+
         $this->reset(['item']);
+
         $this->confirm_dialog_modal_close();
+
         $this->dispatchBrowserEvent('toast',[
-                'title' => null,
+                'title' => 'Delete Item',
                 'class' => 'success',
                 'message' => 'Item has been successfully deleted.',
         ]);
@@ -574,9 +605,9 @@ class PageInventory extends Component
         $this->confirm_dialog_modal_close();
 
         $this->dispatchBrowserEvent('toast', [
-            'title' => null,
+            'title' => 'Items Deleted',
             'class' => 'success',
-            'message' => 'Item(s) has been successfully deleted.',
+            'message' => 'Items has been successfully deleted.',
         ]);
     }
 
@@ -591,7 +622,6 @@ class PageInventory extends Component
         return In_item::select(['id'])->where('item_id', $itemId)->where('status', false)->count();
     }
 
-
     public function inItem($itemId)
     {
         $this->item['id'] = $itemId;
@@ -601,26 +631,37 @@ class PageInventory extends Component
             'item.buffer' => 'nullable|integer'
         ]);
 
+        $item = Item::findOrFail($this->item['id']);
+        
         if (!empty($this->item['in']) || !empty($this->item['buffer'])) {
             
-            $item = Item::findOrFail($this->item['id']);
-
             if (empty($this->item['in'])) {
-                $item->update(['item_buffer' => $this->item['buffer']]);}
+                $item->update([
+                    'item_buffer' => $this->item['buffer']]);}
 
             if (empty($this->item['buffer']) && ($this->item['in'] != 0)) {
-                $item->update(['item_qty' => DB::raw('item_qty + ' . $this->item['in'])]);
+                $item->update([
+                    'item_qty' => DB::raw('item_qty + ' . $this->item['in'])]);
                 In_item::create([
                     'item_id' => $this->item['id'], 
                     'status' => true, 
                     'qty' => $this->item['in']
-                ]);}
+                ]);
+            }
+        } if (!empty($this->item['in']) && !empty($this->item['buffer'])) {
+            $item->update([
+                'item_qty' => DB::raw('item_qty + ' . $this->item['in']),
+                'item_buffer' => $this->item['buffer']]);
 
-        } else {}
+            In_item::create([
+                'item_id' => $this->item['id'], 
+                'status' => true, 
+                'qty' => $this->item['in']
+            ]);
+        }
 
         $this->reset(['item']);
     }
-
 
 
     public function selectedItem($itemId) 
@@ -630,25 +671,15 @@ class PageInventory extends Component
         $this->modal['displayItem'] = true;
     }
 
-
-
-
     public function tabDisplayActiveItem($value)
     {
         return $value == 'all' ? 'All Items' : Category::where('id', $value)->first()->name;
     }
 
-
     public function countItems($type)
     {
         return $type == 'all' ? Item::all()->count() : Item::where('category_id', $type)->count();
     }
-
-
-
-
-
-    
 
 
     public function confirm()
@@ -722,6 +753,7 @@ class PageInventory extends Component
     public function closeModal()
     {
         $this->resetFields();
+        $this->resetErrorBag();
         $this->confirm_dialog_modal_close();
         $this->reset(['searchItem']);
     }
@@ -743,9 +775,7 @@ class PageInventory extends Component
         $this->item['buffer']     = $item->item_buffer;
         $this->item['cost']       = $item->item_cost;
         $this->item['image']      = $item->item_image;
-
-        // $this->item['desc']       = $item->item_desc;
-        
+        $this->item['desc']       = $item->item_desc;        
     }
 
     public function setItem()
@@ -755,13 +785,12 @@ class PageInventory extends Component
             'category_id'   => $this->item['cat'] ?? '',
             'item_desc'     => $this->item['desc'],
             'item_price'    => $this->item['price'],
-            'supplier_id'   => $this->item['supplier'] ?? NULL, 
-            // 'item_qty'      => $this->item['qty'] + $this->item['buffer'],
+            'supplier_id'   => $this->item['supplier'], 
+            'item_qty'      => $this->item['qty'],
             'item_size'     => $this->item['size'],
             'item_buffer'   => $this->item['buffer'],
             'item_cost'     => $this->item['cost'],
         ];
-
         // 'item_type'     => $this->item['type'],
     }
 
@@ -770,16 +799,12 @@ class PageInventory extends Component
         Category::find($catId)->update(['cvalue' => $cvalue, 'cname' => $cname]);
     }
 
-
-
-
     public function activePage($subPageValue)
     {
-        return $this->subPage == $subPageValue ? 'active' : '';
+        return $this->subPage == $subPageValue ? 'tab-active' : '';
     }
 
     public function confirm_dialog_modal_close() { $this->dispatchBrowserEvent('confirm-dialog-close'); }
-
 
     public function stocks($itemId) 
     {
@@ -803,6 +828,198 @@ class PageInventory extends Component
         else
             return false;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function savePdf()
+    {
+        $date = Str::replace(' ', '_', date("Y-m-d h:i:sa"));
+        $ptName = Str::title('john doe');
+        $ptName = Str::replace(' ', '_', $ptName);
+
+
+        // $pdfContent = PDF::loadView('livewire.pages.page-patient', ['purchases' => Purchase::with('patient')->latest()->get()])->output();
+
+        // return response()->streamDownload(
+        //     fn() => print($pdfContent),
+        //     'file_name.pdf'
+        // );
+
+        return response()->streamDownload(function () {
+            $pdf = \App::make('dompdf.wrapper');
+            $pdf->loadHTML($this->pdfOrders());
+            echo $pdf->stream();
+        },  $ptName . '_' . $date . '.pdf');
+
+        return $pdf->stream();
+    }
+
+    public function pdfOrders()
+    {
+
+        $count = 1;
+
+        $html = '
+            <style>
+                table {
+                    border-collapse: collapse;
+                }
+                table th, table td {
+                    border: 1px solid gray;
+                }
+
+                th, td {
+                    padding:0.4em;
+                }
+            </style>
+            <table style="width: 100%;">
+            <tr>
+                <th>#</th>
+                <th>Item Name</th>
+                <th>Description</th>
+                <th>Size</th>
+                <th>Category</th>
+                <th>Quantity</th>
+            </tr>';
+            
+            foreach (Order_list::with(['item'])->get() as $order) {
+                $html .= '
+                <tr>
+                    <td>' . $count++ . '</td>
+                    <td>' . $order->item->item_name . '</td>
+                    <td>' . $order->item->item_desc . '</td>
+                    <td style="text-align:center;">' . $order->item->item_sze . '</td>
+                    <td style="text-align:center;">' . $order->item->category->name . '</td>
+                    <td style="text-align:center;">' . $order->qty . '</td>
+                </tr>
+                ';
+            }
+
+        $html .= '</table>';
+
+        return $html;
+    }
+
+    public function inOrderList($itemId)
+    {
+        return Order_list::select(['item_id'])->where('item_id', $itemId)->first() ? true : false;
+    }
+
+
+    public function batchAddOrderItem()
+    {
+        foreach($this->selectedItems as $selected) {
+            Order_list::create([
+                'item_id' => $selected,
+            ]);
+        }   
+
+        $this->selectedItems = [];
+
+        $this->dispatchBrowserEvent('toast',[
+            'title' => 'Items Added',
+            'class' => 'success',
+            'message' => 'Items was successfully added to the order list.',
+        ]);
+    }
+
+
+    public function addOrderItem($itemId)
+    {
+  
+
+        $order = Order_list::create([
+            'item_id' => $itemId
+        ]);
+
+
+        if ($order)
+            $this->dispatchBrowserEvent('toast',[
+                'title' => 'Item Added',
+                'class' => 'success',
+                'message' => 'Item was successfully added to the order list.',
+            ]);
+    }
+
+
+    public function addOrderItemQty($orderId)
+    {      
+        $this->validate([
+            'orderItemQty' => 'required|numeric|min:0'
+        ]);
+
+        Order_list::select(['id','qty'])->findOrFail($orderId)
+            ->update(['qty' => $this->orderItemQty]);
+
+        $this->orderItemQty = '';
+    }
+
+    public function deleteOrderItem($orderId)
+    {
+        Order_list::destroy($orderId);
+        $this->dispatchBrowserEvent('toast',[
+            'title' => 'Removed',
+            'class' => 'success',
+            'message' => 'Successfully removed from the order list.',
+        ]);
+    }
+
+    public function deleteOrderItems()
+    {
+        Order_list::destroy($this->selectedItems);
+        $this->selectedItems = [];
+        $this->dispatchBrowserEvent('toast',[
+            'title' => 'Removed',
+            'class' => 'success',
+            'message' => 'Successfully removed from the order list.',
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+    public function removeFromOrderList($itemId)
+    {
+        Order_list::select(['item_id'])->where('item_id', $itemId)->delete();
+        $this->dispatchBrowserEvent('toast',[
+            'title' => 'Removed',
+            'class' => 'success',
+            'message' => 'Successfully removed from the order list.',
+        ]);
+    }
+
+    public function batchRemoveFromOrderList()
+    {
+        foreach ($this->selectedItems as $item) {
+            Order_list::where('item_id', $item)->delete();
+        }
+
+        $this->selectedItems = [];
+
+        $this->dispatchBrowserEvent('toast',[
+            'title' => 'Items Added',
+            'class' => 'success',
+            'message' => 'Items was successfully added to the order list.',
+        ]);
+    }
+    
+
+
 
     // public function storage($disk, $url) 
     // {

@@ -1,3 +1,3 @@
-<button  {{ $attributes->merge(['class' => 'circular ui icon button', 'form' => '']) }} type="submit">
+<button  {{ $attributes->merge(['class' => 'btn btn-circle btn-sm', 'form' => '']) }} type="submit">
     {{ $slot }}
 </button>

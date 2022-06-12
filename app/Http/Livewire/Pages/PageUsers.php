@@ -5,7 +5,7 @@ namespace App\Http\Livewire\Pages;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use App\Models\User;
-use App\Models\Role;
+// use App\Models\Role;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +17,6 @@ class PageUsers extends Component
 {
     use WithFileUploads;
     use WithPagination;
-
 
 
     public $user_added = 'User successfully added.';
@@ -105,7 +104,7 @@ class PageUsers extends Component
         // }
 
 
-        return view('livewire.pages.page-users')
+        return view('livewire.pages.page-users', ['users' => User::all()])
             ->extends('layouts.app')
             ->section('content');
     }
@@ -152,7 +151,7 @@ class PageUsers extends Component
             [
                 'user.name' => 'required|string|max:255',
                 'user.email' => 'required|string|email|max:255|unique:users,email',
-                // 'user.role' => 'required',
+                'user.role' => 'required',
                 'user.password' => 'required|min:6',
                 'user.password_confirmation' => 'required|min:6',
                 'avatar' => 'image|max:1024|nullable',
@@ -165,7 +164,7 @@ class PageUsers extends Component
                 'user.password.min' => 'Too short',
                 'user.password_confirmation.required' => 'Required',
                 'user.password_confirmation.min' => 'Too short',
-                // 'user.role.required' => 'Required',
+                'user.role.required' => 'Required',
             ],
         );
 
@@ -183,19 +182,20 @@ class PageUsers extends Component
 
         if ($this->user['password'] == $this->user['password_confirmation']) {
             $user = User::create($newUser);
+            $user->attachRole($this->user['role']);
+
 
             $this->closeModal();
 
             $this->dispatchBrowserEvent('toast',[
-                'title'   => NULL,
                 'class'   => 'success',
-                'message' => 'User Successfully Added.',
+                'title'   => 'Success',
+                'message' => 'New user has been added successfully.',
             ]);
 
         } else {
             session()->flash('passwordUnmatched', 'Your password did not match.'); 
         }
-
     }
 
     public function updateUser()
@@ -237,9 +237,9 @@ class PageUsers extends Component
         $this->closeModal();
 
         $this->dispatchBrowserEvent('toast',[
-            'title'   => NULL,
             'class'   => 'success',
-            'message' => 'User has been updated motherfucker.',
+            'title'   => 'User Updated',
+            'message' => 'User has been updated successfully.',
         ]);
     }
 
@@ -251,7 +251,10 @@ class PageUsers extends Component
     {
         $this->user['id'] = $userId;
         $this->confirm['deleteUser'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog');
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Confirm Delete',
+            'content' => 'User will be deleted. Confirm?'
+        ]);
     }
 
     public function deletedUser()
@@ -268,16 +271,19 @@ class PageUsers extends Component
         $this->dispatchBrowserEvent('confirm-dialog-close');
 
         $this->dispatchBrowserEvent('toast',[
-            'title'   => NULL,
             'class'   => 'success',
-            'message' => 'Deleted successfully.',
+            'title'   => 'User Deleted',
+            'message' => 'User has been deleted successfully.',
         ]);
     }
 
     public function deleteUsers()
     {
         $this->confirm['deleteUsers'] = true;
-        $this->dispatchBrowserEvent('confirm-dialog');
+        $this->dispatchBrowserEvent('confirm-dialog', [
+            'title' => 'Delete Users',
+            'content' => 'Selected users will be deleted. Confirm?'
+        ]);
     }
 
     public function deletedUsers()
@@ -299,9 +305,9 @@ class PageUsers extends Component
         $this->dispatchBrowserEvent('confirm-dialog-close');
 
         $this->dispatchBrowserEvent('toast',[
-            'title'   => NULL,
             'class'   => 'success',
-            'message' => 'Deleted successfully.',
+            'title'   => 'Users Deleted',
+            'message' => 'Selected users has been deleted successfully.',
         ]);
     }
     

@@ -1,17 +1,17 @@
     {{-- main page div  --}}
-    <div class="outer_container full_vh overflow_hidden">
+    <div class="flex h-screen w-screen overflow-hidden">
         {{-- sidenav  --}}
-        @livewire('components.organisms.layouts.sidenav')
         
-        <section class="section_main full_vh full_w">
-            {{-- top bar  --}}
+        <section class="h-screen w-24 md:w-64" style="background: rgba(243, 243, 243);">
+            @livewire('components.organisms.layouts.sidenav')
+        </section>
+        
+        <section class="col-span-10 h-screen w-full bg-primary-content overflow-y-auto">
+
             @livewire('components.organisms.layouts.topbar')
-            {{-- main content --}}
-            <div class="main_content overflow_hidden full_w">
 
-                {{-- @yield('content') --}}
+            <div class="w-full">
                 {{ $slot }}
-
             </div>
 
         </section>

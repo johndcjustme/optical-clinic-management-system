@@ -28,4 +28,9 @@ class Appointment extends Model
     {
         return $this->belongsTo(Appointment_category::class);
     }
+
+    public function booking_payment()
+    {
+        return $this->hasOne(Booking_payment::class);
+    }
 }

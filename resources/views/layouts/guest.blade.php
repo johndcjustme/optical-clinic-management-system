@@ -1,9 +1,11 @@
 @includeIf('layouts.head')
-        <div class="x-flex x-flex-ycenter" style="background: #ffffff;">
-            <div style="padding: 5em 0; margin-right:auto; margin-left:auto;">
-                <div class="ui card" style="width: 300px;">
-                    {{ $slot }}
-                </div>
-            </div>
-        </div>
+      <div class="flex items-center" style="background: #ffffff;">
+          <div style="padding: 5em 0; margin-right:auto; margin-left:auto;">
+              <div class="card card-compact bg-primary-content shadow-xl" style="width:23em;">
+                  <div class="card-body">
+                      {{ $slot }}
+                  </div>
+              </div>
+          </div>
+      </div>
 @includeIf('layouts.foot')

@@ -16,6 +16,7 @@ class CreateAppointmentCategoriesTable extends Migration
         Schema::create('appointment_categories', function (Blueprint $table) {
             $table->id();
             $table->boolean('status')->nullable();
+            $table->integer('step')->nullable();
             $table->string('title')->nullable();
             $table->string('desc')->nullable();
             $table->string('color')->nullable();

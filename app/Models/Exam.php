@@ -26,6 +26,10 @@ class Exam extends Model
         'exam_ADD',
         'exam_PD',
         'exam_remarks',
+        'exam_frame',
+        'exam_lense',
+        'exam_tint',
+        'exam_others',
     ];
 
     public function patients()

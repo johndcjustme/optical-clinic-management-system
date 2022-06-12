@@ -15,15 +15,15 @@ class AppointmentSeeder extends Seeder
      */
     public function run()
     {
-        $appt1 = Appointment::create([
-            'patient_id' => 1,                    
-            'appt_date' => date('Y-m-d'),
-            'appt_status' => 'ongoing',
-        ]);
-        $appt2 = Appointment::create([
-            'patient_id' => 2,                    
-            'appt_date' => date('Y-m-d'),
-            'appt_status' => 'ongoing',
-        ]);
+        // $appt1 = Appointment::create([
+        //     'patient_id' => 1,                    
+        //     'appt_date' => date('Y-m-d'),
+        //     'appt_status' => 'ongoing',
+        // ]);
+        // $appt2 = Appointment::create([
+        //     'patient_id' => 2,                    
+        //     'appt_date' => date('Y-m-d'),
+        //     'appt_status' => 'ongoing',
+        // ]);
     }
 }

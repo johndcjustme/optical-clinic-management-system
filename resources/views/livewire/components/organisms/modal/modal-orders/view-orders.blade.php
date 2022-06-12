@@ -43,25 +43,27 @@
             <th class="text-center">P. D.</th>
             <td colspan="3">{{ $order->exam->exam_PD }}</td>
         </tr>
-        <tr>
-            <td colspan="7" style="padding-top:12px; padding-bottom:12px;"><b style="margin-right:8px;">REMARKS: </b> {{ $order->exam->exam_remarks }}</td>
-        </tr>
+        
 
         <tr>
             <th class="text-center">LENSE</th>
-            <td colspan="6" style="padding-top:12px; padding-bottom:12px;">{{ $order->lense }}</td>
-        </tr>
-        <tr>
-            <th class="text-center">FRAME</th>
-            <td colspan="6" style="padding-top:12px; padding-bottom:12px;">{{ $order->frame }}</td>
+            <td colspan="6" style="padding-top:12px; padding-bottom:12px;">{{ $order->exam->exam_lense }}</td>
         </tr>
         <tr>
             <th class="text-center">TINT</th>
-            <td colspan="6" style="padding-top:12px; padding-bottom:12px;">{{ $order->tint }}</td>
+            <td colspan="6" style="padding-top:12px; padding-bottom:12px;">{{ $order->exam->exam_tint }}</td>
         </tr>
         <tr>
+            <th class="text-center">FRAME</th>
+            <td colspan="6" style="padding-top:12px; padding-bottom:12px;">{{ $order->exam->exam_frame }}</td>
+        </tr>
+        {{-- <tr>
             <th class="text-center">OTHERS</th>
             <td colspan="6" style="padding-top:12px; padding-bottom:12px;">{{ $order->others }}</td>
+        </tr> --}}
+        <tr>
+            <th class="text-center">REMARKS</th>
+            <td colspan="6" style="padding-top:12px; padding-bottom:12px;">{{ $order->exam->exam_remarks }}</td>
         </tr>
     </table>
 </div>

@@ -1,1 +1,1 @@
-<span class="ui text error">* {{ $slot }}</span>
+<span class="text-red-500">* {{ $slot }}</span>

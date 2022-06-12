@@ -12,7 +12,7 @@ class Modal extends Component
      * @return void
      */
     public $minWidth, $maxWidth;
-    public function __construct($minWidth = '250px', $maxWidth = '500px')
+    public function __construct($minWidth = '250px', $maxWidth = '40em')
     {
         $this->minWidth = $minWidth;
         $this->maxWidth = $maxWidth;

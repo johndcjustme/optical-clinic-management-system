@@ -17,4 +17,9 @@ class Payment extends Model
         'notify',
         'due',
     ];
+
+    public function records()
+    {
+        return $this->hasMany(Payment_record::class);
+    }
 }

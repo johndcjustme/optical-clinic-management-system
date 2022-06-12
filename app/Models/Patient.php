@@ -67,4 +67,5 @@ class Patient extends Model
     {
         return $this->hasMany(Order_detail::class);
     }
+
 }

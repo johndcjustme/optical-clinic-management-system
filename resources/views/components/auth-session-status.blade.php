@@ -1,9 +1,13 @@
 @props(['status'])
 
 @if ($status)
-    <div {{ $attributes->merge(['class' => 'ui success message']) }}>
-        <p>
-            {{ $status }}
-        </p>
+    <div {{ $attributes->merge(['class' => 'p-3 bg-success rounded-xl']) }}>
+        <div class="flex content-center items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span class="ml-3">
+                {{ $status }}
+                Lorem ipsum dolor sit amet consectetur.
+            </span>
+        </div>
     </div>
 @endif

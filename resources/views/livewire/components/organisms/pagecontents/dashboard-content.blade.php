@@ -7,9 +7,9 @@
     @endsection
 
     @section('section-links')
-        <button class="ui button secondary tiny circular icon"  onclick="window.print()">
-            <i class="icon print"></i>
-        </button>
+        <x-atoms.ui.button class="btn-circle"  onclick="window.print()">
+            <i class="fa-solid fa-print"></i>
+        </x-atoms.ui.button>
     @endsection
 
     @section('section-heading-left')
@@ -19,7 +19,7 @@
 
 
 
-    @php
+    {{-- @php
 
 
         // foreach ($items as $item) {
@@ -32,7 +32,7 @@
             echo $max[] = $item->id . ', ' . $item->in_out->sum('qty') . '<br>';
         }
 
-    @endphp
+    @endphp --}}
 
 {{-- 
 
@@ -240,125 +240,280 @@
 
                 
 
-                <div class="ui grid">
-                    <div class="four wide computer eight wide tablet eight wide mobile column">
-                        <div class="ui segments">
+                <div class="ui stackable three column grid">
+
+                    <div class="column">
+
+                        <div class="card card-compact bg-indigo-500 shadow">
+
+                            <div class="card-body">
+                                <h1 class="text-2xl font-bold text-primary-content">Patients</h1>
+                            </div>
+
+                            <div class="stats stats-vertical lg:stats-horizontal bg-transparent text-primary-content w-full">
+                            
+                                <div class="stat">
+                                    <div class="stat-title">Total</div>
+                                    <div class="stat-value">
+                                        {{ $this->totalOfPatients('all') }}
+                                    </div>
+                                    {{-- <div class="stat-desc">View <i class="fa-solid fa-arrow-right"></i></div> --}}
+                                </div>
+                                
+                                <div class="stat">
+                                    <div class="stat-title">Today</div>
+                                    <div class="stat-value">
+                                        {{ $this->totalOfPatients('today') }}
+                                    </div>
+                                    {{-- <div class="stat-desc">View <i class="fa-solid fa-arrow-right"></i></div> --}}
+                                </div>
+                                
+                                <div class="stat">
+                                    <div class="stat-title">Yesterday</div>
+                                    <div class="stat-value">
+                                        {{ $this->totalOfPatients('yesterday') }}
+                                    </div>
+                                    {{-- <div class="stat-desc">View <i class="fa-solid fa-arrow-right"></i></div> --}}
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                        {{-- <div class="ui segments">
                             <div class="ui segment secondary">
-                                <h5>PATIENTS</h5>
+                                <h5>
+                                    <i class="icon wheelchair"></i>
+                                    PATIENTS
+                                </h5>
                             </div>
                             <div class="ui segment">
-                                <div class="ui equal two column grid">
-                                    <div class="column">
-                                        <h2 class="ui header blue" style="text-align:center">
-                                            {{ $this->totalOfPatients('all') }}
-                                            <div class="sub header">Total</div>
-                                        </h2>
+                                <div class="ui horizontal statistic">
+                                    <div class="value">
+                                        {{ $this->totalOfPatients('all') }}
                                     </div>
-                                    <div class="column">
-                                        <h2 class="ui header" style="text-align:center">
+                                    <div class="label">
+                                      total
+                                    </div>
+                                </div>
+                                <div class="ui three columns grid" style="margin-top:0.2em">
+                                    <div class="column" style="text-align: center">
+                                        <h3 class="ui header">
                                             {{ $this->totalOfPatients('today') }}
-                                            <div class="sub header">Today</div>
-                                        </h2>
+                                            <div class="sub header">today</div>
+                                        </h3>
                                     </div>
-                                    <div class="column">
-                                        <h2 class="ui header" style="text-align:center">
+                                    <div class="column" style="text-align: center">
+                                        <h3 class="ui header">
                                             {{ $this->totalOfPatients('yesterday') }}
-                                            <div class="sub header">Yesterday</div>
-                                        </h2>
+                                            <div class="sub header">yesterday</div>
+                                        </h3>
                                     </div>
-                                    <div class="column">
-                                        <h2 class="ui header" style="text-align:center">
+                                    <div class="column" style="text-align: center">
+                                        <h3 class="ui header">
                                             {{ $this->totalOfPatients('thisWeek') }}
-                                            <div class="sub header">This week</div>
-                                        </h2>
+                                            <div class="sub header">this week</div>
+                                        </h3>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="four wide computer eight wide tablet eight wide mobile column">
-                        <div class="ui segments">
-                            <div class="ui segment secondary">
-                                <h5>ORDERS</h5>
-                            </div>
-                            <div class="ui segment">
-                                <div class="ui equal two column grid">
-                                    <div class="column">
-                                        <h2 class="ui header blue" style="text-align:center">
-                                            {{ $this->totalOfPatients('all') }}
-                                            <div class="sub header">Total</div>
-                                        </h2>
-                                    </div>
-                                    <div class="column">
-                                        <h2 class="ui header" style="text-align:center">
-                                            {{ $this->totalOfPatients('all') }}
-                                            <div class="sub header">To order</div>
-                                        </h2>
-                                    </div>
-                                    <div class="column">
-                                        <h2 class="ui header" style="text-align:center">
-                                            {{ $this->totalOfPatients('all') }}
-                                            <div class="sub header">Pending</div>
-                                        </h2>
-                                    </div>
-                                    <div class="column">
-                                        <h2 class="ui header" style="text-align:center">
-                                            {{ $this->totalOfPatients('all') }}
-                                            <div class="sub header">Recived</div>
-                                        </h2>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        </div> --}}
                     </div>
 
-                    <div class="four wide computer eight wide tablet eight wide mobile column">
-                        <div class="ui segments">
+                    <div class="column">
+                        <div class="card card-compact shadow bg-indigo-500">
+                            <div class="card-body">
+                                <h1 class="text-2xl font-bold text-primary-content">
+                                    Appointment
+                                </h1>
+                            </div>
+                            <div class="stats stats-vertical lg:stats-horizontal bg-transparent text-secondary-content w-full">
+                            
+                                <div class="stat">
+                                    <div class="stat-title">Today</div>
+                                    <div class="stat-value">
+                                        {{ $this->appointmentStats('today') }}
+                                    </div>
+                                    {{-- <a href="#" class="stat-desc">View <i class="fa-solid fa-arrow-right"></i></a> --}}
+                                </div>
+                                
+                                <div class="stat">
+                                    <div class="stat-title">For approval</div>
+                                    <div class="stat-value">
+                                        {{ $this->appointmentStats('forApproval') }}
+                                    </div>
+                                    {{-- <a href="appointments?activeMenu=22" class="stat-desc">View <i class="fa-solid fa-arrow-right"></i></a> --}}
+                                </div>
+                                
+                                <div class="stat">
+                                    <div class="stat-title">Approved</div>
+                                    <div class="stat-value">
+                                        {{ $this->appointmentStats('ongoing') }}
+                                    </div>
+                                    {{-- <a href="appointments?activeMenu=33" class="stat-desc">View <i class="fa-solid fa-arrow-right"></i></a> --}}
+                                </div>
+                                
+                            </div>
+
+                        </div>
+
+
+                        {{-- <div class="ui segments">
                             <div class="ui segment secondary">
-                                <h5>APPOINTMENTS</h5>
+                                <h5>
+                                    <i class="icon cart"></i>
+                                    ORDERS
+                                </h5>
                             </div>
                             <div class="ui segment">
-                                <div class="ui equal two column grid">
-                                    <div class="column">
-                                        <h2 class="ui header blue" style="text-align:center">
-                                            {{ $this->appointmentStats('today') }}
-                                            <div class="sub header">today</div>
-                                        </h2>
+                                <div class="ui horizontal statistic">
+                                    <div class="value">
+                                        452
                                     </div>
-                                    <div class="column">
-                                        <h2 class="ui header" style="text-align:center">
+                                    <div class="label">
+                                      total
+                                    </div>
+                                </div>
+                                <div class="ui three columns grid" style="margin-top:0.2em">
+                                    <div class="column" style="text-align: center">
+                                        <h3 class="ui header">
+                                            23
+                                            <div class="sub header">today</div>
+                                        </h3>
+                                    </div>
+                                    <div class="column" style="text-align: center">
+                                        <h3 class="ui header">
+                                            45
+                                            <div class="sub header">yesterday</div>
+                                        </h3>
+                                    </div>
+                                    <div class="column" style="text-align: center">
+                                        <h3 class="ui header">
+                                            32
+                                            <div class="sub header">this week</div>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> --}}
+                    </div>
+
+
+                    <div class="column">
+           
+                        <div class="card card-compact shadow bg-indigo-500">
+                            <div class="card-body">
+                                <h1 class="text-2xl font-bold text-primary-content">
+                                    Orders
+                                </h1>
+                            </div>
+                            <div class="stats stats-vertical lg:stats-horizontal text-primary-content bg-transparent w-full">
+                            
+                                <div class="stat">
+                                    <div class="stat-title">Pending</div>
+                                    <div class="stat-value">
+                                        {{ $this->orderStats(2) }}
+                                    </div>
+                                    {{-- <div class="stat-desc">View <i class="fa-solid fa-arrow-right"></i></div> --}}
+                                </div>
+                                
+                                <div class="stat">
+                                    <div class="stat-title">Recieved</div>
+                                    <div class="stat-value">
+                                        {{ $this->orderStats(3) }}
+                                    </div>
+                                    {{-- <div class="stat-desc">View <i class="fa-solid fa-arrow-right"></i></div> --}}
+                                </div>
+                                
+                                <div class="stat">
+                                    <div class="stat-title">Claimed</div>
+                                    <div class="stat-value">
+                                        {{ $this->orderStats(4) }}
+                                    </div>
+                                    {{-- <div class="stat-desc">View <i class="fa-solid fa-arrow-right"></i></div> --}}
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                        {{-- <div class="ui segments">
+                            <div class="ui segment secondary">
+                                <h5>
+                                    <i class="icon calendar"></i>
+                                    APPOINTMENTS
+                                </h5>
+                            </div>
+                            <div class="ui segment">
+                                <div class="ui horizontal statistic">
+                                    <div class="value">
+                                        {{ $this->appointmentStats('today') }}
+                                    </div>
+                                    <div class="label">
+                                      Today
+                                    </div>
+                                </div>
+                                <div class="ui three columns grid" style="margin-top:0.2em">
+                                    <div class="column" style="text-align: center">
+                                        <h3 class="ui header">
                                             {{ $this->appointmentStats('tomorrow') }}
                                             <div class="sub header">Tomorrow</div>
-                                        </h2>
+                                        </h3>
                                     </div>
-                                    <div class="column">
-                                        <h2 class="ui header" style="text-align:center">
+                                    <div class="column" style="text-align: center">
+                                        <h3 class="ui header">
                                             {{ $this->appointmentStats('ongoing') }}
                                             <div class="sub header">Ongoing</div>
-                                        </h2>
+                                        </h3>
                                     </div>
-                                    <div class="column">
-                                        <h2 class="ui header" style="text-align:center">
+                                    <div class="column" style="text-align: center">
+                                        <h3 class="ui header">
                                             {{ $this->appointmentStats('forApproval') }}
-                                            <div class="sub header">For Approval</div>
-                                        </h2>
+                                            <div class="sub header">For approval</div>
+                                        </h3>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
 
+
+                    
+
+{{-- 
                     <div class="four wide computer eight wide tablet eight wide mobile column">
                         <div class="ui segments">
                             <div class="ui segment secondary">
                                 <h5>MORE</h5>
                             </div>
                             <div class="ui segment">
-                               some content
+                                <div class="ui horizontal statistic">
+                                    <div class="value">
+                                      2,204
+                                    </div>
+                                    <div class="label">
+                                      total
+                                    </div>
+                                </div>
+                                <div class="ui three columns grid">
+                                    <div class="column" style="text-align: center">
+                                        <h3 class="ui header">245
+                                            <div class="sub header">today</div>
+                                        </h3>
+                                    </div>
+                                    <div class="column" style="text-align: center">
+                                        <h3 class="ui header">245
+                                            <div class="sub header">yesterday</div>
+                                        </h3>
+                                    </div>
+                                    <div class="column" style="text-align: center">
+                                        <h3 class="ui header">245
+                                            <div class="sub header">this week</div>
+                                        </h3>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
+
                 </div>
 
                   
@@ -456,84 +611,79 @@
 
             <div class="ui grid">
                 <div class="ten wide computer ten wide tablet sixteen wide mobile column">
-                    <div class="ui segments">
-                        <div class="ui segment secondary">
-                            <div class="x-flex x-flex-xbetween  x-flex-ycenter">
-                                <div class="x-flex x-flex-ycenter x-gap-1">
-                                    <h5 style="padding: 0; margin:0;">
-                                        YEARLY PATIENTS
-                                    </h5>
-                                </div>
+                    <div class="card card-compact shadow">
+                        <div class="card-body">
+
+                            <div class="flex justify-between">
+                                <h2 class="card-title">Yealy Patients</h2>
                                 <div>
-                                </div>
-                                <div class="x-flex x-gap-1">
-                                    <div class="ui floating dropdown">
-                                        {{ $year }} <i class="dropdown icon"></i>
-                                        <div class="menu">
-                                            <div wire:click.prevent="$set('year', 2021)" class="item">2021</span></div>
-                                            <div wire:click.prevent="$set('year', 2022)" class="item">2022</span></div>
-                                            <div wire:click.prevent="$set('year', 2023)" class="item">2023</span></div>
-                                        </div>
-                                    </div>
+                                    <x-organisms.ui.dropdown class="dropdown-end">
+                                        <x-organisms.ui.dropdown.dropdown-label>
+                                            {{ $year }}
+                                            <i class="fa-solid fa-caret-down"></i>
+                                        </x-organisms.ui.dropdown.dropdown-label>
+                                        <x-organisms.ui.dropdown.dropdown-content class="ml-2">
+                                                <li wire:click.prevent="$set('year', 2021)" class="item"><a>2021</a></li>
+                                                <li wire:click.prevent="$set('year', 2022)" class="item"><a>2022</a></li>
+                                                <li wire:click.prevent="$set('year', 2023)" class="item"><a>2023</a></li>
+                                        </x-organisms.ui.dropdown.dropdown-content>
+                                    </x-organisms.ui.dropdown.dropdown-content>
                                 </div>
                             </div>
-                        </div>
-                        <div class="ui segment">
+
                             <div class="content" style="height:300px; overflow:hidden;">
                                 <livewire:livewire-area-chart
                                     key="{{ $areaChartModel->reactiveKey() }}"
                                     :area-chart-model="$areaChartModel"/>
                             </div>
-                        </div>
-                        <div class="ui segment">
-                            <div class="x-flex x-flex-xend">
-                                <span class="ui text grey">
+
+                            <div class="card-actions justify-end mt-3">
+                                <span class="opacity-50">
                                     {{ $this->yearlyPatients($year) }} patients
                                 </span>
                             </div>
+
                         </div>
                     </div>
                 </div>
 
                 <div class="six wide computer six wide tablet sixteen wide mobile column">
-                    <div class="ui segments">
-                        <div class="ui segment secondary">
-                            <div class="x-flex x-flex-xbetween  x-flex-ycenter">
-                                <div class="x-flex x-flex-ycenter x-gap-1">
-                                    <h5 style="padding: 0; margin:0;">
-                                        MONTHLY PATIENTS
-                                    </h5>
-                                </div>
-                                <div class="x-flex x-gap-1">
-                                    <div class="ui floating right pointing dropdown">
-                                        {{ $monthlyPatients }} <i class="dropdown icon"></i>
-                                        <div class="menu">
+                    <div class="card card-compact shadow">
+                        <div class="card-body">
 
-                                            @php $count = 1 @endphp
+                            <div class="flex justify-between">
+                                <h2 class="card-title">Monthly Patients</h2>
+                                <div>
+                                    <x-organisms.ui.dropdown class="dropdown-end">
+                                        <x-organisms.ui.dropdown.dropdown-label>
+                                            {{ $monthlyPatients }}
+                                            <i class="fa-solid fa-caret-down"></i>
+                                        </x-organisms.ui.dropdown.dropdown-label>
+                                        <x-organisms.ui.dropdown.dropdown-content class="ml-2" style="height: 20em; overflow-y:auto">
 
-                                            @foreach ($months as $month) 
-                                                <div wire:click.prevent="setMonthlyPatients({{ $count++ }}, '{{ $month }}')" class="item">{{ $month }}</span></div>
-                                                @php $count += 2 @endphp
-                                            @endforeach
-                                            
-                                        </div>
-                                    </div>
+                                                @php $count = 1 @endphp
+
+                                                @foreach ($months as $month) 
+                                                    <li wire:click.prevent="setMonthlyPatients({{ $count++ }}, '{{ $month }}')" class="item"><a>{{ $month }}</a></li>
+                                                    @php $count += 2 @endphp
+                                                @endforeach
+                                        </x-organisms.ui.dropdown.dropdown-content>
+                                    </x-organisms.ui.dropdown.dropdown-content>
                                 </div>
                             </div>
-                        </div>
-                        <div class="ui segment">
+
                             <div class="content" style="height:300px; overflow:hidden">
                                 <livewire:livewire-column-chart 
                                     key="{{ $columnChartModel->reactiveKey() }}"
                                     :column-chart-model="$columnChartModel"/>
                             </div>
-                        </div>
-                        <div class="ui segment">
-                            <div class="x-flex x-flex-xend">
-                                <span class="ui text grey">
+                            
+                            <div class="card-actions justify-end mt-3">
+                                <span class="opacity-50">
                                     {{ $this->yearlyPatients($year) }} patients
                                 </span>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -543,49 +693,77 @@
 
             <div class="ui grid">
                 <div class="six wide computer six wide tablet sixteen wide mobile column">
-                    <div class="ui segments">
-                        <div class="ui segment secondary">
-                            <h5>INVENTORY</h5>
-                        </div>
-                        <div class="ui segment">
+                    <div class="card card-compact shadow">
+                        <div class="card-body">
+
+                            <div class="flex justify-between">
+                                <h2 class="card-title">Inventory</h2>
+                                <div></div>
+                            </div>
+                            
                             <div class="content" style="height:300px; overflow:hidden; text-align:center;">
                                 <livewire:livewire-pie-chart
                                     key="{{ $pieChartModel->reactiveKey() }}"
                                     :pie-chart-model="$pieChartModel"
                                 />
                             </div>
+
                         </div>
                     </div>
                 </div>
 
                 <div class="ten wide computer ten wide tablet sixteen wide mobile column" style="width:60%;">
-                    <div class="ui segments">
-                        <div class="ui segment secondary">
-                            <div class="x-flex x-flex-xbetween">
-                                <div>
-                                    <h5>
-                                        SOLD OUT PRODUCTS
-                                    </h5>
-                                </div>
-                                <div class="x-flex x-gap-1">
+                    <div class="card card-compact shadow">
+                        <div class="card-body">
+{{-- 
+                            <div class="ui segment secondary">
+                                <div class="x-flex x-flex-xbetween">
                                     <div>
-                                        <div class="ui floating dropdown">
-                                            {{ $productYearlyDemand }} <i class="dropdown icon"></i>
-                                            <div class="menu">
-                                                <div wire:click.prevent="$set('productYearlyDemand', 2021)" class="item">2021</span></div>
-                                                <div wire:click.prevent="$set('productYearlyDemand', 2022)" class="item">2022</span></div>
-                                                <div wire:click.prevent="$set('productYearlyDemand', 2023)" class="item">2023</span></div>
+                                        <h5>
+                                            SOLD OUT PRODUCTS
+                                        </h5>
+                                    </div>
+                                    <div class="x-flex x-gap-1">
+                                        <div>
+                                            <div class="ui floating dropdown">
+                                                {{ $productYearlyDemand }} <i class="dropdown icon"></i>
+                                                <div class="menu">
+                                                    <div wire:click.prevent="$set('productYearlyDemand', 2021)" class="item">2021</span></div>
+                                                    <div wire:click.prevent="$set('productYearlyDemand', 2022)" class="item">2022</span></div>
+                                                    <div wire:click.prevent="$set('productYearlyDemand', 2023)" class="item">2023</span></div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="ui segment">
-                            <div class="content" style="height:300px; overflow:hidden">
-                                <livewire:livewire-column-chart 
-                                    key="{{ $itemsColumnChartModel->reactiveKey() }}"
-                                    :column-chart-model="$itemsColumnChartModel"/>
+ --}}
+
+                            <div class="flex justify-between">
+                                <h2 class="card-title">Sold out products</h2>
+                                <div>
+                                    <x-organisms.ui.dropdown class="dropdown-end">
+                                        <x-organisms.ui.dropdown.dropdown-label>
+                                            {{ $productYearlyDemand }}
+                                            <i class="fa-solid fa-caret-down"></i>
+                                        </x-organisms.ui.dropdown.dropdown-label>
+                                        <x-organisms.ui.dropdown.dropdown-content class="ml-2" style="height: 20em; overflow-y:auto">
+                                            <li wire:click.prevent="$set('productYearlyDemand', 2021)" class="item"><a>2021</a></li>
+                                            <li wire:click.prevent="$set('productYearlyDemand', 2022)" class="item"><a>2022</a></li>
+                                            <li wire:click.prevent="$set('productYearlyDemand', 2023)" class="item"><a>2023</a></li>
+                                        </x-organisms.ui.dropdown.dropdown-content>
+                                    </x-organisms.ui.dropdown.dropdown-content>
+                                </div>
+                            </div>
+
+
+
+                            <div class="ui segment">
+                                <div class="content" style="height:300px; overflow:hidden">
+                                    <livewire:livewire-column-chart 
+                                        key="{{ $itemsColumnChartModel->reactiveKey() }}"
+                                        :column-chart-model="$itemsColumnChartModel"/>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -594,17 +772,18 @@
 
 
 
-            <div class="ui three equal columns grid">
+            <div class="ui grid">
                 <div class="five wide computer five wide tablet sixteen wide mobile column">
-                    <div class="ui segments">
-                        <div class="ui segment secondary">
-                            <h5 class="ui header green">
-                                HIGH DEMAND PRODUCTS (9)
-                            </h5>
-                        </div>
-                        <div class="ui segment">
-                            <div class="content noscroll" style="height:300px; overflow-y: auto">
-                                <x-organisms.ui.table class="unstackable compact very basic">
+                    <div class="card card-compact shadow">
+                        <div class="card-body">
+
+                            <div class="flex justify-between">
+                                <h2 class="card-title">High Demand Products (9)</h2>
+                                <div></div>
+                            </div>
+
+                            <div class="noscroll pb-5" style="height:30em; overflow-y: auto">
+                                <x-organisms.ui.table>
                                     <x-slot name="thead">
                                         <x-organisms.ui.table.th label="Product Name"/>
                                         <x-organisms.ui.table.th label="Sold" style="width:8em" />
@@ -624,19 +803,24 @@
                                     </x-slot>
                                 </x-organisms.ui.table>
                             </div>
+
                         </div>
                     </div>
                 </div>
+
+
+
                 <div class="five wide computer five wide tablet sixteen wide mobile column">
-                    <div class="ui segments">
-                        <div class="ui segment secondary">
-                            <h5 class="ui header orange">
-                                LOW DEMAND PRODUCTS (7)
-                            </h5>
-                        </div>
-                        <div class="ui segment">
-                            <div class="content noscroll" style="height:300px; overflow-y: auto">
-                                <x-organisms.ui.table class="unstackable compact very basic">
+                    <div class="card card-compact shadow">
+                        <div class="card-body">
+                
+                            <div class="flex justify-between">
+                                <h2 class="card-title">Low Demand Products (9)</h2>
+                                <div></div>
+                            </div>
+                            
+                            <div class="noscroll pb-5" style="height:30em; overflow-y: auto">
+                                <x-organisms.ui.table>
                                     <x-slot name="thead">
                                         <x-organisms.ui.table.th label="Product Name"/>
                                         <x-organisms.ui.table.th label="Sold" style="width:8em" />
@@ -656,19 +840,26 @@
                                     </x-slot>
                                 </x-organisms.ui.table>
                             </div>
+
                         </div>
                     </div>
                 </div>
                 <div class="six wide computer six wide tablet sixteen wide mobile column">
-                    <div class="ui segments">
-                        <div class="ui segment secondary">
-                            <h5 class="ui header red">
-                                OUT OF STOCKS ({{ $countLowStocks }})
-                            </h5>
-                        </div>
-                        <div class="ui segment">
-                            <div class="content noscroll" style="height:300px; overflow-y: auto">
-                                <x-organisms.ui.table class="unstackable compact very basic">
+                    <div class="card card-compact shadow">
+                        <div class="card-body">
+                            {{-- <div class="ui segment secondary">
+                                <h5 class="ui header red">
+                                    OUT OF STOCKS ({{ $countLowStocks }})
+                                </h5>
+                            </div> --}}
+
+                            <div class="flex justify-between">
+                                <h2 class="card-title">Out of stocks ({{ $countLowStocks }})</h2>
+                                <div></div>
+                            </div>
+
+                            <div class="noscroll pb-5" style="height:30em; overflow-y:auto">
+                                <x-organisms.ui.table>
                                     <x-slot name="thead">
                                         <x-organisms.ui.table.th label="Product Name"/>
                                         <x-organisms.ui.table.th label="Sold" style="width:8em" />
@@ -688,6 +879,7 @@
                                     </x-slot>
                                 </x-organisms.ui.table>
                             </div>
+                            
                         </div>
                     </div>
                 </div>

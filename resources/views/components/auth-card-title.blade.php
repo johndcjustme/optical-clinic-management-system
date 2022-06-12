@@ -1,9 +1,12 @@
-<h2 style="text-align:center; margin-bottom:1em;">
+<h1 class="text-2xl font-bold">
     {{ $title ?? null }}
-</h2>
+</h1>
 
+<p class="mb-7">
+    {{ $description ?? null }}
+</p>
+{{-- 
 <div style="margin-bottom: 1.3em; text-align:center">
-    <span class="ui text grey">
-        {{ $description ?? null }}
+    <span class="">
     </span>
-</div>
+</div> --}}

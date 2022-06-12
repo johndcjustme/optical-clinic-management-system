@@ -56,4 +56,9 @@ class Item extends Model
     {
         return $this->hasOne(In_out_of_item::class)->latestOfMany();
     }
+
+    public function order_list()
+    {
+        return $this->hasOne(Order_list::class);
+    }
 }

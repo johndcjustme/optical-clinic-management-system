@@ -9,6 +9,7 @@ use App\Models\Patient;
 use App\Models\Setting;
 use App\Models\Day;
 use App\Models\Year;
+use App\Models\Booking_payment;
 use App\Models\Appointment_category as Ac;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use Illuminate\Support\Str;
@@ -67,12 +68,14 @@ class PageAppointments extends Component
 
     public $timeSched, $yearSched;
 
+    public $paymentPhoto;
+
     public 
         $isUpdate = false, 
         $isAdd = false, 
         $addAppt = false;
 
-    public $colName = 'appt_status', $direction = 'asc';
+    public $colName = 'appt_status', $direction = 'desc';
 
     public 
         $setAll_am, 
@@ -114,6 +117,7 @@ class PageAppointments extends Component
         'settings2' => false,
         'settings3' => false,
         'notification_settings' => false,
+        'showPayment'=> false,
     ];
 
 
@@ -158,9 +162,9 @@ class PageAppointments extends Component
         $searchAppt = $this->searchAppt . '%';
 
         if ($this->activeMenu != 'all') 
-            $appts = Appointment::with('patient')->with('appointment_category')->where('appointment_category_id', $this->activeMenu)->orderBy($this->colName, $this->direction)->paginate($this->pageNumber);
+            $appts = Appointment::with(['patient', 'booking_payment','appointment_category'])->where('appointment_category_id', $this->activeMenu)->orderByDesc('id')->paginate($this->pageNumber);
         else
-            $appts = Appointment::with('patient')->with('appointment_category')->orderBy($this->colName, $this->direction)->paginate($this->pageNumber);
+            $appts = Appointment::with(['patient', 'booking_payment','appointment_category'])->orderByDesc('id')->paginate($this->pageNumber);
 
 
         return view('livewire.pages.page-appointments', 
@@ -187,18 +191,31 @@ class PageAppointments extends Component
         // }
     }
 
+
+    public function hasPayment($apptId)
+    {
+        $booking_payment = Booking_payment::where('appointment_id', $apptId)->first();
+        if ($booking_payment) { return 'yes'; } else { return 'no'; }
+    }
+
+    // public function showPayment($apptId)
+    // {
+    //     dd($apptId);
+    // }
+
     public function updatedCategory()
     {
         $this->resetPage();
     }
 
-    public function updatedYearSched()
+    public function yearSched()
     {
+
         if (!empty($this->yearSched)) {
             if (Str::length($this->yearSched) <> 4) {
                 if ($this->yearSched < date('Y')) {
                     $this->dispatchBrowserEvent('toast',[
-                        'title'   => NULL,
+                        'title'   => 'Error',
                         'class'   => 'error',
                         'message' => 'Valid year is ' . date('Y') . ' and more than.',
                     ]);
@@ -216,7 +233,7 @@ class PageAppointments extends Component
         }
     }
 
-    public function updatedTimeSched()
+    public function timeSched()
     {
         $this->addTime();
     }
@@ -497,6 +514,7 @@ class PageAppointments extends Component
         $pt_mobile = Patient::find($patientId)->patient_mobile;
         //send message
 
+
         try {
             return sendSMS($pt_mobile, $text);
         } catch (\Exception $e) {
@@ -507,7 +525,6 @@ class PageAppointments extends Component
             ]);
         }
     }
-
 
     public function deletingAppt($apptId)
     {
@@ -562,12 +579,12 @@ class PageAppointments extends Component
 
 
 
-    public function approvingAppt($apptId) {
-        $this->appt['id'] = $apptId;
-        $this->confirm['approve'] = true;
-        $this->confirmDialogMessage = 'Approve Appointment?';
-        $this->dispatchBrowserEvent('confirm-dialog');
-    }
+    // public function approvingAppt($apptId) {
+    //     $this->appt['id'] = $apptId;
+    //     $this->confirm['approve'] = true;
+    //     $this->confirmDialogMessage = 'Approve Appointment?';
+    //     $this->dispatchBrowserEvent('confirm-dialog');
+    // }
 
     // public function approveAppt()
     // {
@@ -600,13 +617,13 @@ class PageAppointments extends Component
     //     $this->reset(['confirm', 'appt']);
     // }
 
-    public function cancelingAppt($apptId)
-    {
-        $this->confirm['cancel'] = true;
-        $this->appt['id'] = $apptId;
-        $this->confirmDialogMessage = 'Do you want to Cancel this Appointment?';
-        $this->dispatchBrowserEvent('confirm-dialog');
-    }
+    // public function cancelingAppt($apptId)
+    // {
+    //     $this->confirm['cancel'] = true;
+    //     $this->appt['id'] = $apptId;
+    //     $this->confirmDialogMessage = 'Do you want to Cancel this Appointment?';
+    //     $this->dispatchBrowserEvent('confirm-dialog');
+    // }
 
     public function cancelAppt()
     {
@@ -704,6 +721,12 @@ class PageAppointments extends Component
                 break;
             case 'settings3': 
                 $this->modal['settings3'] = true; 
+                break;
+            case 'payment_photo':
+                // dd('hey');
+                $booking_payment = Booking_payment::where('appointment_id', $id)->first()->photo;
+                $this->paymentPhoto = $booking_payment;
+                $this->modal['showPayment'] = true;
                 break;
             default:
         }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateChatroomsTable extends Migration
+class CreatePaymentRecordsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,17 @@ class CreateChatroomsTable extends Migration
      */
     public function up()
     {
-        Schema::create('chatrooms', function (Blueprint $table) {
+        Schema::create('payment_records', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->integer('new_message');
+            $table->unsignedBigInteger('payment_id');
+            $table->double('pay_amount')->nullable();
+            $table->double('payment_type')->nullable();
+            $table->string('description')->nullable();
             $table->timestamps();
 
-            $table->foreign('user_id')
+            $table->foreign('payment_id')
+                ->on('payments')
                 ->references('id')
-                ->on('users')
                 ->onDelete('cascade');
         });
     }
@@ -33,6 +35,6 @@ class CreateChatroomsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chatrooms');
+        Schema::dropIfExists('payment_records');
     }
 }

@@ -57,6 +57,8 @@
                         Send
                     </button>
                 </div>
+
+                
                 {{-- <div class="ui dropdown icon circular floating button tiny" x-init="$('.ui.dropdown').dropdown()" style="z-index: 500">
                     <i class="add user icon"></i>
                     <div class="menu right small">

@@ -20,6 +20,16 @@ class SupplierSeeder extends Seeder
     {
         $faker = Faker\Factory::create();
 
+
+        Supplier::create([
+            'supplier_name' => $faker->name,
+            'supplier_contact_no' => '09384938921',
+            'supplier_address' => $faker->address,
+            'supplier_bank' => 'bank name',
+            'supplier_acc_no' => $faker->bankAccountNumber,
+            'supplier_branch' => 'Tandag branch',
+            'supplier_email' => $faker->email,
+        ]);
     
     }
 }

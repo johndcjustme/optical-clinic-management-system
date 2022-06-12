@@ -2,22 +2,39 @@
 
     @section('section-page-title')
         <x-atoms.ui.header 
-            title="Patients"
-            desc="All Patients • {{ $this->patientTotal() }}"/>
+            title="Patients">
+            {{-- desc="All Patients • {{ $this->patientTotal() }}"> --}}
+            {{-- <div class="max-w-xs text-sm breadcrumbs">
+                <ul>
+                  <li>Home</li>
+                  <li>Patient History</li>
+                </ul>
+              </div> --}}
+        </x-atoms.ui.header>
     @endsection
 
     @section('section-links')
         @if ($subPage != 3)
-            <div class="ui compact tiny menu">
-                <div wire:click.prevent="subPage(1)" class="link item @if($subPage == 1) active @endif">Exam List</div>
-                <div wire:click.prevent="subPage(4)" class="link item @if($subPage == 4) active @endif">Patient List</div>
-                {{-- <div wire:click.prevent="subPage(2)" class="link item @if($subPage == 2) active @endif">Purchase</div> --}}
-            </div>
+            <x-organisms.ui.tabs>
+                <x-organisms.ui.tabs.tab wire:click.prevent="subPage(1)" class="{{ $subPage == 1 ? 'tab-active' : '' }}">
+                    Today
+                </x-organisms.ui.tabs.tab>
+                <x-organisms.ui.tabs.tab wire:click.prevent="subPage(4)" class="{{ $subPage == 4 ? 'tab-active' : '' }}">
+                    Patient List
+                </x-organisms.ui.tabs.tab>
+            </x-organisms.ui.tab>
         @endif
 
     @endsection
 
     @section('section-heading-left')
+        @switch ($subPage)
+            @case(1)
+             
+            @break
+        @endswitch
+
+
         @if ($subPage != 3)
             @if (count($selectedPatients) > 0)
                 <x-atoms.ui.header-dropdown-menu wire-close="$set('selectedPatients', [])" class="left pointing tiny">
@@ -27,7 +44,12 @@
                     <x-slot name="menu"> 
                         @switch($subPage)
                             @case(1)
-                                <div wire:click.prevent="batchRemoveFromQueue" class="item"><i class="delete icon"></i> Remove from exam list</div>
+                                <li wire:click.prevent="batchRemoveFromQueue">
+                                    <a>
+                                        <i class="fa-solid fa-bin"></i> 
+                                        Remove from list
+                                    </a>
+                                </li>
                                 @break
                             @case(2)
                                 
@@ -37,9 +59,24 @@
                                 
                                 @break
                             @case(4)
-                                <div class="item"><i class="edit icon"></i> Edit</div>
-                                <div class="item"><i class="add icon"></i> Add to exam list</div>
-                                <div wire:click.prevent="deletingPatients" class="item"><i class="delete icon"></i> Delete</div>
+                                <li class="item">
+                                    <a>
+                                        <i class="edit icon"></i>
+                                         Edit
+                                    </a>
+                                </li>
+                                <li class="item">
+                                    <a>
+                                        <i class="add icon"></i>
+                                        Add to exam list
+                                    </a>
+                                </li>
+                                <li wire:click.prevent="deletingPatients" class="item">
+                                    <a>
+                                        <i class="fa-solid fa-delete"></i> 
+                                        Delete
+                                    </a>
+                                </li>
                                 @break
                             @default
                         @endswitch
@@ -55,10 +92,19 @@
 
         @switch($subPage)
             @case(1)
-                <div><x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/></div>
+                {{-- <div class="btn-group">
+                    <x-atoms.ui.button wire:click.prevent="" class="">All</x-atoms.ui.button>
+                    <x-atoms.ui.button wire:click.prevent="" class="btn-active">Exam list</x-atoms.ui.button>
+                    <x-atoms.ui.button wire:click.prevent="" class="">payment list</x-atoms.ui.button>
+                    @if (count($appointments) > 0)
+                        <x-atoms.ui.button wire:click.prevent="" class="">Booked</x-atoms.ui.button>
+                    @endif
+                </div> --}}
                 @break
             @case(2)
-                <div><x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/></div>
+                <div>
+                    <x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/>
+                </div>
                 <x-atoms.ui.header-dropdown-menu class="right pointing tiny">
                     <x-slot name="menu"> 
                         <div class="item">
@@ -133,41 +179,20 @@
                     @default
                         <div><x-atoms.ui.search wire-model="searchPatient" placeholder="Search..."/></div>
                 @endswitch
-                <div>
-                    <x-atoms.ui.header-dropdown-menu class="right pointing tiny">
-                        <x-slot name="menu"> 
-                            <div class="item">
-                                <x-molecules.ui.dropdown.icon/>
-                                <span class="text">Filter</span>
-                                <x-molecules.ui.dropdown.menu>
-                                    <div wire:click.prevent="$set('filter', 'DATE_RANGE')" class="item">
-                                        Date Range
-                                    </div>
-                                    <div wire:click.prevent="$set('filter', 'DATE_SINGLE')" class="item">
-                                        Single Date
-                                    </div>
-                                    <div class="ui divider"></div>
-                                    <div class="item">
-                                        Today
-                                    </div>
-                                    <div class="item">
-                                        This Week
-                                    </div>
-                                    <div class="item">
-                                        This Month
-                                    </div>
-                                </x-molecules.ui.dropdown.menu>
-                            </div>
-                            <div class="item">
-                                <x-molecules.ui.dropdown.icon/>
-                                <span class="text">Showing {{ $pageNumber }} Entries</span>
-                                <x-molecules.ui.dropdown.menu>
-                                    <x-organisms.ui.paginator-number/>
-                                </x-molecules.ui.dropdown.menu>
-                            </div>
-                        </x-slot>
-                    </x-atoms.ui.header-dropdown-menu>
-                </div>
+
+                <x-organisms.ui.dropdown-end>
+                    <li @click="filter = ! filter">
+                        <div class="flex justify-between">
+                            <div>filter <span class="ml-2 opacity-50">25</span></div>
+                            <div><i :class="filter ? 'fa-caret-down' : 'fa-caret-right'" class="fa-solid"></i></div>
+                        </div>
+                    </li>
+                    <ul x-show="filter" @click.outside="filter = false" x-transition class="menu bg-neutral p-2 rounded-box" style="display:none">
+                        <li wire:click.prevent="$set('filter', 'DATE_RANGE')" class="text-white"><a>Date Range</a></li>
+                        <li wire:click.prevent="$set('filter', 'DATE_SINGLE')" class="text-white"><a>Single Date</a></li>
+                    </ul>
+                    <x-organisms.ui.dropdown-entries :pagenumber="$pageNumber"/>
+                </x-organisms.ui.dropdown-end>
                 @break
                 
             @default
@@ -175,11 +200,16 @@
     @endsection
 
     @section('section-main')
-        {{-- @switch($subPage)
-            @case(1) --}}
-                <div style="display: {{ $subPage == 1 ? 'block' : 'none'}}">
+
+
+        @switch($subPage)
+            @case(1)
+                <div class="mt-10">
+
                     @if ($inqueue->where('patient_exam_status', true)->count() > 0) 
-                        <x-organisms.ui.table class="selectable unstackable">
+                        <h3 class="text-sm uppercase mb-5"><i class="fa-solid fa-edit mr-2"></i> Ready for Exam</h3>
+
+                        <x-organisms.ui.table class="">
                             <x-slot name="thead"></x-slot>
                             <x-slot name="tbody">
                                 @foreach ($inqueue->where('patient_exam_status', true) as $pt)   
@@ -188,23 +218,11 @@
                             </x-slot>
                         </x-organisms.ui.table>
                     @endif
-                        
-                    @if (($inqueue->where('patient_exam_status', true)->count()) > 0 && ($inqueue->where('patient_exam_status', false)->count() > 0))
-                        <center>
-                            ...
-                        </center>
-                    @endif
-    
-                    @if ((! $inqueue->where('patient_exam_status', true)->count()) > 0 && (! $inqueue->where('patient_exam_status', false)->count() > 0))
-                        <x-atoms.ui.message 
-                            icon="frown open"
-                            class="mt_20"
-                            header="Exam list is empty."
-                            message="This section will contain patients to be examined."/>
-                    @endif
-    
+                    
                     @if ($inqueue->where('patient_exam_status', false)->count() > 0)
-                        <x-organisms.ui.table class="selectable unstackable">
+                        <h3 class="text-sm mt-16 mb-5 uppercase"><i class="fa-solid fa-money-bill-wave mr-2"></i> Ready for Payment</h3>
+
+                        <x-organisms.ui.table class="">
                             <x-slot name="thead"></x-slot>
                             <x-slot name="tbody">
                                 @foreach ($inqueue->where('patient_exam_status', false) as $pt)   
@@ -213,10 +231,48 @@
                             </x-slot>
                         </x-organisms.ui.table>
                     @endif
+
+                    @if (count($appointments) > 0)
+
+                        <h3 class="text-sm uppercase mt-16 mb-5"><i class="fa-solid fa-calendar mr-2"></i> Booked Patient</h3>
+
+                        <x-organisms.ui.table class="">
+                            <x-slot name="thead"></x-slot>
+                            <x-slot name="tbody">
+                                @foreach ($appointments as $pt)
+                                    @if (! $pt->patient->patient_queue)
+                                        <tr>
+                                            <x-organisms.ui.table.td style="width:8em;"/>
+
+                                            <x-organisms.ui.table.td class="text-center" style="width:15em;">
+                                                <x-atoms.ui.button wire:click.prevent="addToQueue({{ $pt->patient->id }})" class="btn-sm btn-primary btn-outline">Add to exam list</x-atoms.ui.button>
+                                            </x-organisms.ui.table.td>
+
+                                            <x-organisms.ui.table.td
+                                                text="{{ $pt->patient->patient_lname .', ' . $pt->patient->patient_fname . ' ' . $pt->patient->patient_mname }}"
+                                                desc="{{ $pt->patient->patient_address }}"
+                                                desc-icon="{{ !empty($pt->patient->patient_address) ? 'fa-location-dot' : '' }}"
+                                                avatar="{{ avatar($pt->patient->patient_avatar) }}"/>
+
+                                            <x-organisms.ui.table.td style="width:9em"/>
+
+                                            <x-organisms.ui.table.td style="width:9em">
+                                                @if ($this->isBooked($pt->patient->id)) 
+                                                    <span class="badge badge-sm badge-info">Booked</span>
+                                                @endif
+                                            </x-organisms.ui.table.td>
+
+                                            <x-organisms.ui.table.td style="width:3em"/>
+                                        </tr>12PkuMUtBP
+                                    @endif
+                                @endforeach
+                            </x-slot>
+                        </x-organisms.ui.table>
+                    @endif
                 </div>
 
-                {{-- @break
-            @case(2) --}}
+                @break
+            @case(2)
                 {{-- <div style="display: {{ $subPage == 2 ? 'block' : 'none'}}">
 
                     <x-organisms.ui.table class="selectable">
@@ -261,20 +317,112 @@
                         </x-slot>
                     </x-organisms.ui.table>
                 </div> --}}
-                {{-- @break
-            @case(3) --}}
-                {{-- <div style="n --}}
-                {{-- @break
-            @case(4)  --}}
+                @break
+            @case(3)
+                <div style="width: 40em; margin-right:auto; margin-left:auto;">
+                    <div>
+                        <x-atoms.ui.button wire:click.prevent="$set('subPage', 4)" class="btn-ghost btn-sm"><i class="fa-solid fa-arrow-left mr-2"></i> Back</x-atoms.ui.button>
+                    </div>
+
+                    @foreach ($examsHistory as $history) 
+                        <form wire:submit.prevent="updateExam({{ $this->exam['id'] }})" class="" id="saveExam" style="margin-top:3em;">
+                            <div class="">
+                                <h3 class="">Date Created: <span class="font-bold text-blue-500">{{ humanReadableDate($history->created_at) }}</span></h3>
+                                <div class="ui divider mt-3"></div>
+
+                                <div style="overflow-y: auto; padding-bottom:1em">
+                                    <table class="tbl-exam" style="min-width: 300px; width:100%;">
+                                        <thead>
+                                            <tr>
+                                                <td>RX</td>
+                                                <td>SPH</td>
+                                                <td>CYL</td>
+                                                <td>AXIS</td>
+                                                <td>NVA</td>
+                                                <td>PH</td>
+                                                <td>CVA</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="font-bold">OD</td>
+                                                <td>
+                                                    <input value="{{ $history->exam_OD_SPH }}dfdf" type="text" class="input input-bordered w-full mb-3"/></td>
+                                                <td>
+                                                    <input value="{{ $history->exam_OD_CYL }}" type="text" class="input input-bordered w-full mb-3"/></td>
+                                                <td>
+                                                    <input value="{{ $history->exam_OD_AXIS }}" type="text" class="input input-bordered w-full mb-3"/></td>
+                                                <td>
+                                                    <input value="{{ $history->exam_OD_NVA }}" type="text" class="input input-bordered w-full mb-3"/></td>
+                                                <td>
+                                                    <input value="{{ $history->exam_OD_PH }}" type="text" class="input input-bordered w-full mb-3"/></td>
+                                                <td>
+                                                    <input value="{{ $history->exam_OD_CVA }}" type="text" class="input input-bordered w-full mb-3"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-bold">OS</td>
+                                                <td>
+                                                    <input value="{{ $history->exam_OS_SPH }}" value="{{ $history->exam_OS_SPH }}" type="text" class="input input-bordered w-full"/></td>
+                                                <td>
+                                                    <input value="{{ $history->exam_OS_CYL }}" value="{{ $history->exam_OS_CYL }}" type="text" class="input input-bordered w-full"/></td>
+                                                <td>
+                                                    <input value="{{ $history->exam_OS_AXIS }}" type="text" class="input input-bordered w-full"/></td>
+                                                <td>
+                                                    <input value="{{ $history->exam_OS_NVA }}" type="text" class="input input-bordered w-full"/></td>
+                                                <td>
+                                                    <input value="{{ $history->exam_OS_PH }}" type="text" class="input input-bordered w-full"/></td>
+                                                <td>
+                                                    <input value="{{ $history->exam_OS_CVA }}" type="text" class="input input-bordered w-full"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td colspan="3">
+                                                    <x-atoms.ui.label>ADD</x-atoms.ui.lab>
+                                                    <input value="{{ $history->exam_ADD }}" type="text" class="i12PkuMUtBP
+                                                <td colspan="3">
+                                                    <x-atoms.ui.label>TINT</x-atoms.ui.label>
+                                                    <input value="{{ $history->exam_tint }}" type="text" placeholder="Enter tint..." class="input input-bordered w-full"/>
+                                                </td>
+                                            
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td colspan="6">
+                                                    <x-atoms.ui.label>FRAME</x-atoms.ui.label>
+                                                    <input value="{{ $history->exam_frame }}" type="text" placeholder="Enter frame..." class="input input-bordered w-full"/>
+                                                </td>
+                                                {{-- <td colspan="3">
+                                                    <x-atoms.ui.label>OTHERS</x-atoms.ui.label>
+                                                    <input value="{{ $history->exam_others }}" type="text" placeholder="Please specify..." class="input input-bordered w-full"/>
+                                                </td> --}}
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td colspan="8">
+                                                    <x-atoms.ui.label>REMARKS</x-atoms.ui.label>
+                                                    <textarea class="input input-bordered w-full" wire:model.defer="exam.exam_remarks" placeholder="Enter remarks..." rows="2"></textarea>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </form>                    
+                    @endforeach
+                </div>
+                @break
+            @case(4) 
                 <div style="display: {{ $subPage == 4 ? 'block' : 'none'}}">
-                    <x-organisms.ui.table class="selectable unstackable">
+                    <x-organisms.ui.table class="">
                         <x-slot name="thead">
                             <x-organisms.ui.table.th-checkbox/>
-                            <x-organisms.ui.table.th label="" style="width: 9em"/>
+                            <x-organisms.ui.table.th label="" style="width: 12em"/>
                             <x-organisms.ui.table.th label="Name" order-by="patient_lname" />
+                            <x-organisms.ui.table.th label="Gender" style="width:10em;"/>
+                            <x-organisms.ui.table.th label="Age" style="width:10em;"/>
+                            <x-organisms.ui.table.th label="Date Added" style="width:10em;"/>
                             <x-organisms.ui.table.th label=""/>
-                            <x-organisms.ui.table.th label=""/>
-                            <x-organisms.ui.table.th label="Date Added" order-by="created_at"/>
                             <x-organisms.ui.table.th-more/>
                         </x-slot>
                         <x-slot name="tbody">
@@ -282,26 +430,22 @@
                                 $count = 1;
                             @endphp
                             @forelse ($pts as $pt)   
-                                <tr class="{{ $this->examListIndicator($pt->id) ? 'positive' : ''; }}">
+                                <tr class="{{ $this->examListIndicator($pt->id) ? 'active' : ''; }}">
                                     <x-organisms.ui.table.td 
                                         checkbox="selectedPatients" 
                                         checkbox-value="{{ $pt->id }}"
                                         style="width: 3em"/>
                                     <x-organisms.ui.table.td>
-                                        <div class="flex flex_y_center full_w" style="gap:0.8em">
-                                            <div>
-                                                <div wire:click.prevent="patientShowModal('exam', {{ $pt->id }})" class="clickable_icon">
-                                                    <span class="ui text teal">
-                                                        <i class="fa-solid fa-pen"></i>
-                                                    </span>
-                                                </div>
+                                        <div class="flex" style="gap:0.9em">
+                                            <div class="tooltip" data-tip="View Exam" style="z-index:100">
+                                                <x-atoms.ui.button wire:click.prevent="patientShowModal('exam', {{ $pt->id }})" class="btn-sm btn-circle btn-ghost">
+                                                    <i class="fa-solid text-blue-500 fa-pen"></i>
+                                                </x-atoms.ui.button>
                                             </div>
-                                            <div wire:click.prevent="patientShowModal('purchase', {{ $pt->id }})">
-                                                <div class="clickable_icon">
-                                                    <span class="ui text blue">
-                                                        <i class="fa-solid fa-cart-shopping"></i>
-                                                    </span>
-                                                </div>
+                                            <div class="tooltip" data-tip="View Purchase" style="z-index:100">
+                                                <x-atoms.ui.button wire:click.prevent="patientShowModal('purchase', {{ $pt->id }})" class="btn-sm btn-circle btn-ghost">
+                                                    <i class="fa-solid text-blue-500 fa-cart-shopping"></i>
+                                                </x-atoms.ui.button>
                                             </div>
                                         </div>  
                                     </x-organisms.ui.table.td>
@@ -309,13 +453,18 @@
                                         text="{{ $pt->patient_lname . ', ' . $pt->patient_fname . ' ' . $pt->patient_mname}}"
                                         desc="{{ !empty($pt->patient_address) || ($pt->patient_address != NULL) ? $pt->patient_address : ''; }}"
                                         desc-icon="{{ !empty($pt->patient_address) || ($pt->patient_address != NULL) ? 'fa-location-dot' : ''; }}"
-                                        avatar="{{ $this->storage($pt->patient_avatar) }}"/>
+                                        avatar="{{ avatar($pt->patient_avatar) }}"/>
                                     <x-organisms.ui.table.td 
-                                        desc="Exams: {{ $this->countExam($pt->id) }}"/>
+                                        text="{{ $pt->patient_gender }}"/>
                                     <x-organisms.ui.table.td 
-                                        desc="Purchases: {{ $this->countPurchase($pt->id) }}"/>
+                                        text="{{ $pt->patient_age }}"/>
                                     <x-organisms.ui.table.td 
-                                        text="{{ $this->date($pt->created_at) }}"/>
+                                        desc="{{ $this->date($pt->created_at) }}"/>
+                                    <x-organisms.ui.table.td>
+                                        @if ($this->isBooked($pt->id)) 
+                                            <span class="badge badge-sm badge-info">Booked</span>
+                                        @endif
+                                    </x-organisms.ui.table.td>
                                     <x-organisms.ui.table.td-more style="width: 3em">
                                         <x-atom.more.option
                                             wire-click="patientShowModal('isUpdate', {{ $pt->id }})"
@@ -325,10 +474,10 @@
                                             option-name="Delete"/>
                                         <x-atom.more.option 
                                             wire-click="history(1, {{ $pt->id }})"
-                                            option-name="Exam History"/>
-                                        <x-atom.more.option 
+                                            option-name="Exam History {{ $this->countExam($pt->id) }}"/>
+                                        {{-- <x-atom.more.option 
                                             wire-click="history(2, {{ $pt->id }})"
-                                            option-name="Purchase History"/>
+                                            option-name="Purchase History"/> --}}
                                         <div class="divider"></div>
                                         @if ($this->currentlyInPaientList($pt->id))
                                             <x-atom.more.option 
@@ -348,10 +497,10 @@
                     </x-organisms.ui.table>
                     {{ $pts->links('livewire.components.paginator') }}
                 </div>
-                {{-- @break
+                @break
             @default
                 
-        @endswitch --}}
+        @endswitch
         
 
 

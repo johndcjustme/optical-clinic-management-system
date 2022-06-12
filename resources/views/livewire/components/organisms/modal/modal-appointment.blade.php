@@ -3,20 +3,19 @@
     @section('modal_title')
         <div class="x-flex x-flex-ycenter" style="gap:0.7em">
             @if ($modal['settings'] || $modal['settings2'])
-                <div wire:click.prevent="enableScheduling" class="ui checkbox toggle" data-inverted="" data-tooltip="{{ $this->enableSchedulingStatus(11) ? 'Disable Scheduling' : 'Enable Scheduling'}}" data-position="bottom left" data-variation="small">
-                    <input type="checkbox" @if ($this->enableSchedulingStatus(11)) checked="checked" @endif id="enableScheduling">
-                    <label for="enableScheduling"></label>
-                </div>
+                <div class="tooltip tooltip-bottom" data-tip="{{ $this->enableSchedulingStatus(11) ? 'Disable Scheduling' : 'Enable Scheduling'}}">
+                    <input wire:click.prevent="enableScheduling" type="checkbox" class="toggle toggle-lg" @if ($this->enableSchedulingStatus(11)) checked @endif id="enableScheduling">
+                </div> 
                 @if (!$modal['settings3'])
                 {{-- hiden when settings3 is true --}}
-                    <x-atoms.ui.button-circular wire:click.prevent="$toggle('modal.settings2')" class="mini basic {{ $modal['settings2'] ? 'primary' : ''}}">
-                        <i class="icon {{ $modal['settings2'] ? 'arrow left' : 'settings'}}"></i>
+                    <x-atoms.ui.button-circular wire:click.prevent="$toggle('modal.settings2')">
+                        <i class="fa-solid {{ $modal['settings2'] ? 'fa-caret-left' : 'fa-gear'}}"></i>
                     </x-atoms.ui.button-circular>
                 @endif
                 @if ($modal['settings2']) 
                     {{-- hiden when settings2 is true --}}
-                    <x-atoms.ui.button-circular wire:click.prevent="$toggle('deletingApptCat')" class="mini basic {{ $deletingApptCat ? 'primary red' : ''}} animate_zoom" data-inverted="" data-tooltip="Notificaton Settings" data-position="bottom left" data-variation="small" style="z-index: 1">
-                        <i class="icon {{ $deletingApptCat ? 'close' : 'trash'}}"></i>
+                    <x-atoms.ui.button-circular wire:click.prevent="$toggle('deletingApptCat')" class="btn-error {{ $deletingApptCat ? 'primary red' : ''}} animate_zoom" data-inverted="" data-tooltip="Notificaton Settings" data-position="bottom left" data-variation="small" style="z-index: 1">
+                        <i class="fa-solid {{ $deletingApptCat ? 'fa-close' : 'fa-trash'}}"></i>
                     </x-atoms.ui.button-circular>
                 @endif
             @endif
@@ -27,18 +26,22 @@
             @endif
             @if ($modal['update'])
 
-                <div class="ui dropdown floating icon button tiny" x-init="$('.ui.dropdown').dropdown()" style="z-index: 400">
-                    <i class="dropdown icon"></i>
-                    <span class="">Select Patient</span>
-                    <div class="menu fluid right">  
-                        <div class="ui icon search input">
+
+                {{-- <x-organisms.ui.dropdown class="dropdown-right">
+                    <x-organisms.ui.dropdown.dropdown-label>
+                        <i class="fa-solid fa-circle mr-2"></i>
+                        Select
+                        <i class="fa-solid fa-caret-right"></i>
+                    </x-organisms.ui.dropdown.dropdown-label>
+                    <x-organisms.ui.dropdown.dropdown-content class="ml-2" style="height: 20em; overflow-y:auto">
+                        <li class="ui icon search input">
                             <i class="search icon"></i>
                             <input type="text" placeholder="Search Items...">
-                        </div>
-                        <div class="divider"></div>
-                        <div class="scrolling menu">
-                            @foreach (App\Models\Patient::all() as $pt)
-                                <div class="item">
+                        </li>
+
+                        <div class="menu">
+                            @foreach (App\Models\Patient::select(['id', 'patient_fname', 'patient_mname', 'patient_lname', 'patient_address'])->get() as $pt)
+                                <li class="item">
                                     <div class="x-flex x-flex-xbetween x-gap-1">
                                         <div>
                                             <div>
@@ -54,29 +57,73 @@
                                             </button>
                                         </div>
                                     </div>
+                                </li>
+                            @endforeach
+                            
+                        </div>
+                    </x-organisms.ui.dropdown.dropdown-content>
+                </x-organisms.ui.dropdown.dropdown-content> --}}
+{{-- 
+                <div class="dropdown">
+                    <label tabindex="0" class="btn m-1">Click</label>
+                    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                      <li><a>Item 1</a></li>
+                      <li><a>Item 2</a></li>
+                    </ul>
+                </div> --}}
+                  
+
+                <div class="ui dropdown icon" x-init="$('.ui.dropdown').dropdown()" style="z-index: 400">
+                    <label class="btn mb-3">
+                        <i class="fa-solid fa-caret-down mr-2"></i>
+                        Select Patient
+                    </label>    
+                    <div class="mt-2 menu shadow-xl overflow-hidden" style="border-radius: 1em;">
+                        <div class="p-3 search">
+                            <input class="input input-bordered w-full" type="text" placeholder="Search Items...">
+                        </div>
+                        <div class="dropdown-content scrolling menu">
+                            @foreach (App\Models\Patient::select(['id', 'patient_fname', 'patient_mname', 'patient_lname', 'patient_address'])->get() as $pt)
+                                <div class="item flex align-center">
+                                    <div class="flex justify-between">
+                                        <div>
+                                            <div class="font-bold">
+                                                {{ $pt->patient_lname . ', ' . $pt->patient_fname . ' ' . $pt->patient_mnmae }}
+                                            </div>
+                                            <div class="text-sm opacity-50">
+                                                <i class="fa-solid fa-location-dot"></i> {{ $pt->patient_address }}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <x-atoms.ui.button class="btn-circle btn-primary btn-sm" wire:click.prevent="createAppt({{ $pt->id }})">
+                                                <i class="fa-solid fa-add"></i>
+                                            </x-atoms.ui.button>
+                                        </div>
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
                     </div>
                 </div>
+                
             @endif
         </div>
         <div>
-            <h5>
+            <x-atoms.ui.modal-title>
             @if ($modal['settings'])
                 APPOINTMENT SETTINGS
             @elseif ($modal['update'])
                 APPOINTMENT
             @endif
-            </h5>
+            </x-atoms.ui.modal-title>
         </div>
         <div>                
             @if ($modal['settings'] || $modal['settings2'])
-                <button wire:click.prevent="closeModal" class="ui button tiny">Close</button>
+                <x-atoms.ui.btn-close-modal/>
             @else
                 @if (! $modal['add'])
-                    <button wire:click.prevent="closeModal" class="ui button tiny">Close</button>
-                    <x-atoms.ui.button class="secondary tiny" form="updateAppt" type="submit">Save</i></x-atoms.ui.button>
+                    <x-atoms.ui.btn-close-modal/>
+                    <x-atoms.ui.button class="btn-primary ml-2" form="updateAppt" type="submit">Save</x-atoms.ui.button>
                 @endif
             @endif
         </div>
@@ -87,11 +134,11 @@
         @if ($modal['settings'])
             <br><br>
             @if ($modal['settings2'])
-                <form wire:submit.prevent="addApptCategory" action="">
-                    <div class="ui action input fluid @error('apptCat.title') error @enderror">
-                        <input wire:model.defer="apptCat.title" type="text" placeholder="Enter Category (Max of 20 characters)...">
-                        <button type="submit" class="ui button">Add Category</button>
-                    </div>
+                <form wire:submit.prevent="addApptCategory" action="" class="input-group">
+                    {{-- <div class="ui action input fluid @error('apptCat.title') error @enderror"> --}}
+                    <input class="input input-bordered w-full" wire:model.defer="apptCat.title" type="text" placeholder="Enter Category (Max of 20 characters)..." required>
+                    <button type="submit" class="btn btn-square"><i class="fa-solid fa-add"></i></button>
+                    {{-- </div> --}}
                 </form>
 
                 <br><br>
@@ -101,23 +148,24 @@
                     <x-slot name="tbody">
                         @foreach ($categories as $category)
                             @php $error = !$category->status ? 'error' : ''; @endphp
-                            <tr  style="padding-right: 1em;">
+                            <tr>
 
                                 <td class="{{ $error }}" style="padding-left:1em; ">
-                                    @if (!$category->status) <i class="attention icon" style="margin-right: 1em"></i> @endif
-                                    <div class="ui {{ $category->cname }} empty circular label" style="margin-right: 0.5em"></div>
-                                    <span>{{ $category->title}}</span>
+                                    {{-- @if (!$category->status) <i class="fa-solid fa-attention" style="margin-right: 1em"></i> @endif --}}
+                                    <i class="fa-solid fa-circle" style="color: {{ $category->color }}"></i>
+                                    {{-- <div class="ui {{ $category->cname }} empty circular label" style="margin-right: 0.5em"></div> --}}
+                                    {{ $category->title}}
                                 </td>
 
                                 <td class="right aligned {{ $error }}" style="width:6em">
                                     <div class="ui dropdown primary blue" x-init="$('.ui.dropdown').dropdown()">
-                                        <i class="edit icon"></i>
+                                        <i class="fa-solid fa-edit"></i>
                                         Pick a color
                                         <div class="menu left">
                                             <div class="scrolling menu">
                                                 @foreach (colors() as $color)
                                                     <div wire:click.prevent="setColor('{{ $category->id }}', '{{ $color['value'] }}', '{{ $color['name'] }}')" class="item">
-                                                        <div class="ui {{ $color['name'] }} empty circular label"></div>
+                                                        <i class="fa-solid fa-circle" style="color:{{ $color['value'] }}"></i>
                                                         {{ Str::title($color['name']) }}
                                                     </div>
                                                 @endforeach
@@ -126,21 +174,12 @@
                                     </div>
                                 </td>
 
-                                <td class="right aligned {{ $error }}" style="width: 7em;">
-                                    <div class="ui form">
-                                        <div class="grouped fields">
-                                            <div class="field">
-                                                <div class="ui checkbox slider " wire:click.prevent="selectedApptCategory({{$category->id}})" data-inverted="" data-tooltip="{{ $category->status ? 'Active' : 'Disabled' }}" data-position="bottom left" data-variation="small">
-                                                    <input type="checkbox" @if ($category->status) checked="checked" @endif>
-                                                    <label for=""></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
+                                {{-- <td class="text-right {{ $error }}" style="width: 7em;">
+                                    <input class="checkbox checkbox-sm" wire:click.prevent="selectedApptCategory({{$category->id}})" type="checkbox" @if ($category->status) checked @endif>
+                                </td> --}}
                                 @if ($deletingApptCat)
                                     <td class="{{ $error }}" style="width:1em;">
-                                        <button wire:click.prevent="deleteApptCategory({{ $category->id }})" class="ui button mini icon red tertiary animate_opacity" data-inverted="" data-tooltip="Remove Item" data-position="top right" data-variation="mini"><i class="close icon"></i></button>                                    
+                                        <button wire:click.prevent="deleteApptCategory({{ $category->id }})" class="btn btn-error btn-circle btn-sm animate_opacity"><i class="fa-solid fa-close"></i></button>                                    
                                     </td>
                                 @endif
                             </tr>
@@ -149,48 +188,66 @@
                 </x-organisms.ui.table>
             @else
                 <div class="x-flex x-flex-xbetween x-flex-ycenter">
-                    <div class="ui compact tiny menu" style="z-index: 0">
-                        <button wire:click.prevent="$set('apptSettingsTabs', 1)" class="item {{ $apptSettingsTabs == 1 ? 'active' : ''; }}">Days</button>
-                        <button wire:click.prevent="$set('apptSettingsTabs', 2)" class="item {{ $apptSettingsTabs == 2 ? 'active' : ''; }}">Time</button>
-                        <button wire:click.prevent="$set('apptSettingsTabs', 3)" class="item {{ $apptSettingsTabs == 3 ? 'active' : ''; }}">Year</button>
-                    </div>
+
+                      
+                    <x-organisms.ui.tabs>
+                        <x-organisms.ui.tabs.tab wire:click.prevent="$set('apptSettingsTabs', 1)" class="{{ $apptSettingsTabs == 1 ? 'tab-active' : ''; }}">
+                            Days
+                        </x-organisms.ui.tabs.tab>
+                        <x-organisms.ui.tabs.tab wire:click.prevent="$set('apptSettingsTabs', 2)" class="{{ $apptSettingsTabs == 2 ? 'tab-active' : ''; }}">
+                            Time
+                        </x-organisms.ui.tabs.tab>
+                        <x-organisms.ui.tabs.tab wire:click.prevent="$set('apptSettingsTabs', 3)" class="{{ $apptSettingsTabs == 3 ? 'tab-active' : ''; }}">
+                            Year
+                        </x-organisms.ui.tabs.tab>
+                        <x-organisms.ui.tabs.tab wire:click.prevent="$set('apptSettingsTabs', 4)" class="{{ $apptSettingsTabs == 4 ? 'tab-active' : ''; }}">
+                            Payment
+                        </x-organisms.ui.tabs.tab>
+                    </x-organisms.ui.tabs>
+
                     <div>
-                        @if ($apptSettingsTabs == 2)
-                            <div class="ui tiny input @error('timeSched') error @enderror">
-                                <input wire:model.lazy="timeSched" type="time" placeholder="Search...">
-                            </div>    
-                        @elseif ($apptSettingsTabs == 3)        
-                            <div class="ui small input compact @if (session()->has('yearMessage')) error @endif">
-                                <input wire:model.lazy="yearSched"  type="text" placeholder="e.g. {{ date('Y') }}">
-                            </div>               
+                        @if ($apptSettingsTabs == 1)
+                            <x-atoms.ui.input style="opacity: 0"/>
+                        @elseif ($apptSettingsTabs == 2)
+                            <form wire:submit.prevent="timeSched" class="input-group">
+                                <input class="input input-bordered @error('timeSched') input-error @enderror" wire:model.defer="timeSched" type="time" placeholder="Search...">
+                                <button type="submit" class="btn btn-square btn-primary"><i class="fa-solid fa-plus"></i></button>
+                            </form>
+                        @elseif ($apptSettingsTabs == 3)
+                            <form wire:submit.prevent="yearSched" class="input-group">
+                                <input class="input input-bordered @if (session()->has('yearMessage')) input-error @endif" wire:model.defer="yearSched"  type="number" placeholder="e.g. {{ date('Y') }}" style="width:10em">
+                                <button type="submit" class="btn btn-square btn-primary"><i class="fa-solid fa-plus"></i></button>
+                            </form>
+                        @elseif ($apptSettingsTabs == 4)
+                            <x-atoms.ui.input style="opacity: 0"/>
                         @endif
+
                     </div>         
+
                 </div>
             
                 <br>
                 @switch($apptSettingsTabs)
                     @case(1)
-                        <x-organisms.ui.table class="selectable very basic unstackable">
+                        <x-organisms.ui.table class="selectable very basic unstackable mt-5">
                             <x-slot name="thead"></x-slot>
                             <x-slot name="tbody">
-                                @foreach (App\Models\Day::all() as $day)
-                                    @php $error = !$day->status ? 'error' : ''; @endphp
+                                @foreach (App\Models\Day::select(['id', 'day', 'status'])->get() as $day)
+                                    @php $error = !$day->status ? 'inactive' : 'active'; @endphp
                                     <tr>
-                                        <td class="{{ $error }}" style="padding-left:1em;">
+                                        <td class="{{ $error }}">
                                             @if (!$day->status) <i class="attention icon"></i> @endif
                                             {{ $day->day}}
                                         </td>
-                                        <td class="{{ $error }} right aligned" style="width: 10em;">
-                                            <div class="ui form">
-                                                <div class="grouped fields">
-                                                    <div class="field">
-                                                        <div class="ui checkbox slider " wire:click.prevent="selectedDay({{$day->id}})" data-inverted="" data-tooltip="{{ $day->status ? 'Active' : 'Disabled' }}" data-position="bottom left" data-variation="small">
-                                                            <input type="checkbox" @if ($day->status) checked="checked" @endif>
-                                                            <label for=""></label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <td style="width: 5em">
+                                            @if($day->status) 
+                                                <span class="badge badge-sm badge-success w-20">Active</span>
+                                            @else
+                                                <span class="badge badge-sm badge-ghost w-20">Inactive</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-right" style="width: 10em;">
+                                            <input class="checkbox checkbox-sm" wire:click.prevent="selectedDay({{$day->id}})" type="checkbox" @if ($day->status) checked="checked" @endif> 
                                         </td>
                                     </tr>
                                 @endforeach
@@ -200,7 +257,7 @@
 
                     @case(2)
                         <br>
-                        @if (App\Models\Time::count() > 0)
+                        @if (App\Models\Time::select(['id'])->count() > 0)
                             
                             <x-organisms.ui.table class="very basic unstackable">
                                 <x-slot name="thead"></x-slot>
@@ -250,15 +307,15 @@
                         @break
                     @case(3)
                         <br>
-                        <div class="flex flex_wrap gap_1 mt_5">
+                        <div class="flex flex-wrap gap-3 mt-3">
                             @forelse (App\Models\Year::orderBy('year')->get() as $year)
-                                <div class="ui mini labeled button" tabindex="0">
-                                    <div class="ui basic button">
+                                <div class="btn-group">
+                                    <button class="btn">
                                         {{ $year->year }}
-                                    </div>
-                                    <a class="ui left pointing blue label" wire:click.prevent="deleteYear({{ $year->id }})">
-                                    <i class="fas fa-close"></i>
-                                    </a>
+                                    </button>
+                                    <button class="btn btn-active" wire:click.prevent="deleteYear({{ $year->id }})">
+                                        <i class="fas fa-close"></i>
+                                    </button>
                                 </div>
                             @empty
                                 <div class="ui message tiny fluid" style="width: 100%">
@@ -269,6 +326,10 @@
                                 </div>
                             @endforelse
                         </div>
+                        @break
+                    @case(4)
+                        <br>
+                        <h1>payment</h1>
                         @break
                     @default
                 @endswitch
@@ -294,7 +355,7 @@
                             </div>
                         @endif
 
-                        <div class="mt_7">
+                        <div class="pt-5">
                             @if (!empty($appt['pt_phone']))
                                 <p class="my_7">
                                     <i class="text_center fa-solid dark_100 fa-phone" style="width: 1.1em"></i>
@@ -330,6 +391,8 @@
                     </div>
                 </div>
             </form>
+        @elseif ($modal['showPayment'])
+            <img src="{{ storage('items', $paymentPhoto) }}" alt="">
         @endif         
     @endsection
 </x-organisms.modal>

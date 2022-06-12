@@ -1,29 +1,26 @@
-<div class="mt_5 w_lg" style="margin:auto; padding-top:3em; max-width:1500px; width:100%; height:100%" x-init="$('.ui.dropdown').dropdown();">
-    <div class="px_15" style="padding-bottom: 100px">
+<div class="pt-10" x-init="$('.ui.dropdown').dropdown();">
+    <div class="px-5" style="padding-bottom: 100px">
         <div class="">
             @yield('section-page-title')
         </div>
-        <br>
-        <div class="flex gap_1 mt_15 ">
+    
+        <div class="flex gap-5 mt-14">
             @yield('section-links')
         </div>
-        <br><br>
-        <div class="x-flex x-flex-xbetween x-flex-ycenter">
 
-            <div class="x-flex x-flex-ycenter x-gap-1">
+        <div class="flex justify-between items-center my-14">
+            <div class="flex items-center gap-5">
                 @yield('section-heading-left')
             </div>
 
-
-            <div class="x-flex x-flex-ycenter x-gap-1">
+            <div class="flex items-center gap-5">
                 @yield('section-heading-center')
             </div>
 
-            <div class="x-flex x-flex-ycenter x-gap-1">
+            <div class="flex items-center gap-5">
                 @yield('section-heading-right')
             </div>
-
-        </div><br>
+        </div>
 
         <div class="" style="z-index:0;">
             @yield('section-main')

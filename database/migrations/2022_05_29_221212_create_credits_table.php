@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMembersTable extends Migration
+class CreateCreditsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,15 @@ class CreateMembersTable extends Migration
      */
     public function up()
     {
-        Schema::create('members', function (Blueprint $table) {
+        Schema::create('credits', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->timestamps();
+            $table->unsignedBigInteger('patient_id');
+            $table->double('total')->nullable();
+            $table->date('due')->nullable();
 
-            $table->foreign('user_id')
+            $table->foreign('patient_id')
                 ->references('id')
-                ->on('users')
+                ->on('patients')
                 ->onDelete('cascade');
         });
     }
@@ -32,6 +33,6 @@ class CreateMembersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('members');
+        Schema::dropIfExists('credits');
     }
 }

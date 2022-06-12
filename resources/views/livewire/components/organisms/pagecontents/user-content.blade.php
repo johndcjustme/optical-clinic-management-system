@@ -7,12 +7,9 @@
     @endsection
 
     @section('section-links')
-        <div class="ui compact tiny menu">
+        {{-- <div class="ui compact tiny menu">
             <div wire:click.prevent="$set('role', '')" class="link item">All</div>
-            {{-- @foreach ($allRoles as $menu)
-                <div wire:click.prevent="$set('role', {{ $menu->id }})" class="link item @if($role == $menu->id) active @endif @if($users->where('role_id', $menu->id)->count() <= 0) disabled @endif">{{ $menu->role }}</div>
-            @endforeach --}}
-        </div>
+        </div> --}}
     @endsection
 
     @section('section-heading-left')
@@ -36,7 +33,7 @@
     @endsection
 
     @section('section-heading-right')
-        <div>
+        {{-- <div>
             <x-atoms.ui.search wire-model="searchUser" placeholder="Search..."/>
         </div>
         <x-molecules.ui.dropdown>
@@ -69,42 +66,36 @@
                     Roles
                 </div>
             </x-molecules.ui.dropdown.menu>
-        </x-molecules.ui.dropdown>
+        </x-molecules.ui.dropdown> --}}
     @endsection
 
     @section('section-main')
-        {{-- @foreach ($roles as $role)
-            @if ($users->where('role_id', $role->id)->count() > 0)
+        {{-- @foreach ($roles as $role) --}}
+            {{-- @if ($users->where('role_id', $role->id)->count() > 0) --}}
                 <x-organisms.ui.table class="selectable unstackable">
                     <x-slot name="thead">
-                        <x-organisms.ui.table.th label="{{ Str::upper($role->role) . ' ' . count($users->where('role_id', $role->id))}}" colspan="6"/>
+                        <x-organisms.ui.table.th label="Name"/>
+                        <x-organisms.ui.table.th label="Email Adderess" style="width:30em;"/>
+                        <x-organisms.ui.table.th label="Date Added" style="width:15em"/>
+                        <x-organisms.ui.table.th-more/>
                     </x-slot>
                     <x-slot name="tbody">
-                        @forelse ($users->where('role_id', $role->id) as $user)
+                        @forelse (App\Models\User::select('id', 'name', 'email', 'created_at')->whereRoleIs(['user'])->get() as $user)
                             <tr>
                                 <x-organisms.ui.table.td 
-                                    checkbox="selectedUsers" 
-                                    checkbox-value="{{ $user->id }}"
-                                    style="width: 3em"/>
-                                <x-organisms.ui.table.td 
                                     text="{{ $user->name }}"
-                                    avatar="{{ $this->storage($user->avatar) }}"/>
+                                    avatar="{{ avatar($user->avatar) }}"/>
                                 <x-organisms.ui.table.td 
-                                    style="width:10em"
-                                    text="{{ $user->role->role }}"/>
-                                <x-organisms.ui.table.td 
-                                    style="width:15em"
                                     text="{{ $user->email }}"/>
                                 <x-organisms.ui.table.td 
-                                    style="width:10em"
-                                    text="{{ $this->date($user->created_at) }}"/>
-                                <x-organisms.ui.table.td-more style="width:3em;">
+                                    text="{{ humanReadableDate($user->created_at) }}"/>
+                                <x-organisms.ui.table.td-more>
                                     <x-atom.more.option
                                         wire-click="showModal('update', {{ $user->id }})"
-                                        option-name="Edit"/>
+                                        option-name="Edit" />
                                     <x-atom.more.option 
                                         wire-click="deleteUser({{ $user->id }})"
-                                        option-name="Delete"/>
+                                        option-name="Delete" />
                                 </x-organisms.ui.table.td>
                             </tr>
                         @empty
@@ -112,8 +103,8 @@
                         @endforelse
                     </x-slot>
                 </x-organisms.ui.table>
-            @endif
-        @endforeach --}}
+            {{-- @endif --}}
+        {{-- @endforeach --}}
     @endsection
 
 </x-layout.page-content>
