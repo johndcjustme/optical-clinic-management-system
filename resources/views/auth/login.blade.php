@@ -26,19 +26,19 @@
             @csrf
 
             <!-- Email Address -->
-            <div class="form-control w-full max-w-xs">
+            <div class="form-control w-full">
                 {{-- <x-label for="email" :value="__('Email')" /> --}}
                 <x-input id="email" class="" type="email" name="email" placeholder="Enter email address..." :value="old('email')" required autofocus />
             </div>
 
             <!-- Password -->
-            <div class="form-control w-full max-w-xs mt-3">
+            <div class="form-control w-full mt-3">
                 {{-- <x-label for="password" :value="__('Password')" /> --}}
                 <x-input id="password" class="" type="password" name="password" placeholder="Enter password..." required  autocomplete="current-password" />
             </div>
 
             <div class="flex justify-between items-center mt-7">
-                <div class="mt-3"> 
+                <div> 
                     @if (Route::has('password.request'))
                         <a class="link link-hover text-blue-500" href="{{ route('password.request') }}">
                             {{ __('Forgot your password?') }}

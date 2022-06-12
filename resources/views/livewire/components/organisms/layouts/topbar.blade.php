@@ -1,9 +1,6 @@
-<div style="position:relative; background-color:transparent;">
+<div style="position:fixed; background-color:transparent; top:1em; right:1.5em; z-index:200">
 
     <div class="shadow-lg" style="
-        position: absolute; 
-        top: 0.9em; 
-        right: 1em;
         background-color: #ffffff;
         padding-top:0.3em;
         padding-bottom:0.3em;
@@ -38,33 +35,32 @@
                 @endif
                 <div class="noscroll mb-3 rounded-xl" style="overflow-y:auto;">
                     @forelse ($notifications as $notif)
-                            <div class="card card-compact backdrop-blur-sm bg-white/80 mb-3 shadow">
-                                <div class="card-body">
-                                    <div class="w-full">
-                                        <span class="opacity-50" style="font-size:0.8rem; font-weight:bold;"><i class="fa-solid fa-bell mr-2"></i> {{ Str::upper($notif->title) }}</span>
-                                        <p class="my-2" style="font-size: 1rem;">
-                                            {{ $notif->desc }}
+                        <div class="card card-compact backdrop-blur-sm bg-white/80 mb-3 shadow">
+                            <div class="card-body">
+                                <div class="w-full">
+                                    <span class="opacity-50" style="font-size:0.8rem; font-weight:bold;"><i class="fa-solid fa-bell mr-2"></i> {{ Str::upper($notif->title) }}</span>
+                                    <p class="my-2" style="font-size: 1rem;">
+                                        {{ $notif->desc }}
+                                    </p>
+                                    <div class="x-flex x-flex-xbetween x-flex-ycenter" style="padding-top:0.7em; width:100%;">
+                                        <p class="opacity-50">
+                                            {{ $notif->created_at->diffForHumans() }}
                                         </p>
-                                        <div class="x-flex x-flex-xbetween x-flex-ycenter" style="padding-top:0.7em; width:100%;">
-                                            <p class="opacity-50">
-                                                {{ $notif->created_at->diffForHumans() }}
-                                            </p>
-                                            <div class="flex justify-between" style="gap:1em;">
-                                                <a class="text-blue-400" href="{{ $notif->link }}">View</a>
-                                                <a wire:click.prevent="is_read({{ $notif->id }})" class="text-blue-400">Close</a>
-                                            </div>
+                                        <div class="flex justify-between" style="gap:1em;">
+                                            <a class="text-blue-400" href="{{ $notif->link }}">View</a>
+                                            <a wire:click.prevent="is_read({{ $notif->id }})" class="text-blue-400">Close</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        @empty
-                            <div class="flex items-center justify-center py-10">
-                                <div>
-                                    <p class="text-center bg-white px-5 rounded-2xl"><i class="fa-solid fa-bell mr-2"></i> No notifications so far.</p>
-                                </div>
+                        </div>
+                    @empty
+                        <div class="flex items-center justify-center py-10">
+                            <div>
+                                <p class="text-center bg-white px-5 rounded-2xl"><i class="fa-solid fa-bell mr-2"></i> No notifications so far.</p>
                             </div>
-                        @endforelse
-
+                        </div>
+                    @endforelse
                 </div>
             </x-organisms.ui.dropdown.dropdown-content>
         </x-organisms.ui.dropdown.dropdown-content>
@@ -74,7 +70,7 @@
 
 
         <x-organisms.ui.dropdown class="dropdown-end">
-            <x-organisms.ui.dropdown.dropdown-label class="" style="position:relative;">
+            <x-organisms.ui.dropdown.dropdown-label style="position:relative;">
                 {{-- <i class="fa-solid fa-bell"></i> --}}
                 <img class="mask mask-circle" src="{{ avatar(Auth::user()->avatar) }}" style="height:2.7em; width:2.7em"/>
 
@@ -100,8 +96,9 @@
             </x-organisms.ui.dropdown.dropdown-content>
         </x-organisms.ui.dropdown.dropdown-content>
 
-{{--         
 
+
+{{--         
         <div style="position: relative;" x-data="{open:false}">
             <div @click="open= ! open" class="btn btn-circle" style="position:relative;">
                 <i class="fa-solid fa-bell"></i>
@@ -147,6 +144,10 @@
                 @endif
             </div>
         </div> --}}
+
+
+
+
     </div>
 </div>
 
